@@ -11,8 +11,8 @@ class DevicesListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppViewModel>(builder: (context, viewModel, child) {
       return Scaffold(
-        appBar: buildAppBar(
-            'Lista urządzeń', context, viewModel, viewModel.createDevice),
+        appBar: buildAppBar('Lista urządzeń', context, viewModel,
+            viewModel.createDevice, () {}),
         body: const SafeArea(
           child: Column(
             children: [

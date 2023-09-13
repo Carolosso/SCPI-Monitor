@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test/style/theme.dart';
 import 'package:test/view_models/app_view_model.dart';
-import 'package:test/pages/main_page.dart';
+import 'package:test/views/pages/main_page.dart';
 
 void main() {
   runApp(ChangeNotifierProvider(

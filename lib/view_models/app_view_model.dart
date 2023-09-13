@@ -4,8 +4,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:test/models/device_model.dart';
 import 'package:test/models/station_model.dart';
-import 'package:test/pages/devices_list_page.dart';
-import 'package:test/pages/main_page.dart';
+import 'package:test/views/pages/devices_list_page.dart';
+import 'package:test/views/pages/main_page.dart';
 
 class AppViewModel extends ChangeNotifier {
   bool isDarkTheme = false;

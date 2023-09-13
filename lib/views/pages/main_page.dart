@@ -11,8 +11,8 @@ class MainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppViewModel>(builder: (context, viewModel, child) {
       return Scaffold(
-        appBar: buildAppBar(
-            'Monitorowanie', context, viewModel, viewModel.createStation),
+        appBar: buildAppBar('Monitorowanie', context, viewModel,
+            viewModel.createStation, viewModel.fillLists),
         body: const SafeArea(
           child: Column(
             children: [

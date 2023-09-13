@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:test/view_models/app_view_model.dart';
 
 AppBar buildAppBar(String title, BuildContext context, AppViewModel viewModel,
-    Function action) {
+    Function onSubmit, Function actionAction) {
   final TextEditingController controller1 = TextEditingController();
 
   return AppBar(
@@ -32,7 +32,7 @@ AppBar buildAppBar(String title, BuildContext context, AppViewModel viewModel,
                     child: TextField(
                       controller: controller1,
                       onSubmitted: (value) {
-                        //viewModel.createStation(value);
+                        onSubmit(value);
                       },
                       decoration: InputDecoration(
                           contentPadding: const EdgeInsets.only(
@@ -56,7 +56,7 @@ AppBar buildAppBar(String title, BuildContext context, AppViewModel viewModel,
                     TextButton(
                       child: const Text('Uzupełnij'),
                       onPressed: () {
-                        action(controller1);
+                        actionAction();
                         Navigator.of(context).pop();
                       },
                     ),
