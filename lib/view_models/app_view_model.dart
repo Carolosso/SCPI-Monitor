@@ -64,6 +64,11 @@ class AppViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void createDevice(String name) {
+    devices.add(Device(name, 'ip', 'serial', 'status', 12.0));
+    notifyListeners();
+  }
+
   void addDeviceToStation(int index, Device device) {
     devices.add(device);
     stations[index].devices.add(device);

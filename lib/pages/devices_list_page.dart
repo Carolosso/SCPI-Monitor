@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:test/style/theme.dart';
 import 'package:test/view_models/app_view_model.dart';
+import 'package:test/views/device_list_view.dart';
+import 'package:test/views/navigation_bar_sheet_view.dart';
 
 class DevicesListPage extends StatelessWidget {
   const DevicesListPage({super.key});
@@ -9,48 +10,19 @@ class DevicesListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<AppViewModel>(builder: (context, viewModel, child) {
-      return ListView.builder(
-        itemBuilder: (context, indexDevice) {
-          return Container(
-            color: Styles.surfaceColor,
-            child: Padding(
-              padding: const EdgeInsets.all(6.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    viewModel.devices[indexDevice].name,
-                    textAlign: TextAlign.left,
-                    style: const TextStyle(
-                      fontSize: 18,
-                    ),
-                  ),
-                  Text(
-                    'IP: ${viewModel.devices[indexDevice].ip}',
-                    textAlign: TextAlign.left,
-                    style: const TextStyle(
-                      fontSize: 14,
-                    ),
-                  ),
-                  Text(
-                    'Serial: ${viewModel.devices[indexDevice].serial}',
-                    textAlign: TextAlign.left,
-                    style: const TextStyle(
-                      fontSize: 14,
-                    ),
-                  ),
-                  Text(
-                    'Status: ${viewModel.devices[indexDevice].status}',
-                    textAlign: TextAlign.left,
-                    style: const TextStyle(
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+      return Scaffold(
+        appBar: buildAppBar(
+            'Lista urządzeń', context, viewModel, viewModel.createDevice),
+        body: const SafeArea(
+          child: Column(
+            children: [
+              //Task Info View
+              Expanded(flex: 1, child: DevicesListView()),
+              //Task List View
+            ],
+          ),
+        ),
+        //floatingActionButton: AddTaskView(),
       );
     });
   }

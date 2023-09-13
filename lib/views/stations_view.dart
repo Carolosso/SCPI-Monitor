@@ -4,14 +4,9 @@ import 'package:test/style/theme.dart';
 import 'package:test/view_models/app_view_model.dart';
 import 'package:test/views/floating_action_button_view.dart';
 
-class StationsMainView extends StatefulWidget {
+class StationsMainView extends StatelessWidget {
   const StationsMainView({super.key});
 
-  @override
-  State<StationsMainView> createState() => _StationsMainViewState();
-}
-
-class _StationsMainViewState extends State<StationsMainView> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AppViewModel>(builder: (context, viewModel, child) {
