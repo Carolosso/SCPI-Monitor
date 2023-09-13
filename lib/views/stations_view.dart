@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test/style/theme.dart';
-import 'package:test/view_models/app_view_model.dart';
+import 'package:test/providers/app_view_model.dart';
 import 'package:test/views/floating_action_button_view.dart';
+import 'package:test/views/navigation_bar_sheet_view.dart';
 
 class StationsMainView extends StatelessWidget {
   const StationsMainView({super.key});
@@ -11,6 +12,8 @@ class StationsMainView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppViewModel>(builder: (context, viewModel, child) {
       return Scaffold(
+        appBar: buildAppBar('Monitorowanie', context, viewModel,
+            viewModel.createStation, viewModel.fillLists),
         body: SafeArea(
           child: ListView.builder(
             shrinkWrap: true,

@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test/style/theme.dart';
-import 'package:test/view_models/app_view_model.dart';
-import 'package:test/views/pages/main_page.dart';
+import 'package:test/providers/app_view_model.dart';
+import 'package:test/providers/screen_index_provider.dart';
+import 'package:test/views/pages/home_page.dart';
 
-void main() {
-  runApp(ChangeNotifierProvider(
-      create: (context) => AppViewModel(), child: const MyApp()));
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: Styles.themeData(true, context),
-      home: const MainPage(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ScreenIndexProvider()),
+        ChangeNotifierProvider(create: (context) => AppViewModel()),
+      ],
+      child: MaterialApp(
+        theme: Styles.themeData(true, context),
+        home: HomePage(),
+      ),
     );
   }
 }

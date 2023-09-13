@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:test/view_models/app_view_model.dart';
+import 'package:test/providers/app_view_model.dart';
 import 'package:test/views/device_list_view.dart';
 import 'package:test/views/navigation_bar_sheet_view.dart';
 

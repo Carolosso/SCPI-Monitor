@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test/style/theme.dart';
-import 'package:test/view_models/app_view_model.dart';
+import 'package:test/providers/app_view_model.dart';
 
 class FloatingActionButtonView extends StatelessWidget {
   const FloatingActionButtonView({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:test/view_models/app_view_model.dart';
+import 'package:test/providers/app_view_model.dart';
 
 AppBar buildAppBar(String title, BuildContext context, AppViewModel viewModel,
     Function onSubmit, Function actionAction) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test/style/theme.dart';
-import 'package:test/view_models/app_view_model.dart';
+import 'package:test/providers/app_view_model.dart';
 
 class DevicesListView extends StatelessWidget {
   const DevicesListView({super.key});
@@ -10,6 +10,7 @@ class DevicesListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppViewModel>(builder: (context, viewModel, child) {
       return ListView.builder(
+        itemCount: viewModel.devices.length,
         itemBuilder: (context, indexDevice) {
           return Container(
             color: Styles.surfaceColor,
