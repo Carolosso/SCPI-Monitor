@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:test/providers/app_view_model.dart';
 
-AppBar buildAppBar(String title, BuildContext context, AppViewModel viewModel,
-    Function onSubmit, Function actionAction) {
+AppBar buildAppBar(String title, String dialogTitle, BuildContext context,
+    AppViewModel viewModel, Function onSubmit, Function actionAction) {
   final TextEditingController controller1 = TextEditingController();
 
   return AppBar(
@@ -17,6 +17,7 @@ AppBar buildAppBar(String title, BuildContext context, AppViewModel viewModel,
         )),
     backgroundColor: Colors.white24,
     elevation: 0,
+    //leading: const BackButton(color: Colors.black),
     actions: [
       IconButton(
         icon: const Icon(Icons.add_circle_rounded),
@@ -27,7 +28,7 @@ AppBar buildAppBar(String title, BuildContext context, AppViewModel viewModel,
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: const Text('Dodawanie stanowiska'),
+                  title: Text(dialogTitle),
                   content: SingleChildScrollView(
                     child: TextField(
                       controller: controller1,

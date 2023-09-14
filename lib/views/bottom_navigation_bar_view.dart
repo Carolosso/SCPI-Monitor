@@ -6,13 +6,13 @@ BottomNavigationBar buildBottomNavBar(
   return BottomNavigationBar(
     selectedItemColor: Colors.black,
     currentIndex: siModel.screenIndex,
-    showSelectedLabels: false,
-    showUnselectedLabels: false,
+    showSelectedLabels: true,
+    showUnselectedLabels: true,
     items: const [
-      BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+      BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Widok stanowisk'),
       BottomNavigationBarItem(
-          icon: Icon(Icons.perm_device_information), label: ''),
-      //BottomNavigationBarItem(icon: Icon(Icons.settings), label: ''),
+          icon: Icon(Icons.perm_device_information), label: 'Urządzenia'),
+      BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Ustawienia'),
     ],
     onTap: (value) => siModel.updateScreenIndex(value),
   );

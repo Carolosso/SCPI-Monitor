@@ -4,29 +4,32 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:test/models/device_model.dart';
 import 'package:test/models/station_model.dart';
-import 'package:test/views/pages/devices_list_page.dart';
-import 'package:test/views/stations_view.dart';
 
 class AppViewModel extends ChangeNotifier {
   bool isDarkTheme = false;
-
 
   List<Device> devices = [];
   List<Station> stations = [];
   int get stationsCount => stations.length;
 
   // <- Timer
-  late Timer _timer;
+  late Timer timer;
+
   bool isStopped = true;
 
+  void switchStartStop() {
+    isStopped = !isStopped;
+    notifyListeners();
+  }
+
   void stopTimer() {
-    isStopped = true;
-    _timer.cancel();
+    //isStopped = true;
+    timer.cancel();
   }
 
   void play() {
-    isStopped = false;
-    _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+    //isStopped = false;
+    timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       for (int i = 0; i < stationsCount; i++) {
         for (int j = 0; j < stations[i].devices.length; j++) {
           refreshDeviceValue(i, j);

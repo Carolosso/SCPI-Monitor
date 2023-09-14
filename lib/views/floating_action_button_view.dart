@@ -18,12 +18,19 @@ class FloatingActionButtonView extends StatelessWidget {
               } else {
                 viewModel.stopTimer();
               }
+              viewModel.switchStartStop();
             },
-            child: const Icon(
-              Icons.play_arrow,
-              color: Colors.black,
-              size: 30,
-            ));
+            child: viewModel.isStopped
+                ? const Icon(
+                    Icons.play_arrow,
+                    color: Colors.black,
+                    size: 30,
+                  )
+                : const Icon(
+                    Icons.stop,
+                    color: Colors.black,
+                    size: 30,
+                  ));
       },
     );
   }

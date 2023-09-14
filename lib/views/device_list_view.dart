@@ -12,42 +12,45 @@ class DevicesListView extends StatelessWidget {
       return ListView.builder(
         itemCount: viewModel.devices.length,
         itemBuilder: (context, indexDevice) {
-          return Container(
-            color: Styles.surfaceColor,
-            child: Padding(
-              padding: const EdgeInsets.all(6.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    viewModel.devices[indexDevice].name,
-                    textAlign: TextAlign.left,
-                    style: const TextStyle(
-                      fontSize: 18,
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Container(
+              color: Styles.backgroundColor,
+              child: Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      viewModel.devices[indexDevice].name,
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(
+                        fontSize: 20,
+                      ),
                     ),
-                  ),
-                  Text(
-                    'IP: ${viewModel.devices[indexDevice].ip}',
-                    textAlign: TextAlign.left,
-                    style: const TextStyle(
-                      fontSize: 14,
+                    Text(
+                      'IP: ${viewModel.devices[indexDevice].ip}',
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(
+                        fontSize: 15,
+                      ),
                     ),
-                  ),
-                  Text(
-                    'Serial: ${viewModel.devices[indexDevice].serial}',
-                    textAlign: TextAlign.left,
-                    style: const TextStyle(
-                      fontSize: 14,
+                    Text(
+                      'Serial: ${viewModel.devices[indexDevice].serial}',
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(
+                        fontSize: 15,
+                      ),
                     ),
-                  ),
-                  Text(
-                    'Status: ${viewModel.devices[indexDevice].status}',
-                    textAlign: TextAlign.left,
-                    style: const TextStyle(
-                      fontSize: 14,
+                    Text(
+                      'Status: ${viewModel.devices[indexDevice].status}',
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(
+                        fontSize: 15,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
