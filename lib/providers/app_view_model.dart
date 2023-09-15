@@ -70,8 +70,6 @@ class AppViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void editDevice() {}
-
   void addDeviceToStation(int index, Device device) {
     if (!stations[index].devices.contains(device)) {
       stations[index].devices;

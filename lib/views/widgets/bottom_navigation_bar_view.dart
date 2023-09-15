@@ -9,7 +9,7 @@ BottomNavigationBar buildBottomNavBar(
     showSelectedLabels: true,
     showUnselectedLabels: true,
     items: const [
-      BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Widok stanowisk'),
+      BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Stanowiska'),
       BottomNavigationBarItem(
           icon: Icon(Icons.perm_device_information), label: 'Urządzenia'),
       BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Ustawienia'),

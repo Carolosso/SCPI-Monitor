@@ -5,25 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "test (debug mode)",
+            "name": "SCPI Monitor (debug mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "debug",
             "program": "lib/main.dart"
         },
         {
-            "name": "test",
+            "name": "SCPI Monitor",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "test (profile mode)",
+            "name": "SCPI Monitor (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "test (release mode)",
+            "name": "SCPI Monitor (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

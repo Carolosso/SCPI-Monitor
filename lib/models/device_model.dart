@@ -1,6 +1,7 @@
 class Device {
   int? stationIndex;
   int? deviceID;
+  //bool isAssigned = false;
   String name;
   String ip;
   String serial;
