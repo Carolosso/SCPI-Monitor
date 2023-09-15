@@ -10,8 +10,9 @@ class AppViewModel extends ChangeNotifier {
 
   List<Device> devices = [];
   List<Station> stations = [];
-  int get stationsCount => stations.length;
 
+  int get stationsCount => stations.length;
+  int get devicesCount => devices.length;
   // <- Timer
   late Timer timer;
 
@@ -49,8 +50,8 @@ class AppViewModel extends ChangeNotifier {
       for (int j = 0; j < count; j++) {
         addDeviceToStation(
             i,
-            Device('name$temp', '192.168.0.$temp', 'serial', 'Online',
-                (Random().nextDouble() * 12)));
+            Device(devicesCount + 1, i, 'name$temp', '192.168.0.$temp',
+                'serial', 'Online', (Random().nextDouble() * 12)));
         temp++;
       }
     }
@@ -59,19 +60,26 @@ class AppViewModel extends ChangeNotifier {
   // <-------------DEBUGGING
 
   void createStation(String name) {
-    stations.add(Station(name, []));
+    stations.add(Station(name, [], stationsCount + 1));
     notifyListeners();
   }
 
   void createDevice(String name) {
-    devices.add(Device(name, 'ip', 'serial', 'status', 12.0));
+    devices.add(
+        Device(devicesCount + 1, null, name, 'ip', 'serial', 'status', 12.0));
     notifyListeners();
   }
 
+  void editDevice() {}
+
   void addDeviceToStation(int index, Device device) {
-    devices.add(device);
-    stations[index].devices.add(device);
-    notifyListeners();
+    if (!stations[index].devices.contains(device)) {
+      stations[index].devices;
+      stations[index].devices.add(device);
+      device.stationIndex = index + 1;
+
+      notifyListeners();
+    } else {}
   }
 
   void refreshDeviceValue(int indexStation, int indexDevice) {

@@ -2,18 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test/style/theme.dart';
 import 'package:test/providers/app_view_model.dart';
-import 'package:test/views/custom_app_bar_old.dart';
-import 'package:test/views/floating_action_button_view.dart';
+import 'package:test/views/widgets/custom_app_bar.dart';
+import 'package:test/views/widgets/floating_action_button_view.dart';
 
-class StationsMainView extends StatelessWidget {
-  const StationsMainView({super.key});
+class StationsListView extends StatelessWidget {
+  const StationsListView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Consumer<AppViewModel>(builder: (context, viewModel, child) {
       return Scaffold(
-        appBar: buildAppBar('Widok stanowisk', 'Dodaj stanowisko', context,
-            viewModel, viewModel.createStation, viewModel.fillLists),
+        appBar: CustomAppBar(
+          title: 'Widok stanowisk',
+          dialogTitle: 'Dodaj stanowisko',
+          viewModel: viewModel,
+          showAction: true,
+          showLeading: false,
+          onActionTap: viewModel.fillLists,
+          onSubmit: viewModel.createStation,
+        ),
+        //buildAppBar('Widok stanowisk', 'Dodaj stanowisko', context,
+        //  viewModel, viewModel.createStation, viewModel.fillLists),
         body: SafeArea(
           child: ListView.builder(
             shrinkWrap: true,
@@ -21,16 +30,16 @@ class StationsMainView extends StatelessWidget {
             itemBuilder: (context, indexStation) {
               return Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5),
+                    const EdgeInsets.symmetric(vertical: 0.0, horizontal: 5),
                 child: Card(
-                  elevation: 20,
+                  elevation: 10,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   color: Styles.primaryColor,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 10.0, horizontal: 5),
+                        vertical: 5.0, horizontal: 5),
                     child: Column(
                       children: <Widget>[
                         Text(
@@ -88,10 +97,8 @@ class StationsMainView extends StatelessWidget {
                               ),
                             );
                           },
-                          shrinkWrap:
-                              true, // todo comment this out and check the result
-                          physics:
-                              const ClampingScrollPhysics(), // todo comment this out and check the result
+                          shrinkWrap: true,
+                          physics: const ClampingScrollPhysics(),
                         ),
                       ],
                     ),
