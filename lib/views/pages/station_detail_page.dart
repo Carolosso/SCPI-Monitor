@@ -28,7 +28,7 @@ class StationDetailPage extends StatelessWidget {
             ],
           ),
           centerTitle: true,
-          backgroundColor: Colors.white,
+          backgroundColor: Styles.backgroundColor,
           elevation: 0,
         ),
         body: ListView.builder(

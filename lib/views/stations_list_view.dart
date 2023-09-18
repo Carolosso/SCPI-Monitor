@@ -41,80 +41,115 @@ class StationsListView extends StatelessWidget {
                               StationDetailPage(stationIndex: indexStation),
                         ));
                   },
-                  child: Card(
-                    elevation: 10,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    color: Styles.primaryColor,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 5.0, horizontal: 5),
-                      child: Column(
-                        children: <Widget>[
-                          Text(
-                            viewModel.getStationName(indexStation),
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18),
+                  child: viewModel.stations[indexStation].devices.isEmpty
+                      ? Card(
+                          elevation: 10,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
                           ),
-                          GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 200,
-                                    childAspectRatio: 1 / .4,
-                                    crossAxisSpacing: 2,
-                                    mainAxisSpacing: 2),
-                            itemCount:
-                                viewModel.getStationsDevicesCount(indexStation),
-                            itemBuilder: (context, indexDevice) {
-                              return Card(
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                ),
-                                color: Styles.surfaceColor,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(6.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        //alignment: Alignment.centerLeft,
-                                        flex: 1,
-                                        child: Text(
-                                          'Device ${indexDevice + 1}',
-                                          textAlign: TextAlign.left,
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                          ), //??????
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        //alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          '${viewModel.getDeviceValue(indexStation, indexDevice).toStringAsFixed(3)} V',
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                          color: Styles.primaryColor,
+                          child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 5.0, horizontal: 5),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    viewModel.getStationName(indexStation),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                            shrinkWrap: true,
-                            physics: const ClampingScrollPhysics(),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 15),
+                                    child: Text(
+                                      'Tap to see details',
+                                      style: TextStyle(
+                                        color: Colors.red.shade700,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )))
+                      : Card(
+                          elevation: 10,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
+                          color: Styles.primaryColor,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 5.0, horizontal: 5),
+                            child: Column(
+                              children: <Widget>[
+                                Text(
+                                  viewModel.getStationName(indexStation),
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18),
+                                ),
+                                GridView.builder(
+                                  gridDelegate:
+                                      const SliverGridDelegateWithMaxCrossAxisExtent(
+                                          maxCrossAxisExtent: 200,
+                                          childAspectRatio: 1 / .4,
+                                          crossAxisSpacing: 2,
+                                          mainAxisSpacing: 2),
+                                  itemCount: viewModel
+                                      .getStationsDevicesCount(indexStation),
+                                  itemBuilder: (context, indexDevice) {
+                                    return Card(
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                      ),
+                                      color: Styles.surfaceColor,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(6.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Expanded(
+                                              //alignment: Alignment.centerLeft,
+                                              flex: 1,
+                                              child: Text(
+                                                'Device ${indexDevice + 1}',
+                                                textAlign: TextAlign.left,
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                ), //??????
+                                              ),
+                                            ),
+                                            Expanded(
+                                              flex: 1,
+                                              //alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                '${viewModel.getDeviceValue(indexStation, indexDevice).toStringAsFixed(3)} V',
+                                                style: const TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  shrinkWrap: true,
+                                  physics: const ClampingScrollPhysics(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                 ),
               );
             },

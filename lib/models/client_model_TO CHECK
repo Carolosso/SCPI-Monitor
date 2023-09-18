@@ -1,0 +1,41 @@
+/* import 'dart:io';
+import 'dart:typed_data';
+import 'package:test/models/socket_service_model.dart';
+
+Future<void> openConnectionWith(String ip, int port) async {
+  final socket = await Socket.connect(ip, port);
+  print('Connected to: ${socket.remoteAddress.address}:${socket.remotePort}');
+
+  socket.listen(
+    (Uint8List data) {
+      final serverResponse = String.fromCharCodes(data).trim();
+      print(serverResponse.toString());
+      var parsedCommand = parseCommand(serverResponse);
+
+      if (parsedCommand.key == SocketAction.successMessage) {
+        print(parsedCommand.value.toString());
+      }
+      print(new String.fromCharCodes(data).trim());
+    },
+    // handle errors
+    onError: (error) {
+      print(error);
+      socket.destroy();
+    },
+
+    // handle server ending connection
+    onDone: () {
+      print('Server left.');
+      //socket.destroy();
+    },
+  );
+
+// Ask user for its username
+  String? command = 'READ?2323';
+  void doneHandler() {
+    socket.destroy();
+  }
+
+  sendMessageToServer(socket, command);
+}
+ */
