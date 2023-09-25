@@ -1,4 +1,3 @@
-import 'package:tcp_socket_connection/tcp_socket_connection.dart';
 import 'package:test/local_package/local_TcpSocketConnection.dart';
 
 class Device {

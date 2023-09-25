@@ -6,7 +6,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-class LocalTcpSocketConnection {
+class LocalTcpSocketConnection extends ChangeNotifier {
   late String _ipAddress;
   late int _portAddress;
   Socket? _server;
@@ -16,18 +16,16 @@ class LocalTcpSocketConnection {
   LocalTcpSocketConnection(this._ipAddress, this._portAddress);
 
   String message = "";
-  String name = "";
-  double value = 0;
+  //String name = "";
+  double value = 0.0;
 
-  String getName() {
-    return name;
-  }
-
-  //double get getValue => value;
+  double get getValue => double.parse(message);
+  String get getName => message;
 
   //receiving and sending back a custom message
   void messageReceiver(String msg) {
     message = msg;
+    notifyListeners();
   }
 
   void identification() {
@@ -45,8 +43,6 @@ class LocalTcpSocketConnection {
 
     //check if it's possible to connect to the endpoint
     await connect(5000, messageReceiver, attempts: 1);
-    //identification();
-    readValue();
   }
 
   /// Initializes che class itself

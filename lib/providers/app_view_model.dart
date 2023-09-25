@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:test/local_package/local_TcpSocketConnection.dart';
@@ -29,11 +28,14 @@ class AppViewModel extends ChangeNotifier {
   }
 
   void play() async {
-    timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+    timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       for (int i = 0; i < stationsCount; i++) {
         for (int j = 0; j < stations[i].devices.length; j++) {
           //con.startConnection();
-          refreshDeviceValue(i, j, Random().nextDouble() * 12);
+          refreshDeviceValue(
+            i,
+            j,
+          );
         }
       }
     });
@@ -72,15 +74,17 @@ class AppViewModel extends ChangeNotifier {
   }
 
   void createDevice(String name, String ip) async {
-    String status = "";
-    devices.add(Device(devicesCount + 1, null, name, ip, 'serial', status, 21.2,
-        LocalTcpSocketConnection(ip, 5025)));
+    String status;
+    LocalTcpSocketConnection testConnection =
+        LocalTcpSocketConnection(ip, 5025);
+    status = (await testConnection.canConnect(5000)) ? "Online" : "Offline";
 
-    //status = (await connection.canConnect(5000)) ? "Online" : "Offline";
-    //connection.startConnection();
-    //status = connection.message;
-    //status = (connection.isConnected()) ? "Online" : "Offline";
-    //print("POBRANA NAZWA:${connection.getName()}");
+    Device temp = Device(devicesCount + 1, null, name, ip, 'serial', status,
+        0.0, LocalTcpSocketConnection(ip, 5025));
+
+    devices.add(temp);
+    devices.add(Device(devicesCount + 1, null, 'Keysight2', ip, 'serial',
+        status, 0.0, LocalTcpSocketConnection(ip, 5026)));
 
     notifyListeners();
   }
@@ -91,22 +95,30 @@ class AppViewModel extends ChangeNotifier {
   }
 
   void removeDeviceFromStation(int stationIndex, int deviceIndex) {
+    stations[stationIndex]
+        .devices
+        .elementAt(deviceIndex)
+        .connection
+        .disconnect();
     stations[stationIndex].devices.removeAt(deviceIndex);
     notifyListeners();
   }
 
   void addDeviceToStation(int index, Device device) {
     if (!stations[index].devices.contains(device)) {
-      //stations[index].devices;
+      device.connection.startConnection();
+
       stations[index].devices.add(device);
       device.stationIndex = index + 1;
       notifyListeners();
     } else {}
   }
 
-  void refreshDeviceValue(int indexStation, int indexDevice, double value) {
-    //value = Random().nextDouble() + 12;
-    stations[indexStation].devices[indexDevice].value = value;
+  void refreshDeviceValue(int indexStation, int indexDevice) {
+    stations[indexStation].devices[indexDevice].connection.readValue();
+    stations[indexStation].devices[indexDevice].value =
+        stations[indexStation].devices[indexDevice].connection.getValue;
+
     notifyListeners();
   }
 

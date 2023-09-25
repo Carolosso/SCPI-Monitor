@@ -141,7 +141,6 @@ class DevicesListView extends StatelessWidget {
                             'Status: ${viewModel.devices[indexDevice].status}',
                             textAlign: TextAlign.left,
                             style: const TextStyle(
-                              color: Colors.green,
                               fontSize: 15,
                             ),
                           ),

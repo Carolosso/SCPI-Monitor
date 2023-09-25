@@ -114,8 +114,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                           actions: <Widget>[
                             TextButton(
                               child: const Text('Uzupełnij'),
-                              onPressed: () async {
-                                await onActionTap(nameTextController.text,
+                              onPressed: () {
+                                onActionTap(nameTextController.text,
                                     ipTextController.text);
                                 Navigator.of(context).pop();
                               },

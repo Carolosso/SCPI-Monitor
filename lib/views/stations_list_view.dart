@@ -120,7 +120,8 @@ class StationsListView extends StatelessWidget {
                                               //alignment: Alignment.centerLeft,
                                               flex: 1,
                                               child: Text(
-                                                'Device ${indexDevice + 1}',
+                                                viewModel.stations[indexStation]
+                                                    .devices[indexDevice].name,
                                                 textAlign: TextAlign.left,
                                                 style: const TextStyle(
                                                   fontSize: 14,

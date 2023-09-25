@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:test/local_package/local_TcpSocketConnection.dart';
 
 class SettingsPage extends StatelessWidget {
   SettingsPage({super.key});
