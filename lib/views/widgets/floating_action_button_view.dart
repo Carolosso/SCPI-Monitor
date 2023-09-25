@@ -16,7 +16,7 @@ class FloatingActionButtonView extends StatelessWidget {
               if (viewModel.isStopped) {
                 viewModel.play();
               } else {
-                viewModel.stopTimer();
+                viewModel.stop();
               }
               viewModel.switchStartStop();
             },

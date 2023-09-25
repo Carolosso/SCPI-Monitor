@@ -23,7 +23,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String dialogTitle;
   final Function onSubmit;
   final double height;
-  final TextEditingController controller1 = TextEditingController();
+  final TextEditingController nameTextController = TextEditingController();
+  final TextEditingController ipTextController = TextEditingController();
 
   final PreferredSizeWidget preferredSizeWidget = PreferredSize(
     preferredSize: const Size.fromHeight(80),
@@ -55,38 +56,67 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onPressed: () {
                   showDialog(
                       context: context,
-                      builder: (BuildContext context) {
+                      builder: (context) {
                         return AlertDialog(
                           title: Text(dialogTitle),
                           content: SingleChildScrollView(
-                            child: TextField(
-                              controller: controller1,
-                              onSubmitted: (value) {
-                                onSubmit(value);
-                              },
-                              decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.only(
-                                    bottom: 5,
+                            child: Column(
+                              children: [
+                                TextField(
+                                  controller: nameTextController,
+                                  onSubmitted: (value) {
+                                    onSubmit(value);
+                                  },
+                                  decoration: InputDecoration(
+                                      contentPadding: const EdgeInsets.only(
+                                        bottom: 5,
+                                      ),
+                                      filled: true,
+                                      //fillColor: viewModel.clrlvl2,
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          borderSide: BorderSide.none)),
+                                  autofocus: true,
+                                  textAlign: TextAlign.center,
+                                  textAlignVertical: TextAlignVertical.center,
+                                  autocorrect: false,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
                                   ),
-                                  filled: true,
-                                  //fillColor: viewModel.clrlvl2,
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                      borderSide: BorderSide.none)),
-                              autofocus: true,
-                              textAlign: TextAlign.center,
-                              textAlignVertical: TextAlignVertical.center,
-                              autocorrect: false,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
-                              ),
+                                ),
+                                TextField(
+                                  controller: ipTextController,
+                                  onSubmitted: (value) {
+                                    onSubmit(value);
+                                  },
+                                  decoration: InputDecoration(
+                                      contentPadding: const EdgeInsets.only(
+                                        bottom: 5,
+                                      ),
+                                      filled: true,
+                                      //fillColor: viewModel.clrlvl2,
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          borderSide: BorderSide.none)),
+                                  autofocus: true,
+                                  textAlign: TextAlign.center,
+                                  textAlignVertical: TextAlignVertical.center,
+                                  autocorrect: false,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           actions: <Widget>[
                             TextButton(
                               child: const Text('Uzupełnij'),
-                              onPressed: () {
-                                onActionTap();
+                              onPressed: () async {
+                                await onActionTap(nameTextController.text,
+                                    ipTextController.text);
                                 Navigator.of(context).pop();
                               },
                             ),

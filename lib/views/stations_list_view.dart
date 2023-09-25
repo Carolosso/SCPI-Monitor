@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test/style/theme.dart';
 import 'package:test/providers/app_view_model.dart';
-import 'package:test/views/pages/station_detail_page.dart';
+import 'package:test/views/station_detail_view.dart';
 import 'package:test/views/widgets/custom_app_bar.dart';
 import 'package:test/views/widgets/floating_action_button_view.dart';
 

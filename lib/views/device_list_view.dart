@@ -17,125 +17,144 @@ class DevicesListView extends StatelessWidget {
           viewModel: viewModel,
           showAction: true,
           showLeading: false,
-          onActionTap: () {},
-          onSubmit: viewModel.createDevice,
+          onActionTap: viewModel.createDevice,
+          onSubmit: () {},
         ),
         body: ListView.builder(
           itemCount: viewModel.devices.length,
           itemBuilder: (context, indexDevice) {
-            return GestureDetector(
-              onTap: () => showDialog<void>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title:
-                          Text('Edytuj ${viewModel.devices[indexDevice].name}'),
-                      content: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            TextField(
-                              onSubmitted: (value) {
-                                viewModel.devices[indexDevice].name = value;
-                              },
-                              decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.only(
-                                    bottom: 5,
-                                  ),
-                                  filled: true,
-                                  //fillColor: viewModel.clrlvl2,
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                      borderSide: BorderSide.none)),
-                              textAlign: TextAlign.center,
-                              textAlignVertical: TextAlignVertical.center,
-                              autocorrect: false,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
+            return Dismissible(
+              key: UniqueKey(),
+              direction: DismissDirection.endToStart,
+              onDismissed: (direction) {
+                viewModel.removeDevice(indexDevice);
+              },
+              background: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 5),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade300,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.delete,
+                  color: Colors.red.shade700,
+                ),
+              ),
+              child: GestureDetector(
+                onTap: () => showDialog<void>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(
+                            'Edytuj ${viewModel.devices[indexDevice].name}'),
+                        content: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              TextField(
+                                onSubmitted: (value) {
+                                  viewModel.setNewParametersToDevice(
+                                      indexDevice, value);
+                                },
+                                decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.only(
+                                      bottom: 5,
+                                    ),
+                                    filled: true,
+                                    //fillColor: viewModel.clrlvl2,
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                        borderSide: BorderSide.none)),
+                                textAlign: TextAlign.center,
+                                textAlignVertical: TextAlignVertical.center,
+                                autocorrect: false,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
+                              SizedBox(
+                                child: DropdownButton<int>(
+                                    isExpanded: true,
+                                    //value: viewModel.devices[indexDevice].stationIndex,
+                                    items: viewModel.stations
+                                        .map((e) => DropdownMenuItem(
+                                              value: e.stationID,
+                                              child: Text(e.name),
+                                            ))
+                                        .toList(),
+                                    onChanged: (selectedStation) =>
+                                        viewModel.addDeviceToStation(
+                                            selectedStation! - 1,
+                                            viewModel.devices[indexDevice])),
+                              )
+                            ],
+                          ),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text('Zamknij'),
+                            onPressed: () {
+                              // onActionTap();
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    }),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Container(
+                    color: Styles.backgroundColor,
+                    child: Padding(
+                      padding: const EdgeInsets.all(6.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            viewModel.devices[indexDevice].name,
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                              fontSize: 20,
                             ),
-                            SizedBox(
-                              child: DropdownButton<int>(
-                                  isExpanded: true,
-                                  //value: viewModel.devices[indexDevice].stationIndex,
-                                  items: viewModel.stations
-                                      .map((e) => DropdownMenuItem(
-                                            value: e.stationID,
-                                            child: Text(e.name),
-                                          ))
-                                      .toList(),
-                                  onChanged: (selectedStation) =>
-                                      viewModel.addDeviceToStation(
-                                          selectedStation! - 1,
-                                          viewModel.devices[indexDevice])),
-                            )
-                          ],
-                        ),
+                          ),
+                          Text(
+                            'App ID: ${viewModel.devices[indexDevice].deviceID}',
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                              fontSize: 12,
+                            ),
+                          ),
+                          Text(
+                            'IP: ${viewModel.devices[indexDevice].ip}',
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                          Text(
+                            'Serial: ${viewModel.devices[indexDevice].serial}',
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                          Text(
+                            'Status: ${viewModel.devices[indexDevice].status}',
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                              color: Colors.green,
+                              fontSize: 15,
+                            ),
+                          ),
+                          Text(
+                            'Numer Stanowiska: ${viewModel.devices[indexDevice].stationIndex}',
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          )
+                        ],
                       ),
-                      actions: <Widget>[
-                        TextButton(
-                          child: const Text('Zamknij'),
-                          onPressed: () {
-                            // onActionTap();
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    );
-                  }),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Container(
-                  color: Styles.backgroundColor,
-                  child: Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          viewModel.devices[indexDevice].name,
-                          textAlign: TextAlign.left,
-                          style: const TextStyle(
-                            fontSize: 20,
-                          ),
-                        ),
-                        Text(
-                          'App ID: ${viewModel.devices[indexDevice].deviceID}',
-                          textAlign: TextAlign.left,
-                          style: const TextStyle(
-                            fontSize: 12,
-                          ),
-                        ),
-                        Text(
-                          'IP: ${viewModel.devices[indexDevice].ip}',
-                          textAlign: TextAlign.left,
-                          style: const TextStyle(
-                            fontSize: 15,
-                          ),
-                        ),
-                        Text(
-                          'Serial: ${viewModel.devices[indexDevice].serial}',
-                          textAlign: TextAlign.left,
-                          style: const TextStyle(
-                            fontSize: 15,
-                          ),
-                        ),
-                        Text(
-                          'Status: ${viewModel.devices[indexDevice].status}',
-                          textAlign: TextAlign.left,
-                          style: const TextStyle(
-                            color: Colors.green,
-                            fontSize: 15,
-                          ),
-                        ),
-                        Text(
-                          'Numer Stanowiska: ${viewModel.devices[indexDevice].stationIndex}',
-                          textAlign: TextAlign.left,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                        )
-                      ],
                     ),
                   ),
                 ),
