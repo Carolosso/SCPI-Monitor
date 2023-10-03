@@ -6,6 +6,4 @@ class ConnectionModel {
   TcpSocketConnection socketConnection;
 
   ConnectionModel(this.ip, this.port, this.socketConnection);
-
-  
 }

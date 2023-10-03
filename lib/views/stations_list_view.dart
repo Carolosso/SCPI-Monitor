@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:test/style/theme.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/views/station_detail_view.dart';
-import 'package:test/views/widgets/custom_app_bar.dart';
+import 'package:test/views/widgets/custom_app_bars/custom_app_bar_for_stations_view.dart';
 import 'package:test/views/widgets/floating_action_button_view.dart';
 
 class StationsListView extends StatelessWidget {
@@ -13,17 +13,7 @@ class StationsListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppViewModel>(builder: (context, viewModel, child) {
       return Scaffold(
-        appBar: CustomAppBar(
-          title: 'Stanowiska',
-          dialogTitle: 'Dodaj stanowisko',
-          viewModel: viewModel,
-          showAction: true,
-          showLeading: false,
-          onActionTap: viewModel.fillLists,
-          onSubmit: viewModel.createStation,
-        ),
-        //buildAppBar('Widok stanowisk', 'Dodaj stanowisko', context,
-        //  viewModel, viewModel.createStation, viewModel.fillLists),
+        appBar: CustomAppBarForStationsView(),
         body: SafeArea(
           child: ListView.builder(
             shrinkWrap: true,
@@ -65,7 +55,7 @@ class StationsListView extends StatelessWidget {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 15),
                                     child: Text(
-                                      'Tap to see details',
+                                      'Add device to this station.',
                                       style: TextStyle(
                                         color: Colors.red.shade700,
                                         fontWeight: FontWeight.bold,
@@ -75,6 +65,7 @@ class StationsListView extends StatelessWidget {
                                   ),
                                 ],
                               )))
+                      //if not empty show styled Card
                       : Card(
                           elevation: 10,
                           shape: RoundedRectangleBorder(

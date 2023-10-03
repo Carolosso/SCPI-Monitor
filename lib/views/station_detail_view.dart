@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
@@ -13,23 +14,52 @@ class StationDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppViewModel>(builder: (context, viewModel, child) {
       return Scaffold(
-        appBar: AppBar(
-          foregroundColor: Colors.black,
-          title: Column(
-            children: [
-              Text(
-                viewModel.stations[stationIndex].name,
-                style: const TextStyle(fontSize: 32),
-              ),
-              const Text(
-                'Widok szczegołowy',
-                style: TextStyle(fontSize: 16),
-              )
-            ],
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(70.0),
+          //TODO
+          // CENTER THIS SOMEHOW!
+          child: AppBar(
+            clipBehavior: Clip.none,
+            foregroundColor: Colors.black,
+            title: Column(
+              children: [
+                TextField(
+                  onSubmitted: (value) {
+                    viewModel.setStationName(stationIndex, value);
+                  },
+                  textAlign: TextAlign.center,
+                  textAlignVertical: TextAlignVertical.center,
+                  autocorrect: false,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.only(bottom: 5),
+                    hintText: viewModel.stations[stationIndex].name,
+                    border: InputBorder.none,
+                    hintStyle: GoogleFonts.inter(
+                      textStyle: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 24,
+                      ),
+                    ),
+                  ),
+                  style: GoogleFonts.inter(
+                    textStyle: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 24,
+                    ),
+                  ),
+                ),
+                const Text(
+                  'Widok szczegołowy',
+                  style: TextStyle(fontSize: 16),
+                )
+              ],
+            ),
+            centerTitle: true,
+            backgroundColor: Styles.backgroundColor,
+            elevation: 0,
           ),
-          centerTitle: true,
-          backgroundColor: Styles.backgroundColor,
-          elevation: 0,
         ),
         body: ListView.builder(
           shrinkWrap: true,

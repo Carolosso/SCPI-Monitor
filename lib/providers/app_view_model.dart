@@ -32,41 +32,11 @@ class AppViewModel extends ChangeNotifier {
       for (int i = 0; i < stationsCount; i++) {
         for (int j = 0; j < stations[i].devices.length; j++) {
           //con.startConnection();
-          refreshDeviceValue(
-            i,
-            j,
-          );
+          refreshDeviceValue(i, j);
         }
       }
     });
   }
-
-  // <- Timer
-  // <-------------DEBUGGING
-  void fillLists() {
-    /*  int temp = 0;
-    int count = Random().nextInt(4) + 1;
-
-    for (int i = 0; i < stationsCount; i++) {
-      count = Random().nextInt(4) + 1;
-      for (int j = 0; j < count; j++) {
-        addDeviceToStation(
-            i,
-            Device(
-                devicesCount + 1,
-                i,
-                'name$temp',
-                '192.168.0.$temp',
-                'serial',
-                'Online',
-                (Random().nextDouble() * 12),
-                LocalTcpSocketConnection('10.0.2.2', 5025)));
-        temp++;
-      }
-    } */
-  }
-
-  // <-------------DEBUGGING
 
   void createStation(String name) {
     stations.add(Station(name, [], stationsCount + 1));
@@ -74,18 +44,14 @@ class AppViewModel extends ChangeNotifier {
   }
 
   void createDevice(String name, String ip) async {
-    String status;
+    String status = '';
     LocalTcpSocketConnection testConnection =
         LocalTcpSocketConnection(ip, 5025);
     status = (await testConnection.canConnect(5000)) ? "Online" : "Offline";
 
     Device temp = Device(devicesCount + 1, null, name, ip, 'serial', status,
         0.0, LocalTcpSocketConnection(ip, 5025));
-
     devices.add(temp);
-    devices.add(Device(devicesCount + 1, null, 'Keysight2', ip, 'serial',
-        status, 0.0, LocalTcpSocketConnection(ip, 5026)));
-
     notifyListeners();
   }
 
@@ -109,7 +75,7 @@ class AppViewModel extends ChangeNotifier {
       device.connection.startConnection();
 
       stations[index].devices.add(device);
-      device.stationIndex = index + 1;
+      //device.stationIndex = index + 1;
       notifyListeners();
     } else {}
   }
@@ -141,5 +107,16 @@ class AppViewModel extends ChangeNotifier {
 
   String getStationName(int index) {
     return stations[index].name;
+  }
+
+  void setStationName(int indexStation, String newName) {
+    stations[indexStation].name = newName;
+    notifyListeners();
+  }
+
+  void removeStation(int indexStation) {
+    stations[indexStation].devices.clear();
+    stations.removeAt(indexStation);
+    notifyListeners();
   }
 }

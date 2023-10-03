@@ -17,7 +17,7 @@ class LocalTcpSocketConnection extends ChangeNotifier {
 
   String message = "";
   //String name = "";
-  double value = 0.0;
+  double value = 0;
 
   double get getValue => double.parse(message);
   String get getName => message;

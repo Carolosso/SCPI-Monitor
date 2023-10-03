@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test/style/theme.dart';
 import 'package:test/providers/app_view_model.dart';
-import 'package:test/views/widgets/custom_app_bar.dart';
+import 'package:test/views/widgets/custom_app_bars/custom_app_bar_for_devices_view.dart';
 
 class DevicesListView extends StatelessWidget {
   const DevicesListView({super.key});
@@ -11,15 +11,7 @@ class DevicesListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppViewModel>(builder: (context, viewModel, child) {
       return Scaffold(
-        appBar: CustomAppBar(
-          title: 'Urządzenia (${viewModel.devicesCount})',
-          dialogTitle: 'Dodaj urządzenie',
-          viewModel: viewModel,
-          showAction: true,
-          showLeading: false,
-          onActionTap: viewModel.createDevice,
-          onSubmit: () {},
-        ),
+        appBar: CustomAppBarForDevicesView(),
         body: ListView.builder(
           itemCount: viewModel.devices.length,
           itemBuilder: (context, indexDevice) {
