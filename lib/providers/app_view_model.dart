@@ -31,7 +31,6 @@ class AppViewModel extends ChangeNotifier {
     timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       for (int i = 0; i < stationsCount; i++) {
         for (int j = 0; j < stations[i].devices.length; j++) {
-          //con.startConnection();
           refreshDeviceValue(i, j);
         }
       }
@@ -49,13 +48,13 @@ class AppViewModel extends ChangeNotifier {
         LocalTcpSocketConnection(ip, 5025);
     status = (await testConnection.canConnect(5000)) ? "Online" : "Offline";
 
-    Device temp = Device(devicesCount + 1, null, name, ip, 'serial', status,
-        0.0, LocalTcpSocketConnection(ip, 5025));
+    Device temp = Device(devicesCount + 1, name, ip, 'serial', status, 0.0,
+        LocalTcpSocketConnection(ip, 5025));
     devices.add(temp);
     notifyListeners();
   }
 
-  void removeDevice(int index) {
+  void removeDeviceFromList(int index) {
     devices.removeAt(index);
     notifyListeners();
   }
@@ -96,8 +95,9 @@ class AppViewModel extends ChangeNotifier {
     return stations[indexStation].devices.elementAt(indexDevice).name;
   }
 
-  void setNewParametersToDevice(int index, String name) {
+  void setNewParametersToDevice(int index, String name, String ip) {
     devices[index].name = name;
+    devices[index].ip = ip;
     notifyListeners();
   }
 

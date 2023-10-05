@@ -15,17 +15,19 @@ class LocalTcpSocketConnection extends ChangeNotifier {
 
   LocalTcpSocketConnection(this._ipAddress, this._portAddress);
 
-  String message = "";
+  String message = "0";
   //String name = "";
-  double value = 0;
+  double value = 0.000;
 
   double get getValue => double.parse(message);
   String get getName => message;
 
   //receiving and sending back a custom message
   void messageReceiver(String msg) {
-    message = msg;
-    notifyListeners();
+    if (msg.isNotEmpty) {
+      message = msg;
+      notifyListeners();
+    }
   }
 
   void identification() {

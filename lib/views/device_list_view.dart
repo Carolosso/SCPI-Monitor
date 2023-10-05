@@ -5,7 +5,10 @@ import 'package:test/providers/app_view_model.dart';
 import 'package:test/views/widgets/custom_app_bars/custom_app_bar_for_devices_view.dart';
 
 class DevicesListView extends StatelessWidget {
-  const DevicesListView({super.key});
+  DevicesListView({super.key});
+
+  final TextEditingController nameTextController = TextEditingController();
+  final TextEditingController ipTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +22,7 @@ class DevicesListView extends StatelessWidget {
               key: UniqueKey(),
               direction: DismissDirection.endToStart,
               onDismissed: (direction) {
-                viewModel.removeDevice(indexDevice);
+                viewModel.removeDeviceFromList(indexDevice);
               },
               background: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -33,65 +36,107 @@ class DevicesListView extends StatelessWidget {
                 ),
               ),
               child: GestureDetector(
-                onTap: () => showDialog<void>(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text(
-                            'Edytuj ${viewModel.devices[indexDevice].name}'),
-                        content: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              TextField(
-                                onSubmitted: (value) {
-                                  viewModel.setNewParametersToDevice(
-                                      indexDevice, value);
-                                },
-                                decoration: InputDecoration(
+                onTap: () {
+                  nameTextController.text = viewModel.devices[indexDevice].name;
+                  ipTextController.text = viewModel.devices[indexDevice].ip;
+
+                  showDialog<void>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(
+                              'Edytuj ${viewModel.devices[indexDevice].name}'),
+                          content: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                TextField(
+                                  controller: nameTextController,
+                                  onSubmitted: (value) {},
+                                  decoration: InputDecoration(
                                     contentPadding: const EdgeInsets.only(
                                       bottom: 5,
                                     ),
                                     filled: true,
-                                    //fillColor: viewModel.clrlvl2,
-                                    border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                        borderSide: BorderSide.none)),
-                                textAlign: TextAlign.center,
-                                textAlignVertical: TextAlignVertical.center,
-                                autocorrect: false,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
+                                    enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Styles.primaryColor)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Styles.surfaceColor)),
+                                    labelText: ' Nazwa ',
+                                  ),
+                                  //autofocus: true,
+                                  textAlign: TextAlign.center,
+                                  textAlignVertical: TextAlignVertical.center,
+                                  autocorrect: false,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(
-                                child: DropdownButton<int>(
-                                    isExpanded: true,
-                                    //value: viewModel.devices[indexDevice].stationIndex,
-                                    items: viewModel.stations
-                                        .map((e) => DropdownMenuItem(
-                                              value: e.stationID,
-                                              child: Text(e.name),
-                                            ))
-                                        .toList(),
-                                    onChanged: (selectedStation) =>
-                                        viewModel.addDeviceToStation(
-                                            selectedStation! - 1,
-                                            viewModel.devices[indexDevice])),
-                              )
-                            ],
+                                const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 10)),
+                                TextField(
+                                  controller: ipTextController,
+                                  onSubmitted: (value) {},
+                                  decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.only(
+                                      bottom: 5,
+                                    ),
+                                    filled: true,
+                                    enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Styles.primaryColor)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Styles.surfaceColor)),
+                                    labelText: ' IP ',
+                                  ),
+                                  //autofocus: true,
+                                  textAlign: TextAlign.center,
+                                  textAlignVertical: TextAlignVertical.center,
+                                  autocorrect: false,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 10)),
+                                SizedBox(
+                                  child: DropdownButton<int>(
+                                      hint: const Text('Dodaj do stanowiska Ω'),
+                                      isExpanded: true,
+                                      //value: viewModel.devices[indexDevice].stationIndex,
+                                      items: viewModel.stations
+                                          .map((e) => DropdownMenuItem(
+                                                value: e.stationID,
+                                                child: Text(e.name),
+                                              ))
+                                          .toList(),
+                                      onChanged: (selectedStation) =>
+                                          viewModel.addDeviceToStation(
+                                              selectedStation! - 1,
+                                              viewModel.devices[indexDevice])),
+                                )
+                              ],
+                            ),
                           ),
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            child: const Text('Zamknij'),
-                            onPressed: () {
-                              // onActionTap();
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    }),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text('Zapisz'),
+                              onPressed: () {
+                                viewModel.setNewParametersToDevice(
+                                    indexDevice,
+                                    nameTextController.text,
+                                    ipTextController.text);
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      });
+                },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Container(
@@ -136,14 +181,14 @@ class DevicesListView extends StatelessWidget {
                               fontSize: 15,
                             ),
                           ),
-                          Text(
+/*                           Text(
                             'Numer Stanowiska: ${viewModel.devices[indexDevice].stationIndex}',
                             textAlign: TextAlign.left,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
                             ),
-                          )
+                          ) */
                         ],
                       ),
                     ),

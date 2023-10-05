@@ -1,7 +1,7 @@
 import 'package:test/local_package/local_TcpSocketConnection.dart';
 
 class Device {
-  int? stationIndex;
+  //int? stationIndex;
   int? deviceID;
   //bool isAssigned = false;
   String name;
@@ -11,6 +11,6 @@ class Device {
   double value;
   LocalTcpSocketConnection connection;
 
-  Device(this.deviceID, this.stationIndex, this.name, this.ip, this.serial,
-      this.status, this.value, this.connection);
+  Device(this.deviceID, this.name, this.ip, this.serial, this.status,
+      this.value, this.connection);
 }
