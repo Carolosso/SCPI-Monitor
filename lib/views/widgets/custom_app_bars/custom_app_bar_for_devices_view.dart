@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:test/providers/app_view_model.dart';
+import 'package:test/style/theme.dart';
 
 class CustomAppBarForDevicesView extends StatelessWidget
     implements PreferredSizeWidget {
@@ -53,12 +54,14 @@ class CustomAppBarForDevicesView extends StatelessWidget
                               onSubmitted: (value) {
                                 //onSubmit(value);
                               },
-                              decoration: const InputDecoration(
-                                contentPadding: EdgeInsets.only(
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.only(
                                   bottom: 5,
                                 ),
                                 filled: true,
-                                border: OutlineInputBorder(),
+                                focusedBorder: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Styles.surfaceColor)),
                                 labelText: ' Nazwa ',
                               ),
                               autofocus: true,
@@ -76,13 +79,15 @@ class CustomAppBarForDevicesView extends StatelessWidget
                               onSubmitted: (value) {
                                 // onSubmit(value);
                               },
-                              decoration: const InputDecoration(
-                                contentPadding: EdgeInsets.only(
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.only(
                                   bottom: 5,
                                 ),
                                 filled: true,
                                 //fillColor: viewModel.clrlvl2,
-                                border: OutlineInputBorder(),
+                                focusedBorder: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Styles.surfaceColor)),
                                 labelText: ' IP ',
                               ),
                               autofocus: true,

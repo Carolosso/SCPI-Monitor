@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
-  SettingsPage({super.key});
-
-  TextEditingController controller1 = TextEditingController();
-  TextEditingController controller2 = TextEditingController();
+  const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,16 +17,10 @@ class SettingsPage extends StatelessWidget {
             child: const Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                'Połącz',
+                'do zrobienia',
                 style: TextStyle(fontSize: 32),
               ),
             ),
-          ),
-          TextField(
-            controller: controller1,
-          ),
-          TextField(
-            controller: controller2,
           ),
         ],
       )),

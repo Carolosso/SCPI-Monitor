@@ -15,7 +15,7 @@ class AppViewModel extends ChangeNotifier {
   int get devicesCount => devices.length;
   // <- Timer
   late Timer timer;
-
+//TO DO AppID problem z inkrementacja po usunieciu
   bool isStopped = true;
 
   void switchStartStop() {
@@ -47,8 +47,7 @@ class AppViewModel extends ChangeNotifier {
     LocalTcpSocketConnection testConnection =
         LocalTcpSocketConnection(ip, 5025);
     status = (await testConnection.canConnect(5000)) ? "Online" : "Offline";
-
-    Device temp = Device(devicesCount + 1, name, ip, 'serial', status, 0.0,
+    Device temp = Device(devicesCount + 1, name, ip, 'serial', status, '-', 0.0,
         LocalTcpSocketConnection(ip, 5025));
     devices.add(temp);
     notifyListeners();
@@ -95,9 +94,15 @@ class AppViewModel extends ChangeNotifier {
     return stations[indexStation].devices.elementAt(indexDevice).name;
   }
 
-  void setNewParametersToDevice(int index, String name, String ip) {
+  String getDeviceMeasuredUnit(int indexStation, int indexDevice) {
+    return stations[indexStation].devices.elementAt(indexDevice).measuredUnit;
+  }
+
+  void setNewParametersToDevice(
+      int index, String name, String ip, String unit) {
     devices[index].name = name;
     devices[index].ip = ip;
+    devices[index].measuredUnit = unit;
     notifyListeners();
   }
 

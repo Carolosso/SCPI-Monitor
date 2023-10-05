@@ -22,12 +22,13 @@ class StationDetailPage extends StatelessWidget {
             clipBehavior: Clip.none,
             foregroundColor: Colors.black,
             title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextField(
                   onSubmitted: (value) {
                     viewModel.setStationName(stationIndex, value);
                   },
-                  textAlign: TextAlign.center,
+                  // textAlign: TextAlign.start,
                   textAlignVertical: TextAlignVertical.center,
                   autocorrect: false,
                   decoration: InputDecoration(
@@ -56,7 +57,7 @@ class StationDetailPage extends StatelessWidget {
                 )
               ],
             ),
-            centerTitle: true,
+            //centerTitle: true,
             backgroundColor: Styles.backgroundColor,
             elevation: 0,
           ),
@@ -71,41 +72,53 @@ class StationDetailPage extends StatelessWidget {
               onDismissed: (direction) {
                 viewModel.removeDeviceFromStation(stationIndex, indexDevice);
               },
-              //TODO PROBLEM Z BACKGROUNDEM
-              child: Card(
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
+              background: Container(
+                decoration: BoxDecoration(
+                  color: Colors.red.shade300,
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                color: Styles.primaryColor,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        viewModel.stations[stationIndex].devices[indexDevice]
-                            .name, //
-                        textAlign: TextAlign.left,
-                        style: const TextStyle(
-                            fontSize: 14, color: Colors.white), //??????
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Wartość mierzona',
-                          style: TextStyle(
-                              fontSize: 8, color: Styles.surfaceColor),
+                child: Icon(
+                  Icons.delete,
+                  color: Colors.red.shade700,
+                ),
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                child: Card(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  color: Styles.primaryColor,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          viewModel.stations[stationIndex].devices[indexDevice]
+                              .name, //
+                          textAlign: TextAlign.left,
+                          style: const TextStyle(
+                              fontSize: 14, color: Colors.white), //??????
                         ),
-                      ),
-                      Text(
-                        '${viewModel.stations[stationIndex].devices[indexDevice].value.toStringAsFixed(3)} V', //
-                        style: const TextStyle(
-                            fontSize: 32,
-                            //fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ),
-                    ],
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            'Wartość mierzona',
+                            style: TextStyle(
+                                fontSize: 8, color: Styles.surfaceColor),
+                          ),
+                        ),
+                        Text(
+                          '${viewModel.getDeviceValue(stationIndex, indexDevice).toStringAsFixed(3)} ${viewModel.getDeviceMeasuredUnit(stationIndex, indexDevice)}',
+                          style: const TextStyle(
+                              fontSize: 32,
+                              //fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

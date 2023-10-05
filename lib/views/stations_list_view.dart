@@ -123,7 +123,7 @@ class StationsListView extends StatelessWidget {
                                               flex: 1,
                                               //alignment: Alignment.centerLeft,
                                               child: Text(
-                                                '${viewModel.getDeviceValue(indexStation, indexDevice).toStringAsFixed(3)} V',
+                                                '${viewModel.getDeviceValue(indexStation, indexDevice).toStringAsFixed(3)} ${viewModel.getDeviceMeasuredUnit(indexStation, indexDevice)}',
                                                 style: const TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.bold,

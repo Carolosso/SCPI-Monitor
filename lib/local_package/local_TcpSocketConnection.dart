@@ -26,8 +26,9 @@ class LocalTcpSocketConnection extends ChangeNotifier {
   void messageReceiver(String msg) {
     if (msg.isNotEmpty) {
       message = msg;
-      notifyListeners();
     }
+    //TODO Message received: PUSTE???
+    notifyListeners();
   }
 
   void identification() {

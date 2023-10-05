@@ -8,9 +8,10 @@ class Device {
   String ip;
   String serial;
   String status;
+  String measuredUnit;
   double value;
   LocalTcpSocketConnection connection;
 
   Device(this.deviceID, this.name, this.ip, this.serial, this.status,
-      this.value, this.connection);
+      this.measuredUnit, this.value, this.connection);
 }
