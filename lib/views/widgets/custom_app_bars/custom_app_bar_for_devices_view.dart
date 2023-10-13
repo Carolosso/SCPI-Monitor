@@ -12,7 +12,7 @@ class CustomAppBarForDevicesView extends StatelessWidget
   });
 
   final double height;
-  final TextEditingController nameTextController = TextEditingController();
+  //final TextEditingController nameTextController = TextEditingController();
   final TextEditingController ipTextController = TextEditingController();
 
   final PreferredSizeWidget preferredSizeWidget = PreferredSize(
@@ -49,8 +49,8 @@ class CustomAppBarForDevicesView extends StatelessWidget
                       content: SingleChildScrollView(
                         child: Column(
                           children: [
-                            TextField(
-                              controller: nameTextController,
+                            /*                            TextField(
+                             //controller: nameTextController,
                               onSubmitted: (value) {
                                 //onSubmit(value);
                               },
@@ -71,7 +71,7 @@ class CustomAppBarForDevicesView extends StatelessWidget
                               style: const TextStyle(
                                 fontWeight: FontWeight.w700,
                               ),
-                            ),
+                            ), */
                             const Padding(
                                 padding: EdgeInsets.only(top: 10, bottom: 10)),
                             TextField(
@@ -80,16 +80,21 @@ class CustomAppBarForDevicesView extends StatelessWidget
                                 // onSubmit(value);
                               },
                               decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.only(
-                                  bottom: 5,
-                                ),
-                                filled: true,
-                                //fillColor: viewModel.clrlvl2,
-                                focusedBorder: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Styles.surfaceColor)),
-                                labelText: ' IP ',
-                              ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  contentPadding: const EdgeInsets.only(
+                                    bottom: 5,
+                                  ),
+                                  filled: true,
+                                  //fillColor: viewModel.clrlvl2,
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                          color: Styles.surfaceColor)),
+                                  labelText: ' IP ',
+                                  labelStyle:
+                                      TextStyle(color: Styles.primaryColor)),
                               autofocus: true,
                               textAlign: TextAlign.center,
                               textAlignVertical: TextAlignVertical.center,
@@ -103,10 +108,13 @@ class CustomAppBarForDevicesView extends StatelessWidget
                       ),
                       actions: <Widget>[
                         TextButton(
+                          style: TextButton.styleFrom(
+                              foregroundColor: Styles.primaryColor),
                           child: const Text('Dodaj'),
                           onPressed: () {
-                            viewModel.createDevice(
-                                nameTextController.text, ipTextController.text);
+                            viewModel.createDevice(ipTextController.text);
+                            viewModel.createDevice(ipTextController.text,
+                                port: 5026);
                             Navigator.of(context).pop();
                           },
                         ),

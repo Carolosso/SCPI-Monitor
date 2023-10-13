@@ -57,7 +57,7 @@ class StationsListView extends StatelessWidget {
                                     child: Text(
                                       'Add device to this station.',
                                       style: TextStyle(
-                                        color: Colors.red.shade700,
+                                        color: Styles.surfaceColor,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14,
                                       ),
@@ -116,14 +116,14 @@ class StationsListView extends StatelessWidget {
                                                 textAlign: TextAlign.left,
                                                 style: const TextStyle(
                                                   fontSize: 14,
-                                                ), //??????
+                                                ),
                                               ),
                                             ),
                                             Expanded(
                                               flex: 1,
                                               //alignment: Alignment.centerLeft,
                                               child: Text(
-                                                '${viewModel.getDeviceValue(indexStation, indexDevice).toStringAsFixed(3)} ${viewModel.getDeviceMeasuredUnit(indexStation, indexDevice)}',
+                                                '${viewModel.getDeviceValue(indexStation, indexDevice)}${viewModel.getDeviceMeasuredUnit(indexStation, indexDevice)}',
                                                 style: const TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.bold,

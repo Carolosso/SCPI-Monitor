@@ -16,8 +16,6 @@ class StationDetailPage extends StatelessWidget {
       return Scaffold(
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(70.0),
-          //TODO
-          // CENTER THIS SOMEHOW!
           child: AppBar(
             clipBehavior: Clip.none,
             foregroundColor: Colors.black,
@@ -68,7 +66,9 @@ class StationDetailPage extends StatelessWidget {
           itemBuilder: (context, indexDevice) {
             return Dismissible(
               key: UniqueKey(),
-              direction: DismissDirection.endToStart,
+              direction: viewModel.isStopped
+                  ? DismissDirection.endToStart
+                  : DismissDirection.none,
               onDismissed: (direction) {
                 viewModel.removeDeviceFromStation(stationIndex, indexDevice);
               },
@@ -111,7 +111,7 @@ class StationDetailPage extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '${viewModel.getDeviceValue(stationIndex, indexDevice).toStringAsFixed(3)} ${viewModel.getDeviceMeasuredUnit(stationIndex, indexDevice)}',
+                          '${viewModel.getDeviceValue(stationIndex, indexDevice)}${viewModel.getDeviceMeasuredUnit(stationIndex, indexDevice)}',
                           style: const TextStyle(
                               fontSize: 32,
                               //fontWeight: FontWeight.bold,

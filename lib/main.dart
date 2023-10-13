@@ -18,9 +18,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => AppViewModel()),
       ],
       child: MaterialApp(
-        theme: Styles.themeData(true, context),
-        home: const HomePage(),
-      ),
+          theme: Styles.themeData(true, context), home: const HomePage()),
     );
   }
 }

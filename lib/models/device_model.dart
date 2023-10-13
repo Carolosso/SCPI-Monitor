@@ -1,4 +1,4 @@
-import 'package:test/local_package/local_TcpSocketConnection.dart';
+import 'package:test/local_package/local_tcp_socket_connection.dart';
 
 class Device {
   //int? stationIndex;

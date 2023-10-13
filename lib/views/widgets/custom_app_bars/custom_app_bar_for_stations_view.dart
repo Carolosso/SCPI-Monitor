@@ -54,29 +54,38 @@ class CustomAppBarForStationsView extends StatelessWidget
                                 viewModel.createStation(value);
                               },
                               decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.only(
-                                  bottom: 5,
-                                ),
-                                filled: true,
-                                //fillColor: viewModel.clrlvl2,
-                                focusedBorder: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Styles.surfaceColor)),
-                                labelText: ' Nazwa ',
-                              ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  contentPadding: const EdgeInsets.only(
+                                    bottom: 5,
+                                  ),
+                                  filled: true,
+                                  //fillColor: viewModel.clrlvl2,
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                          color: Styles.surfaceColor)),
+                                  labelText: ' Nazwa ',
+                                  labelStyle:
+                                      TextStyle(color: Styles.primaryColor)),
                               autofocus: true,
                               textAlign: TextAlign.center,
                               textAlignVertical: TextAlignVertical.center,
                               autocorrect: false,
-                              style: const TextStyle(
+                              style: TextStyle(
+                                color: Styles.primaryColor,
                                 fontWeight: FontWeight.w700,
                               ),
+                              cursorColor: Styles.primaryColor,
                             ),
                           ],
                         ),
                       ),
                       actions: <Widget>[
                         TextButton(
+                          style: TextButton.styleFrom(
+                              foregroundColor: Styles.primaryColor),
                           child: const Text('Zamknij'),
                           onPressed: () {
                             Navigator.of(context).pop();

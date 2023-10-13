@@ -1,43 +1,53 @@
-library local_tcp_socket_connection;
-
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
-
-class LocalTcpSocketConnection extends ChangeNotifier {
-  late String _ipAddress;
-  late int _portAddress;
+class LocalTcpSocketConnection {
+  late final String _ipAddress;
+  late final int _portAddress;
   Socket? _server;
   bool _connected = false;
   bool _logPrintEnabled = false;
 
   LocalTcpSocketConnection(this._ipAddress, this._portAddress);
 
-  String message = "0";
-  //String name = "";
-  double value = 0.000;
+  String message = '';
+  String name = '';
 
-  double get getValue => double.parse(message);
-  String get getName => message;
+  String status = 'Offline';
+
+  bool initialized = false;
+
+  String getName() {
+    print("Getting name: " + name);
+    return name;
+  }
+
+  String get getStatus => status;
+
+  void readValue() {
+    sendMessageEOM('READ?', '\n');
+  }
+
+  void init() {
+    sendMessageEOM('*IDN?', '\n');
+  }
+
+  double getValue() {
+    readValue();
+    try {
+      return double.parse(message);
+    } catch (exception) {
+      return 0;
+    }
+  }
 
   //receiving and sending back a custom message
   void messageReceiver(String msg) {
     if (msg.isNotEmpty) {
       message = msg;
     }
-    //TODO Message received: PUSTE???
-    notifyListeners();
-  }
-
-  void identification() {
-    sendMessageEOM('*IDN?', '\n');
-    //sendMessageEOM('*UNITNAME?', '\n');
-  }
-
-  void readValue() {
-    sendMessageEOM('READ?', '\n');
+    //readValue();
   }
 
   //starting the connection and listening to the socket asynchronously
@@ -46,6 +56,49 @@ class LocalTcpSocketConnection extends ChangeNotifier {
 
     //check if it's possible to connect to the endpoint
     await connect(5000, messageReceiver, attempts: 1);
+  }
+
+  //receiving
+  messageInitReceiver(String msg) {
+    if (msg.isNotEmpty) {
+      name = "${msg.split(',').first} | ${msg.split(',').elementAt(1)}";
+      initialized = true;
+      status = 'Online';
+    }
+    disconnect();
+  }
+
+  /// Initializes the connection with initialization. Socket starts listening to server for data
+  /// 'callback' function will be called whenever data is received. The developer elaborates the message received however he wants
+  // /No separator is used to split message into parts
+  ///  * @param  timeOut  the amount of time to attempt the connection in milliseconds
+  ///  * @param  callback  the function called when received a message. It must take a 'String' as param which is the message received
+  ///  * @param  attempts  the number of attempts before stop trying to connect. Default is 1.
+  void connectWithInitialization(int timeOut, {int attempts = 1}) async {
+    enableConsolePrint(true);
+    int k = 1;
+    while (k <= attempts) {
+      try {
+        _server = await Socket.connect(_ipAddress, _portAddress,
+            timeout: Duration(milliseconds: timeOut));
+        break;
+      } catch (ex) {
+        _printData("$k attempt: Socket not connected (Timeout reached)");
+        if (k == attempts) {
+          return;
+        }
+      }
+      k++;
+    }
+    _connected = true;
+    _server!.listen((List<int> event) {
+      String received = (utf8.decode(event));
+      _printData("Message received: $received");
+      messageInitReceiver(received);
+    });
+    _printData("Socket successfully connected");
+    //listener
+    sendMessageEOM('*IDN?', '\n');
   }
 
   /// Initializes che class itself
@@ -61,12 +114,12 @@ class LocalTcpSocketConnection extends ChangeNotifier {
   ///  * @param  the ip  server's ip you are trying to connect to
   ///  * @param  the port servers's port you are trying to connect to
   ///  * @param  enable if set to true, then events will be printed in the console
-  LocalTcpSocketConnection.constructorWithPrint(
+  /* LocalTcpSocketConnection.constructorWithPrint(
       String ip, int port, bool enable) {
     _ipAddress = ip;
     _portAddress = port;
     _logPrintEnabled = enable;
-  }
+  } */
 
   /// Shows events in the console with print method
   /// * @param  enable if set to true, then events will be printed in the console
@@ -232,13 +285,13 @@ class LocalTcpSocketConnection extends ChangeNotifier {
   /// Message will be sent as 'message'+'eom'
   ///  * @param  message  the message to send to server
   ///  * @param  eom  the end of message to send to server
-  void sendMessageEOM(String message, String eom) async {
+  Future sendMessageEOM(String message, String eom) async {
     if (_server != null && _connected) {
       _server!.add(utf8.encode(message + eom));
       _printData("Message sent: $message$eom");
     } else {
       print(
-          "Socket not initialized before sending message! Make sure you have already called the method 'connect()'");
+          "sending message: Socket not initialized before sending message! Make sure you have already called the method 'connect()'");
     }
   }
 /*
@@ -264,7 +317,8 @@ class LocalTcpSocketConnection extends ChangeNotifier {
       try {
         _server = await Socket.connect(_ipAddress, _portAddress,
             timeout: Duration(milliseconds: timeOut));
-        disconnect();
+
+        _printData("$k attempt: Socket online");
         return true;
       } catch (exception) {
         _printData("$k attempt: Socket not connected (Timeout reached)");
