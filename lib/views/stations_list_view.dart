@@ -55,7 +55,7 @@ class StationsListView extends StatelessWidget {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 15),
                                     child: Text(
-                                      'Add device to this station.',
+                                      'Dodaj urządzenie w zakładce "Urządzenia"',
                                       style: TextStyle(
                                         color: Styles.surfaceColor,
                                         fontWeight: FontWeight.bold,

@@ -5,7 +5,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:test/local_package/local_tcp_socket_connection.dart';
-import 'package:test/main.dart';
 import 'package:test/models/device_model.dart';
 import 'package:test/models/station_model.dart';
 
@@ -33,7 +32,7 @@ class AppViewModel extends ChangeNotifier {
   }
 
   void play() {
-    timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+    timer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
       for (int i = 0; i < stationsCount; i++) {
         for (int j = 0; j < stations[i].devices.length; j++) {
           refreshDeviceValue(i, j);
@@ -47,34 +46,42 @@ class AppViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void createDevice(String ip, {int port = 5025}) async {
+  Future<String> createDevice(String ip, {int port = 5025}) async {
     LocalTcpSocketConnection temp = LocalTcpSocketConnection(ip, port);
     Completer completer = Completer();
     String name = 'Unknown';
     String status = "Offline";
-    String serial = "unknown";
-    //initialize socket
-    Socket socket = await Socket.connect(ip, port);
-    // listen to the received data event stream
-    socket.listen((List<int> event) async {
-      print(utf8.decode(event));
-      List<String> message = utf8.decode(event).split(',');
-      name = message.elementAt(1).trim();
-      serial = message.elementAt(2).trim();
-      status = 'Online';
-      completer.complete(event);
-      //completer that saves my life
-    });
-    // send *IDN? ----> <Manufacturer>, <Model>, <Serial Number>, <Firmware Level>, <Options>.
-    socket.add(utf8.encode('*IDN?\n'));
+    String serial = "Unknown";
+    Socket socket;
+    try {
+      //initialize socket
+      socket =
+          await Socket.connect(ip, port, timeout: const Duration(seconds: 5));
+      // listen to the received data event stream
+      socket.listen((List<int> event) async {
+        //print(utf8.decode(event));
+        List<String> message = utf8.decode(event).split(',');
+        name = message.elementAt(1).trim();
+        serial = message.elementAt(2).trim();
+        status = 'Online';
+        completer.complete(event);
+        //completer that saves my life
+      });
+      // send *IDN? ----> <Manufacturer>, <Model>, <Serial Number>, <Firmware Level>, <Options>.
+      socket.add(utf8.encode('*IDN?\n'));
 
-    var answer = await completer.future;
-    // .. and close the socket
-    socket.close();
-    print('disconnected');
-    devices.add(
-        Device(devicesCount + 1, name, ip, serial, status, '-', 0.0, temp));
-    notifyListeners();
+      await completer.future;
+      // .. and close the socket
+      socket.close();
+      socket.destroy();
+      //print('disconnected');
+      devices.add(
+          Device(devicesCount + 1, name, ip, serial, status, '-', 0.0, temp));
+      notifyListeners();
+    } catch (ex) {
+      return "Nie udalo się nawiązać połączenia z urządzeniem!";
+    }
+    return "Nawiązano połączenie z urządzeniem!";
   }
 
   void removeDeviceFromList(int index) {

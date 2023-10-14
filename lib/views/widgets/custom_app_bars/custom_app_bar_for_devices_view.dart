@@ -95,7 +95,7 @@ class CustomAppBarForDevicesView extends StatelessWidget
                                   labelText: ' IP ',
                                   labelStyle:
                                       TextStyle(color: Styles.primaryColor)),
-                              autofocus: true,
+                              // autofocus: true,
                               textAlign: TextAlign.center,
                               textAlignVertical: TextAlignVertical.center,
                               autocorrect: false,
@@ -111,10 +111,18 @@ class CustomAppBarForDevicesView extends StatelessWidget
                           style: TextButton.styleFrom(
                               foregroundColor: Styles.primaryColor),
                           child: const Text('Dodaj'),
-                          onPressed: () {
-                            viewModel.createDevice(ipTextController.text);
-                            viewModel.createDevice(ipTextController.text,
-                                port: 5026);
+                          onPressed: () async {
+                            showDialog(
+                                context: context,
+                                builder: (context) => const Center(
+                                      child: CircularProgressIndicator(),
+                                    ));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text(await viewModel
+                                    .createDevice(ipTextController.text))));
+                            /*  await viewModel.createDevice(ipTextController.text,
+                                port: 5026); */
+                            Navigator.of(context).pop();
                             Navigator.of(context).pop();
                           },
                         ),

@@ -24,6 +24,11 @@ class DevicesListView extends StatelessWidget {
               direction: DismissDirection.endToStart,
               onDismissed: (direction) {
                 viewModel.removeDeviceFromList(indexDevice);
+                //Toast
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text('Urządzenie usunięte.'),
+                  backgroundColor: Styles.primaryColor,
+                ));
               },
               background: Container(
                 margin: const EdgeInsets.all(0),
@@ -41,7 +46,7 @@ class DevicesListView extends StatelessWidget {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Styles.primaryColor,
-                      foregroundColor: Colors.white), //TO DO STYLE THIS
+                      foregroundColor: Colors.white), //TODO STYLE THIS
                   onPressed: () {
                     nameTextController.text =
                         viewModel.devices[indexDevice].name;

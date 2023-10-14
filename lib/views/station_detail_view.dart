@@ -71,6 +71,9 @@ class StationDetailPage extends StatelessWidget {
                   : DismissDirection.none,
               onDismissed: (direction) {
                 viewModel.removeDeviceFromStation(stationIndex, indexDevice);
+                //Toast
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Usunięto urządzenie.')));
               },
               background: Container(
                 decoration: BoxDecoration(
