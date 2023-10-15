@@ -114,8 +114,11 @@ class CustomAppBarForDevicesView extends StatelessWidget
                           onPressed: () async {
                             showDialog(
                                 context: context,
-                                builder: (context) => const Center(
-                                      child: CircularProgressIndicator(),
+                                builder: (context) => Center(
+                                      child: CircularProgressIndicator(
+                                        backgroundColor: Styles.surfaceColor,
+                                        color: Styles.primaryColor,
+                                      ),
                                     ));
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 content: Text(await viewModel

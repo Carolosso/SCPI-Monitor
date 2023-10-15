@@ -15,6 +15,7 @@ class StationsListView extends StatelessWidget {
       return Scaffold(
         appBar: CustomAppBarForStationsView(),
         body: SafeArea(
+          //TODO https://stackoverflow.com/questions/51119795/how-to-remove-scroll-glow
           child: ListView.builder(
             shrinkWrap: true,
             itemCount: viewModel.stationsCount,

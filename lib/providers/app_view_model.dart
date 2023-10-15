@@ -128,11 +128,25 @@ class AppViewModel extends ChangeNotifier {
     return stations[indexStation].devices.elementAt(indexDevice).measuredUnit;
   }
 
-  void setNewParametersToDevice(
-      int index, String name, String ip, String unit) {
+  bool devicesInStations() {
+    for (Station station in stations) {
+      if (station.devices.isNotEmpty) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void setNewParametersToDeviceInStation(
+      int indexDevice, int indexStation, String name, String unit) {
+    stations[indexStation].devices[indexDevice].name = name;
+    stations[indexStation].devices[indexDevice].measuredUnit = unit;
+    notifyListeners();
+  }
+
+  void setNewParametersToDeviceInList(int index, String name, String ip) {
     devices[index].name = name;
     devices[index].ip = ip;
-    devices[index].measuredUnit = unit;
     notifyListeners();
   }
 

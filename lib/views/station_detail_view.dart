@@ -6,10 +6,12 @@ import 'package:test/style/theme.dart';
 import 'package:test/views/widgets/floating_action_button_view.dart';
 
 class StationDetailPage extends StatelessWidget {
-  const StationDetailPage({super.key, required this.stationIndex});
+  StationDetailPage({super.key, required this.stationIndex});
 
   final int stationIndex;
 
+  final TextEditingController nameTextController = TextEditingController();
+  final TextEditingController unitTextController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Consumer<AppViewModel>(builder: (context, viewModel, child) {
@@ -87,40 +89,126 @@ class StationDetailPage extends StatelessWidget {
               ),
               child: SizedBox(
                 width: double.infinity,
-                child: Card(
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  color: Styles.primaryColor,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          viewModel.stations[stationIndex].devices[indexDevice]
-                              .name, //
-                          textAlign: TextAlign.left,
-                          style: const TextStyle(
-                              fontSize: 14, color: Colors.white), //??????
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'Wartość mierzona',
-                            style: TextStyle(
-                                fontSize: 8, color: Styles.surfaceColor),
+                child: GestureDetector(
+                  onTap: () {
+                    nameTextController.text =
+                        viewModel.devices[indexDevice].name;
+                    unitTextController.text =
+                        viewModel.devices[indexDevice].measuredUnit;
+                    showDialog<void>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(
+                                'Edytuj ${viewModel.devices[indexDevice].name}'),
+                            content: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  TextField(
+                                    controller: nameTextController,
+                                    onSubmitted: (value) {},
+                                    decoration: InputDecoration(
+                                      contentPadding: const EdgeInsets.only(
+                                        bottom: 5,
+                                      ),
+                                      filled: true,
+                                      enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Styles.primaryColor)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Styles.surfaceColor)),
+                                      labelText: ' Nazwa ',
+                                    ),
+                                    //autofocus: true,
+                                    textAlign: TextAlign.center,
+                                    textAlignVertical: TextAlignVertical.center,
+                                    autocorrect: false,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 10)),
+                                  TextField(
+                                    controller: unitTextController,
+                                    onSubmitted: (value) {},
+                                    decoration: InputDecoration(
+                                      contentPadding: const EdgeInsets.only(
+                                        bottom: 5,
+                                      ),
+                                      filled: true,
+                                      enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Styles.primaryColor)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Styles.surfaceColor)),
+                                      labelText: ' Jednostka ',
+                                    ),
+                                    //autofocus: true,
+                                    textAlign: TextAlign.center,
+                                    textAlignVertical: TextAlignVertical.center,
+                                    autocorrect: false,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('Zapisz'),
+                                onPressed: () {
+                                  viewModel.setNewParametersToDeviceInStation(
+                                      indexDevice,
+                                      stationIndex,
+                                      nameTextController.text,
+                                      unitTextController.text);
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        });
+                  },
+                  child: Card(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    color: Styles.primaryColor,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            viewModel.stations[stationIndex]
+                                .devices[indexDevice].name, //
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.white), //??????
                           ),
-                        ),
-                        Text(
-                          '${viewModel.getDeviceValue(stationIndex, indexDevice)}${viewModel.getDeviceMeasuredUnit(stationIndex, indexDevice)}',
-                          style: const TextStyle(
-                              fontSize: 32,
-                              //fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                        ),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Wartość mierzona',
+                              style: TextStyle(
+                                  fontSize: 8, color: Styles.surfaceColor),
+                            ),
+                          ),
+                          Text(
+                            '${viewModel.getDeviceValue(stationIndex, indexDevice)}${viewModel.getDeviceMeasuredUnit(stationIndex, indexDevice)}',
+                            style: const TextStyle(
+                                fontSize: 32,
+                                //fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

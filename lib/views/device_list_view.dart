@@ -9,256 +9,237 @@ class DevicesListView extends StatelessWidget {
 
   final TextEditingController nameTextController = TextEditingController();
   final TextEditingController ipTextController = TextEditingController();
-  final TextEditingController unitTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Consumer<AppViewModel>(builder: (context, viewModel, child) {
       return Scaffold(
         appBar: CustomAppBarForDevicesView(),
-        body: ListView.builder(
-          itemCount: viewModel.devices.length,
-          itemBuilder: (context, indexDevice) {
-            return Dismissible(
-              key: UniqueKey(),
-              direction: DismissDirection.endToStart,
-              onDismissed: (direction) {
-                viewModel.removeDeviceFromList(indexDevice);
-                //Toast
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('Urządzenie usunięte.'),
-                  backgroundColor: Styles.primaryColor,
-                ));
-              },
-              background: Container(
-                margin: const EdgeInsets.all(0),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade300,
-                  borderRadius: BorderRadius.circular(10),
+        body: RefreshIndicator(
+          color: Styles.primaryColor,
+          backgroundColor: Styles.surfaceColor,
+          onRefresh: () async {},
+          child: ListView.builder(
+            itemCount: viewModel.devices.length,
+            itemBuilder: (context, indexDevice) {
+              return Dismissible(
+                key: UniqueKey(),
+                direction: DismissDirection.endToStart,
+                onDismissed: (direction) {
+                  viewModel.removeDeviceFromList(indexDevice);
+                  //Toast
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('Urządzenie usunięte.'),
+                    backgroundColor: Styles.primaryColor,
+                  ));
+                },
+                background: Container(
+                  margin: const EdgeInsets.all(0),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade300,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    Icons.delete,
+                    color: Colors.red.shade700,
+                  ),
                 ),
-                child: Icon(
-                  Icons.delete,
-                  color: Colors.red.shade700,
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(3.0),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Styles.primaryColor,
-                      foregroundColor: Colors.white), //TODO STYLE THIS
-                  onPressed: () {
-                    nameTextController.text =
-                        viewModel.devices[indexDevice].name;
-                    ipTextController.text = viewModel.devices[indexDevice].ip;
-                    unitTextController.text =
-                        viewModel.devices[indexDevice].measuredUnit;
-                    showDialog<void>(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text(
-                                'Edytuj ${viewModel.devices[indexDevice].name}'),
-                            content: SingleChildScrollView(
-                              child: Column(
+                child: Padding(
+                  padding: const EdgeInsets.all(3.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Styles.primaryColor,
+                        foregroundColor: Colors.white), //TODO STYLE THIS
+                    onPressed: () {
+                      nameTextController.text =
+                          viewModel.devices[indexDevice].name;
+                      ipTextController.text = viewModel.devices[indexDevice].ip;
+                      showDialog<void>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text(
+                                  'Edytuj ${viewModel.devices[indexDevice].name}'),
+                              content: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    TextField(
+                                      controller: nameTextController,
+                                      onSubmitted: (value) {},
+                                      decoration: InputDecoration(
+                                        contentPadding: const EdgeInsets.only(
+                                          bottom: 5,
+                                        ),
+                                        filled: true,
+                                        enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Styles.primaryColor)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Styles.surfaceColor)),
+                                        labelText: ' Nazwa ',
+                                      ),
+                                      //autofocus: true,
+                                      textAlign: TextAlign.center,
+                                      textAlignVertical:
+                                          TextAlignVertical.center,
+                                      autocorrect: false,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 10)),
+                                    TextField(
+                                      controller: ipTextController,
+                                      onSubmitted: (value) {},
+                                      decoration: InputDecoration(
+                                        contentPadding: const EdgeInsets.only(
+                                          bottom: 5,
+                                        ),
+                                        filled: true,
+                                        enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Styles.primaryColor)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Styles.surfaceColor)),
+                                        labelText: ' IP ',
+                                      ),
+                                      //autofocus: true,
+                                      textAlign: TextAlign.center,
+                                      textAlignVertical:
+                                          TextAlignVertical.center,
+                                      autocorrect: false,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 10)),
+                                    SizedBox(
+                                      child: DropdownButton<int>(
+                                          /*   decoration: InputDecoration(
+                                            filled: true,
+                                            labelText: 'Stanowisko',
+                                          ), */
+                                          hint: viewModel.stations.isEmpty
+                                              ? const Text('brak stanowisk')
+                                              : const Text(
+                                                  'wybierz stanowisko'),
+                                          isExpanded: true,
+                                          //value: viewModel.devices[indexDevice].stationIndex,
+                                          items: viewModel.stations
+                                              .map((e) => DropdownMenuItem(
+                                                    value: e.stationID,
+                                                    child: Text(e.name),
+                                                  ))
+                                              .toList(),
+                                          onChanged: (selectedStation) =>
+                                              viewModel.addDeviceToStation(
+                                                  selectedStation! - 1,
+                                                  viewModel
+                                                      .devices[indexDevice])),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('Zapisz'),
+                                  onPressed: () {
+                                    viewModel.setNewParametersToDeviceInList(
+                                        indexDevice,
+                                        nameTextController.text,
+                                        ipTextController.text);
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Container(
+                        width: double.infinity,
+                        color: Styles.backgroundColor, //Styles.backgroundColor
+                        child: Padding(
+                          padding: const EdgeInsets.all(6.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                viewModel.devices[indexDevice].name,
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                ),
+                              ),
+                              Text(
+                                'App ID: ${viewModel.devices[indexDevice].deviceID}',
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                              Text(
+                                'IP: ${viewModel.devices[indexDevice].ip}',
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                ),
+                              ),
+                              Text(
+                                'Serial: ${viewModel.devices[indexDevice].serial}',
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                ),
+                              ),
+                              Row(
                                 children: [
-                                  TextField(
-                                    controller: nameTextController,
-                                    onSubmitted: (value) {},
-                                    decoration: InputDecoration(
-                                      contentPadding: const EdgeInsets.only(
-                                        bottom: 5,
-                                      ),
-                                      filled: true,
-                                      enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Styles.primaryColor)),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Styles.surfaceColor)),
-                                      labelText: ' Nazwa ',
-                                    ),
-                                    //autofocus: true,
-                                    textAlign: TextAlign.center,
-                                    textAlignVertical: TextAlignVertical.center,
-                                    autocorrect: false,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w700,
+                                  const Text(
+                                    'Status: ',
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                      fontSize: 15,
                                     ),
                                   ),
-                                  const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 10)),
-                                  TextField(
-                                    controller: ipTextController,
-                                    onSubmitted: (value) {},
-                                    decoration: InputDecoration(
-                                      contentPadding: const EdgeInsets.only(
-                                        bottom: 5,
-                                      ),
-                                      filled: true,
-                                      enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Styles.primaryColor)),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Styles.surfaceColor)),
-                                      labelText: ' IP ',
+                                  Text(
+                                    viewModel.devices[indexDevice].status,
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: viewModel.devices[indexDevice]
+                                                  .status ==
+                                              'Online'
+                                          ? Styles.surfaceColor
+                                          : Colors.red,
                                     ),
-                                    //autofocus: true,
-                                    textAlign: TextAlign.center,
-                                    textAlignVertical: TextAlignVertical.center,
-                                    autocorrect: false,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 10)),
-                                  TextField(
-                                    controller: unitTextController,
-                                    onSubmitted: (value) {},
-                                    decoration: InputDecoration(
-                                      contentPadding: const EdgeInsets.only(
-                                        bottom: 5,
-                                      ),
-                                      filled: true,
-                                      enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Styles.primaryColor)),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Styles.surfaceColor)),
-                                      labelText: ' Jednostka ',
-                                    ),
-                                    //autofocus: true,
-                                    textAlign: TextAlign.center,
-                                    textAlignVertical: TextAlignVertical.center,
-                                    autocorrect: false,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 10)),
-                                  SizedBox(
-                                    child: DropdownButton<int>(
-                                        hint: viewModel.stations.isEmpty
-                                            ? const Text('brak stanowisk')
-                                            : const Text('Wybierz stanowisko'),
-                                        isExpanded: true,
-                                        //value: viewModel.devices[indexDevice].stationIndex,
-                                        items: viewModel.stations
-                                            .map((e) => DropdownMenuItem(
-                                                  value: e.stationID,
-                                                  child: Text(e.name),
-                                                ))
-                                            .toList(),
-                                        onChanged: (selectedStation) =>
-                                            viewModel.addDeviceToStation(
-                                                selectedStation! - 1,
-                                                viewModel
-                                                    .devices[indexDevice])),
                                   )
                                 ],
                               ),
-                            ),
-                            actions: <Widget>[
-                              TextButton(
-                                child: const Text('Zapisz'),
-                                onPressed: () {
-                                  viewModel.setNewParametersToDevice(
-                                      indexDevice,
-                                      nameTextController.text,
-                                      ipTextController.text,
-                                      unitTextController.text);
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          );
-                        });
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Container(
-                      width: double.infinity,
-                      color: Styles.backgroundColor, //Styles.backgroundColor
-                      child: Padding(
-                        padding: const EdgeInsets.all(6.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              viewModel.devices[indexDevice].name,
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                fontSize: 20,
-                              ),
-                            ),
-                            Text(
-                              'App ID: ${viewModel.devices[indexDevice].deviceID}',
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              'IP: ${viewModel.devices[indexDevice].ip}',
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                fontSize: 15,
-                              ),
-                            ),
-                            Text(
-                              'Serial: ${viewModel.devices[indexDevice].serial}',
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                fontSize: 15,
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                const Text(
-                                  'Status: ',
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                  ),
+                              /*                           Text(
+                                'Numer Stanowiska: ${viewModel.devices[indexDevice].stationIndex}',
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
                                 ),
-                                Text(
-                                  viewModel.devices[indexDevice].status,
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color:
-                                        viewModel.devices[indexDevice].status ==
-                                                'Online'
-                                            ? Styles.surfaceColor
-                                            : Colors.red,
-                                  ),
-                                )
-                              ],
-                            ),
-                            /*                           Text(
-                              'Numer Stanowiska: ${viewModel.devices[indexDevice].stationIndex}',
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
-                            ) */
-                          ],
+                              ) */
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       );
     });
