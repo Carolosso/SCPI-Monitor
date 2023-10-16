@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:test/local_package/local_tcp_socket_connection.dart';
 import 'package:test/models/device_model.dart';
 import 'package:test/models/station_model.dart';
+import 'package:test/utils/validators.dart';
 
 class AppViewModel extends ChangeNotifier {
   bool isDarkTheme = false;
@@ -49,11 +50,14 @@ class AppViewModel extends ChangeNotifier {
   Future<String> createDevice(String ip, {int port = 5025}) async {
     LocalTcpSocketConnection temp = LocalTcpSocketConnection(ip, port);
     Completer completer = Completer();
-    String name = 'Unknown';
+    String name = "Unknown";
     String status = "Offline";
     String serial = "Unknown";
     Socket socket;
     try {
+      if (!isValidHost(ip)) {
+        throw Exception("Zły format IP!");
+      }
       //initialize socket
       socket =
           await Socket.connect(ip, port, timeout: const Duration(seconds: 5));
@@ -61,25 +65,27 @@ class AppViewModel extends ChangeNotifier {
       socket.listen((List<int> event) async {
         //print(utf8.decode(event));
         List<String> message = utf8.decode(event).split(',');
-        name = message.elementAt(1).trim();
-        serial = message.elementAt(2).trim();
-        status = 'Online';
+        if (message.length > 1) {
+          name = message.elementAt(1).trim();
+          serial = message.elementAt(2).trim();
+        }
+        status = "Online";
         completer.complete(event);
         //completer that saves my life
       });
       // send *IDN? ----> <Manufacturer>, <Model>, <Serial Number>, <Firmware Level>, <Options>.
       socket.add(utf8.encode('*IDN?\n'));
-
+      //await for response
       await completer.future;
       // .. and close the socket
       socket.close();
       socket.destroy();
-      //print('disconnected');
+      // finally add device to list
       devices.add(
           Device(devicesCount + 1, name, ip, serial, status, '-', 0.0, temp));
       notifyListeners();
     } catch (ex) {
-      return "Nie udalo się nawiązać połączenia z urządzeniem!";
+      return "Nie udalo się nawiązać połączenia z urządzeniem!" + ex.toString();
     }
     return "Nawiązano połączenie z urządzeniem!";
   }

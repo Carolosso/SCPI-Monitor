@@ -14,7 +14,7 @@ class CustomAppBarForDevicesView extends StatelessWidget
   final double height;
   //final TextEditingController nameTextController = TextEditingController();
   final TextEditingController ipTextController = TextEditingController();
-
+//TODO DODAĆ FILTRACJE WPISYWANEGO IP
   final PreferredSizeWidget preferredSizeWidget = PreferredSize(
     preferredSize: const Size.fromHeight(80),
     child: Container(),

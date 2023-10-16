@@ -24,12 +24,14 @@ class DevicesListView extends StatelessWidget {
             itemBuilder: (context, indexDevice) {
               return Dismissible(
                 key: UniqueKey(),
-                direction: DismissDirection.endToStart,
+                direction: viewModel.isStopped
+                    ? DismissDirection.endToStart
+                    : DismissDirection.none,
                 onDismissed: (direction) {
                   viewModel.removeDeviceFromList(indexDevice);
                   //Toast
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('Urządzenie usunięte.'),
+                    content: const Text('Urządzenie usunięte.'),
                     backgroundColor: Styles.primaryColor,
                   ));
                 },
