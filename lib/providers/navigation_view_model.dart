@@ -11,7 +11,7 @@ class ScreenIndexProvider extends ChangeNotifier {
     const StationsListView(),
     //const StationDetailPage(),
     DevicesListView(),
-    const SettingsPage(),
+    SettingsPage(),
   ];
 
   void updateScreenIndex(int newIndex) {

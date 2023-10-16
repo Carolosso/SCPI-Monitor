@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import 'package:test/views/settings_view.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
+  SettingsPage({super.key});
+
+  final TextEditingController textController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ustawienia'),
-      ),
-      body: Center(
-          child: Column(
-        children: [
-          TextButton(
-            onPressed: () {},
-            child: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                'do zrobienia',
-                style: TextStyle(fontSize: 32),
-              ),
-            ),
-          ),
-        ],
-      )),
-    );
+        appBar: AppBar(
+          title: Text('Ustawienia',
+              style: GoogleFonts.inter(
+                textStyle: const TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 24,
+                ),
+              )),
+          backgroundColor: Colors.white24,
+          elevation: 0,
+        ),
+        //return Consumer<AppViewModel>(builder: (context, viewModel, child) {
+        body: SettingsView());
   }
 }

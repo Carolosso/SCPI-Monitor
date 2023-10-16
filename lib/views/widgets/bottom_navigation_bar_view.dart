@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test/providers/screen_index_provider.dart';
+import 'package:test/providers/navigation_view_model.dart';
 
 BottomNavigationBar buildBottomNavBar(
     BuildContext context, ScreenIndexProvider siModel) {

@@ -4,9 +4,12 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:test/local_package/local_tcp_socket_connection.dart';
 import 'package:test/models/device_model.dart';
 import 'package:test/models/station_model.dart';
+import 'package:test/providers/settings_view_model.dart';
+import 'package:test/utils/navigation_service.dart';
 import 'package:test/utils/validators.dart';
 
 class AppViewModel extends ChangeNotifier {
@@ -28,12 +31,21 @@ class AppViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  SettingsViewModel getSettingsViewModel() {
+    BuildContext? context = NavigationService.navigatorKey.currentContext;
+    SettingsViewModel settingsViewModel =
+        Provider.of<SettingsViewModel>(context!, listen: false);
+    return settingsViewModel;
+  }
+
   void stop() {
     timer.cancel();
   }
 
   void play() {
-    timer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
+    SettingsViewModel settingsViewModel = getSettingsViewModel();
+    timer = Timer.periodic(Duration(milliseconds: settingsViewModel.timeout),
+        (timer) {
       for (int i = 0; i < stationsCount; i++) {
         for (int j = 0; j < stations[i].devices.length; j++) {
           refreshDeviceValue(i, j);
@@ -54,9 +66,10 @@ class AppViewModel extends ChangeNotifier {
     String status = "Offline";
     String serial = "Unknown";
     Socket socket;
+
     try {
       if (!isValidHost(ip)) {
-        throw Exception("Zły format IP!");
+        return "Zły format IP!";
       }
       //initialize socket
       socket =
@@ -85,7 +98,7 @@ class AppViewModel extends ChangeNotifier {
           Device(devicesCount + 1, name, ip, serial, status, '-', 0.0, temp));
       notifyListeners();
     } catch (ex) {
-      return "Nie udalo się nawiązać połączenia z urządzeniem!" + ex.toString();
+      return "Nie udalo się nawiązać połączenia z urządzeniem!$ex";
     }
     return "Nawiązano połączenie z urządzeniem!";
   }

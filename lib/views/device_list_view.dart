@@ -172,6 +172,7 @@ class DevicesListView extends StatelessWidget {
                           padding: const EdgeInsets.all(6.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               Text(
                                 viewModel.devices[indexDevice].name,
@@ -180,13 +181,13 @@ class DevicesListView extends StatelessWidget {
                                   fontSize: 20,
                                 ),
                               ),
-                              Text(
+                              /*   Text(
                                 'App ID: ${viewModel.devices[indexDevice].deviceID}',
                                 textAlign: TextAlign.left,
                                 style: const TextStyle(
                                   fontSize: 12,
                                 ),
-                              ),
+                              ), */
                               Text(
                                 'IP: ${viewModel.devices[indexDevice].ip}',
                                 textAlign: TextAlign.left,
