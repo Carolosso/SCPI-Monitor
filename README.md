@@ -1,6 +1,6 @@
-# test
+# SPCI Monitor 
 
-A new Flutter project.
+BSC THESIS
 
 ## Getting Started
 
