@@ -24,6 +24,6 @@ class SettingsPage extends StatelessWidget {
           elevation: 0,
         ),
         //return Consumer<AppViewModel>(builder: (context, viewModel, child) {
-        body: SettingsView());
+        body: const SettingsView());
   }
 }

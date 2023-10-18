@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -22,8 +24,6 @@ class AppViewModel extends ChangeNotifier {
   int get devicesCount => devices.length;
   // <- Timer
   late Timer timer;
-  //TODO AppID problem z inkrementacja po usunieciu
-
   bool isStopped = true;
 
   void switchStartStop() {
@@ -48,6 +48,7 @@ class AppViewModel extends ChangeNotifier {
         (timer) {
       for (int i = 0; i < stationsCount; i++) {
         for (int j = 0; j < stations[i].devices.length; j++) {
+          if (stations[i].devices[j].status == "Online") {}
           refreshDeviceValue(i, j);
         }
       }
@@ -61,8 +62,11 @@ class AppViewModel extends ChangeNotifier {
 
   Future<String> createDevice(String ip, {int port = 5025}) async {
     LocalTcpSocketConnection temp = LocalTcpSocketConnection(ip, port);
+
     Completer completer = Completer();
     String name = "Unknown";
+    String manufacturer = "Unknown";
+    String model = "Unknown";
     String status = "Offline";
     String serial = "Unknown";
     Socket socket;
@@ -80,6 +84,8 @@ class AppViewModel extends ChangeNotifier {
         List<String> message = utf8.decode(event).split(',');
         if (message.length > 1) {
           name = message.elementAt(1).trim();
+          manufacturer = message.first;
+          model = message.elementAt(1).trim();
           serial = message.elementAt(2).trim();
         }
         status = "Online";
@@ -93,12 +99,18 @@ class AppViewModel extends ChangeNotifier {
       // .. and close the socket
       socket.close();
       socket.destroy();
-      // finally add device to list
-      devices.add(
-          Device(devicesCount + 1, name, ip, serial, status, '-', 0.0, temp));
+      // finally add device to listDevice device =
+      Device device =
+          Device(name, ip, manufacturer, model, serial, status, '-', 0.0, temp);
+      devices.add(device);
       notifyListeners();
     } catch (ex) {
-      return "Nie udalo się nawiązać połączenia z urządzeniem!$ex";
+      Device device =
+          Device(name, ip, manufacturer, model, serial, status, '-', 0.0, temp);
+
+      devices.add(device);
+      notifyListeners();
+      return "Nie udalo się nawiązać połączenia z urządzeniem!\n$ex";
     }
     return "Nawiązano połączenie z urządzeniem!";
   }
@@ -106,6 +118,25 @@ class AppViewModel extends ChangeNotifier {
   void removeDeviceFromList(int index) {
     devices.removeAt(index);
     notifyListeners();
+  }
+
+  Future<void> refreshFunction() async {
+    for (Device device in devices) {
+      String _ip = device.ip;
+      if (device.status == "Online" &&
+          await device.connection.canConnect(5000)) {
+        //device.status = "Online";
+        //notifyListeners();
+      } else if (device.status == "Offline" &&
+          await device.connection.canConnect(5000)) {
+        device.status = "Online";
+        devices.remove(device);
+        createDevice(_ip);
+      } else if (!await device.connection.canConnect(5000)) {
+        device.status = "Offline";
+      }
+      notifyListeners();
+    }
   }
 
   void removeDeviceFromStation(int stationIndex, int deviceIndex) {
@@ -119,20 +150,29 @@ class AppViewModel extends ChangeNotifier {
   }
 
   void addDeviceToStation(int index, Device device) {
+    print("Dodawanie urzadzenia to stanowiska: $device.connection");
     if (!stations[index].devices.contains(device)) {
-      device.connection.startConnection();
-
-      stations[index].devices.add(device);
-      //device.stationIndex = index + 1;
-      notifyListeners();
+      if (device.status == "Online") {
+        stations[index].devices.add(device);
+        notifyListeners();
+      }
     } else {}
   }
 
-  void refreshDeviceValue(int indexStation, int indexDevice) {
-    stations[indexStation].devices[indexDevice].value =
-        stations[indexStation].devices[indexDevice].connection.getValue();
-
-    notifyListeners();
+  void refreshDeviceValue(int indexStation, int indexDevice) async {
+    //print(stations[indexStation].devices[indexDevice].connection.isConnected());
+    bool connected =
+        stations[indexStation].devices[indexDevice].connection.isConnected();
+    if (!connected) {
+      await stations[indexStation]
+          .devices[indexDevice]
+          .connection
+          .startConnection();
+    } else if (connected) {
+      stations[indexStation].devices[indexDevice].value =
+          stations[indexStation].devices[indexDevice].connection.getValue();
+      notifyListeners();
+    }
   }
 
   int getStationsDevicesCount(int index) {
@@ -166,6 +206,7 @@ class AppViewModel extends ChangeNotifier {
   void setNewParametersToDeviceInList(int index, String name, String ip) {
     devices[index].name = name;
     devices[index].ip = ip;
+    devices[index].connection = LocalTcpSocketConnection(ip, 5025);
     notifyListeners();
   }
 

@@ -18,7 +18,7 @@ class DevicesListView extends StatelessWidget {
         body: RefreshIndicator(
           color: Styles.primaryColor,
           backgroundColor: Styles.surfaceColor,
-          onRefresh: () async {},
+          onRefresh: viewModel.refreshFunction, //
           child: ListView.builder(
             itemCount: viewModel.devices.length,
             itemBuilder: (context, indexDevice) {
@@ -181,15 +181,22 @@ class DevicesListView extends StatelessWidget {
                                   fontSize: 20,
                                 ),
                               ),
-                              /*   Text(
-                                'App ID: ${viewModel.devices[indexDevice].deviceID}',
-                                textAlign: TextAlign.left,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ), */
                               Text(
                                 'IP: ${viewModel.devices[indexDevice].ip}',
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                ),
+                              ),
+                              Text(
+                                'Manufacturer: ${viewModel.devices[indexDevice].manufacturer}',
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                ),
+                              ),
+                              Text(
+                                'Model: ${viewModel.devices[indexDevice].model}',
                                 textAlign: TextAlign.left,
                                 style: const TextStyle(
                                   fontSize: 15,
@@ -225,14 +232,6 @@ class DevicesListView extends StatelessWidget {
                                   )
                                 ],
                               ),
-                              /*                           Text(
-                                'Numer Stanowiska: ${viewModel.devices[indexDevice].stationIndex}',
-                                textAlign: TextAlign.left,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                ),
-                              ) */
                             ],
                           ),
                         ),

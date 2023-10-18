@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
@@ -19,7 +21,7 @@ class LocalTcpSocketConnection {
   bool initialized = false;
 
   String getName() {
-    print("Getting name: " + name);
+    print("Getting name: $name");
     return name;
   }
 
@@ -51,7 +53,7 @@ class LocalTcpSocketConnection {
   }
 
   //starting the connection and listening to the socket asynchronously
-  void startConnection() async {
+  Future startConnection() async {
     enableConsolePrint(true); //use this to see in the console what's happening
 
     //check if it's possible to connect to the endpoint
