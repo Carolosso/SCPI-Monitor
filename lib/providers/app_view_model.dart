@@ -130,6 +130,17 @@ class AppViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void removeDeviceFromStation(int stationIndex, int deviceIndex) {
+    stations[stationIndex]
+        .devices
+        .elementAt(deviceIndex)
+        .connection
+        .disconnect();
+    stations[stationIndex].devices.elementAt(deviceIndex).isAssigned = false;
+    stations[stationIndex].devices.removeAt(deviceIndex);
+    notifyListeners();
+  }
+
   Future<void> getNetworkInfo() async {
     String? gateway;
     String? broadcast;
@@ -168,19 +179,17 @@ class AppViewModel extends ChangeNotifier {
     }
   }
 
-  void removeDeviceFromStation(int stationIndex, int deviceIndex) {
-    stations[stationIndex]
-        .devices
-        .elementAt(deviceIndex)
-        .connection
-        .disconnect();
-    stations[stationIndex].devices.elementAt(deviceIndex).isAssigned = false;
-    stations[stationIndex].devices.removeAt(deviceIndex);
-    notifyListeners();
+  bool comparedBySerialInStation(int indexStation, Device device) {
+    for (Device sdevice in stations[indexStation].devices) {
+      if (device.serial == sdevice.serial) {
+        return false;
+      }
+    }
+    return true;
   }
 
-  Future<void> addDeviceToStation(int index, Device device) async {
-    // kopiowanie obiektu - ogarnąć to TODO
+  Future<void> addDeviceToStation(int indexStation, Device device) async {
+    // kopiowanie obiektu - ogarnąć to - TODO
     Device newDevice = Device(
         device.isAssigned,
         device.name,
@@ -194,31 +203,37 @@ class AppViewModel extends ChangeNotifier {
         device.connection);
     // print("Dodawanie urzadzenia to stanowiska: $device.connection");
     //TODO: dodawanie urzadzenia porownac z jakims ID bo po zrobieniu nowego obiektu device to nie jest to samo juz
-    //!stations[index].devices.contains(device)
-    //print("addDeviceToStation1:${device.connection.isConnected()}");
-
-    if (!device.connection.isConnected()) {
-      await device.connection.startConnection();
-      print("addDeviceToStation2:${device.connection.isConnected()}");
-      stations[index].devices.add(newDevice);
-      device.isAssigned = true;
-      notifyListeners();
-    } else {
-      stations[index].devices.add(newDevice);
-      device.isAssigned = true;
-      notifyListeners();
+    if (comparedBySerialInStation(indexStation, newDevice)) {
+      if (!newDevice.connection.isConnected()) {
+        await newDevice.connection.startConnection();
+        //print("addDeviceToStation2:${device.connection.isConnected()}");
+        device.isAssigned = true;
+        newDevice.isAssigned = true;
+        stations[indexStation].devices.add(newDevice);
+        notifyListeners();
+      } else {
+        stations[indexStation].devices.add(newDevice);
+        device.isAssigned = true;
+        newDevice.isAssigned = true;
+        notifyListeners();
+      }
     }
   }
 
-  void refreshDeviceValue(int indexStation, int indexDevice) {
+  void refreshDeviceValue(int indexStation, int indexDevice) async {
+    LocalTcpSocketConnection connection =
+        stations[indexStation].devices[indexDevice].connection;
     print(
         "Wysyłanie wiadomosci do ${stations[indexStation].devices[indexDevice].name}");
-    double value =
-        stations[indexStation].devices[indexDevice].connection.getValue();
-    print(value);
-    stations[indexStation].devices[indexDevice].value = value;
+    if (connection.isConnected()) {
+      double value = connection.getValue();
+      print(value);
+      stations[indexStation].devices[indexDevice].value = value;
 
-    notifyListeners();
+      notifyListeners();
+    } else {
+      await connection.startConnection();
+    }
   }
 
   int getStationsDevicesCount(int index) {
