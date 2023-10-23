@@ -9,7 +9,6 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<ScreenIndexProvider>(builder: (context, siProvider, child) {
-      //int currentScreenIndex = siProvider.fetch;
       return Scaffold(
         body: SafeArea(
           child: siProvider.pages[siProvider.screenIndex],

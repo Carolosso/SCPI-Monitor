@@ -77,7 +77,7 @@ class StationsListView extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 vertical: 5.0, horizontal: 5),
                             child: Column(
-                              children: <Widget>[
+                              children: [
                                 Text(
                                   viewModel.getStationName(indexStation),
                                   style: const TextStyle(
@@ -89,7 +89,7 @@ class StationsListView extends StatelessWidget {
                                   gridDelegate:
                                       const SliverGridDelegateWithMaxCrossAxisExtent(
                                           maxCrossAxisExtent: 200,
-                                          childAspectRatio: 1 / .4,
+                                          childAspectRatio: 1 / .4, //1/ .4
                                           crossAxisSpacing: 2,
                                           mainAxisSpacing: 2),
                                   itemCount: viewModel

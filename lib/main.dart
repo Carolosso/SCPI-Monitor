@@ -7,7 +7,9 @@ import 'package:test/providers/navigation_view_model.dart';
 import 'package:test/utils/navigation_service.dart';
 import 'package:test/views/pages/home_page.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -16,9 +18,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ScreenIndexProvider()),
         ChangeNotifierProvider(create: (_) => AppViewModel()),
         ChangeNotifierProvider(create: (_) => SettingsViewModel()),
+        ChangeNotifierProvider(create: (_) => ScreenIndexProvider()),
       ],
       child: MaterialApp(
           theme: Styles.themeData(true, context),

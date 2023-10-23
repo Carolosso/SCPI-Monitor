@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'package:test/views/settings_view.dart';
+import 'package:test/views/widgets/custom_app_bars/custom_app_bar_for_settings.dart';
 
 class SettingsPage extends StatelessWidget {
   SettingsPage({super.key});
@@ -11,18 +11,7 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Ustawienia',
-              style: GoogleFonts.inter(
-                textStyle: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 24,
-                ),
-              )),
-          backgroundColor: Colors.white24,
-          elevation: 0,
-        ),
+        appBar: CustomAppBarForSettingsView(),
         //return Consumer<AppViewModel>(builder: (context, viewModel, child) {
         body: const SettingsView());
   }

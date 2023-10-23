@@ -14,10 +14,10 @@ class FloatingActionButtonView extends StatelessWidget {
             backgroundColor: Styles.surfaceColor,
             onPressed: () {
               if (viewModel.isStopped && viewModel.devicesInStations()) {
-                viewModel.play();
                 viewModel.switchStartStop();
+                viewModel.play();
               } else if (!viewModel.isStopped) {
-                viewModel.stop();
+                //viewModel.stop();
                 viewModel.switchStartStop();
               }
             },

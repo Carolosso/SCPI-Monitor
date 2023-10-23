@@ -12,9 +12,7 @@ class CustomAppBarForDevicesView extends StatelessWidget
   });
 
   final double height;
-  //final TextEditingController nameTextController = TextEditingController();
   final TextEditingController ipTextController = TextEditingController();
-//TODO DODAĆ FILTRACJE WPISYWANEGO IP
   final PreferredSizeWidget preferredSizeWidget = PreferredSize(
     preferredSize: const Size.fromHeight(80),
     child: Container(),
@@ -36,6 +34,23 @@ class CustomAppBarForDevicesView extends StatelessWidget
         elevation: 0,
         //leading: const BackButton(),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search_rounded),
+            color: Colors.black,
+            iconSize: 40,
+            onPressed: () async {
+              showDialog(
+                  context: context,
+                  builder: (context) => Center(
+                        child: CircularProgressIndicator(
+                          backgroundColor: Styles.surfaceColor,
+                          color: Styles.primaryColor,
+                        ),
+                      ));
+              await viewModel.findDevicesInNetwork();
+              Navigator.of(context).pop();
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.add_circle_rounded),
             color: Colors.black,
@@ -115,16 +130,26 @@ class CustomAppBarForDevicesView extends StatelessWidget
                             showDialog(
                                 context: context,
                                 builder: (context) => Center(
-                                      child: CircularProgressIndicator(
-                                        backgroundColor: Styles.surfaceColor,
-                                        color: Styles.primaryColor,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          CircularProgressIndicator(
+                                            backgroundColor:
+                                                Styles.surfaceColor,
+                                            color: Styles.primaryColor,
+                                          ),
+                                        ],
                                       ),
                                     ));
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text(await viewModel
-                                    .createDevice(ipTextController.text))));
-                            /*  await viewModel.createDevice(ipTextController.text,
-                                port: 5026); */
+
+                            // ScaffoldMessenger.of(context).showSnackBar(SnackBar( content: Text()));
+                            await viewModel.createDevice(ipTextController.text,
+                                port: 5025);
+                            // await Future.delayed(Duration(seconds: 2));
+                            await viewModel.createDevice(ipTextController.text,
+                                port: 5026);
+
                             Navigator.of(context).pop();
                             Navigator.of(context).pop();
                           },

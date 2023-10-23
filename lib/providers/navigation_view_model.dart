@@ -9,7 +9,6 @@ class ScreenIndexProvider extends ChangeNotifier {
 
   List<Widget> pages = [
     const StationsListView(),
-    //const StationDetailPage(),
     DevicesListView(),
     SettingsPage(),
   ];

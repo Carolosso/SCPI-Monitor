@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Styles {
   static bool isDarkTheme = false;
@@ -14,7 +15,16 @@ class Styles {
   static ThemeData themeData(bool isDarkTheme, BuildContext context) {
     return ThemeData(
       //scaffoldBackgroundColor: Colors.black,
+      //useMaterial3: true,
       colorScheme: const ColorScheme.light(),
+      textTheme: TextTheme(
+          titleLarge: GoogleFonts.inter(
+        textStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w600,
+          fontSize: 24,
+        ),
+      )),
     );
   }
 }

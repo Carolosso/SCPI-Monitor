@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:test/utils/validators.dart';
 
 class SettingsViewModel extends ChangeNotifier {
   int timeout = 1000;
-
-  String ipRange = "192.168.0.1 do 192.168.0.10";
+  String ipRange = "";
+  String? broadcast = "";
 
   String setNewTimeout(String newTimeout) {
-    int _newTimeout = int.parse(newTimeout);
-    if (_newTimeout > 300 && _newTimeout < 10000) {
-      timeout = _newTimeout;
+    int newTo = int.parse(newTimeout);
+    if (newTo > 300 && newTo < 10000) {
+      timeout = newTo;
       // print(timeout.toString());
       notifyListeners();
       return "Ustawiono nową wartość na $newTimeout ms";
@@ -17,8 +18,12 @@ class SettingsViewModel extends ChangeNotifier {
   }
 
   String setNewIpRange(String newRange) {
-    ipRange = newRange;
-    notifyListeners();
-    return "Ustawiono nową wartość na $newRange";
+    if (newRange.isNotEmpty && isValidHost(newRange)) {
+      ipRange = newRange;
+      notifyListeners();
+      return "Ustawiono nową wartość na $newRange";
+    } else {
+      return "Błąd";
+    }
   }
 }

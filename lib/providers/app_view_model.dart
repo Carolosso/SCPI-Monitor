@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:test/local_package/local_tcp_socket_connection.dart';
 import 'package:test/models/device_model.dart';
@@ -14,16 +15,16 @@ import 'package:test/providers/settings_view_model.dart';
 import 'package:test/utils/navigation_service.dart';
 import 'package:test/utils/validators.dart';
 
+//TODO Unhandled Exception: SocketException: Connection reset by peer (OS Error: Connection reset by peer, errno = 104), address = 10.0.2.2, port = 52046
 class AppViewModel extends ChangeNotifier {
   bool isDarkTheme = false;
 
   List<Device> devices = [];
   List<Station> stations = [];
-
   int get stationsCount => stations.length;
   int get devicesCount => devices.length;
   // <- Timer
-  late Timer timer;
+  //late Timer timer;
   bool isStopped = true;
 
   void switchStartStop() {
@@ -39,20 +40,23 @@ class AppViewModel extends ChangeNotifier {
   }
 
   void stop() {
-    timer.cancel();
+    //isStopped = !isStopped;
+    //timer.cancel();
   }
 
-  void play() {
+  void play() async {
     SettingsViewModel settingsViewModel = getSettingsViewModel();
-    timer = Timer.periodic(Duration(milliseconds: settingsViewModel.timeout),
-        (timer) {
+
+    while (!isStopped) {
       for (int i = 0; i < stationsCount; i++) {
         for (int j = 0; j < stations[i].devices.length; j++) {
-          if (stations[i].devices[j].status == "Online") {}
+          print(
+              "Próba pobrania informacji urzadzenia ${stations[i].devices[j].name}");
           refreshDeviceValue(i, j);
         }
       }
-    });
+      await Future.delayed(Duration(milliseconds: settingsViewModel.timeout));
+    }
   }
 
   void createStation(String name) {
@@ -77,7 +81,7 @@ class AppViewModel extends ChangeNotifier {
       }
       //initialize socket
       socket =
-          await Socket.connect(ip, port, timeout: const Duration(seconds: 5));
+          await Socket.connect(ip, port, timeout: const Duration(seconds: 3));
       // listen to the received data event stream
       socket.listen((List<int> event) async {
         //print(utf8.decode(event));
@@ -97,18 +101,23 @@ class AppViewModel extends ChangeNotifier {
       //await for response
       await completer.future;
       // .. and close the socket
+      socket.flush();
       socket.close();
-      socket.destroy();
+      // socket.destroy();
       // finally add device to listDevice device =
-      Device device =
-          Device(name, ip, manufacturer, model, serial, status, '-', 0.0, temp);
-      devices.add(device);
+      Device device = Device(
+          false, name, ip, manufacturer, model, serial, status, '-', 0.0, temp);
+      if (!devices.contains(device)) {
+        devices.add(device);
+      }
+
       notifyListeners();
     } catch (ex) {
-      Device device =
-          Device(name, ip, manufacturer, model, serial, status, '-', 0.0, temp);
-
-      devices.add(device);
+      Device device = Device(
+          false, name, ip, manufacturer, model, serial, status, '-', 0.0, temp);
+      if (!devices.contains(device)) {
+        devices.add(device);
+      }
       notifyListeners();
       return "Nie udalo się nawiązać połączenia z urządzeniem!\n$ex";
     }
@@ -116,13 +125,33 @@ class AppViewModel extends ChangeNotifier {
   }
 
   void removeDeviceFromList(int index) {
+    devices.elementAt(index).connection.disconnect();
     devices.removeAt(index);
     notifyListeners();
   }
 
+  Future<void> getNetworkInfo() async {
+    String? gateway;
+    String? broadcast;
+    try {
+      SettingsViewModel settingsViewModel = getSettingsViewModel();
+      gateway = await NetworkInfo().getWifiGatewayIP();
+      // String? mask = await NetworkInfo().getWifiSubmask();
+      broadcast = await NetworkInfo().getWifiBroadcast();
+      if (broadcast != null && gateway != null) {
+        settingsViewModel.broadcast = broadcast;
+        settingsViewModel.setNewIpRange(gateway);
+      }
+      print(settingsViewModel.broadcast);
+      print(gateway);
+    } catch (e) {
+      print(e);
+    }
+  }
+
   Future<void> refreshFunction() async {
     for (Device device in devices) {
-      String _ip = device.ip;
+      String ip = device.ip;
       if (device.status == "Online" &&
           await device.connection.canConnect(5000)) {
         //device.status = "Online";
@@ -131,7 +160,7 @@ class AppViewModel extends ChangeNotifier {
           await device.connection.canConnect(5000)) {
         device.status = "Online";
         devices.remove(device);
-        createDevice(_ip);
+        createDevice(ip);
       } else if (!await device.connection.canConnect(5000)) {
         device.status = "Offline";
       }
@@ -145,34 +174,51 @@ class AppViewModel extends ChangeNotifier {
         .elementAt(deviceIndex)
         .connection
         .disconnect();
+    stations[stationIndex].devices.elementAt(deviceIndex).isAssigned = false;
     stations[stationIndex].devices.removeAt(deviceIndex);
     notifyListeners();
   }
 
-  void addDeviceToStation(int index, Device device) {
-    print("Dodawanie urzadzenia to stanowiska: $device.connection");
-    if (!stations[index].devices.contains(device)) {
-      if (device.status == "Online") {
-        stations[index].devices.add(device);
-        notifyListeners();
-      }
-    } else {}
-  }
+  Future<void> addDeviceToStation(int index, Device device) async {
+    // kopiowanie obiektu - ogarnąć to TODO
+    Device newDevice = Device(
+        device.isAssigned,
+        device.name,
+        device.ip,
+        device.manufacturer,
+        device.model,
+        device.serial,
+        device.status,
+        device.measuredUnit,
+        device.value,
+        device.connection);
+    // print("Dodawanie urzadzenia to stanowiska: $device.connection");
+    //TODO: dodawanie urzadzenia porownac z jakims ID bo po zrobieniu nowego obiektu device to nie jest to samo juz
+    //!stations[index].devices.contains(device)
+    //print("addDeviceToStation1:${device.connection.isConnected()}");
 
-  void refreshDeviceValue(int indexStation, int indexDevice) async {
-    //print(stations[indexStation].devices[indexDevice].connection.isConnected());
-    bool connected =
-        stations[indexStation].devices[indexDevice].connection.isConnected();
-    if (!connected) {
-      await stations[indexStation]
-          .devices[indexDevice]
-          .connection
-          .startConnection();
-    } else if (connected) {
-      stations[indexStation].devices[indexDevice].value =
-          stations[indexStation].devices[indexDevice].connection.getValue();
+    if (!device.connection.isConnected()) {
+      await device.connection.startConnection();
+      print("addDeviceToStation2:${device.connection.isConnected()}");
+      stations[index].devices.add(newDevice);
+      device.isAssigned = true;
+      notifyListeners();
+    } else {
+      stations[index].devices.add(newDevice);
+      device.isAssigned = true;
       notifyListeners();
     }
+  }
+
+  void refreshDeviceValue(int indexStation, int indexDevice) {
+    print(
+        "Wysyłanie wiadomosci do ${stations[indexStation].devices[indexDevice].name}");
+    double value =
+        stations[indexStation].devices[indexDevice].connection.getValue();
+    print(value);
+    stations[indexStation].devices[indexDevice].value = value;
+
+    notifyListeners();
   }
 
   int getStationsDevicesCount(int index) {
@@ -274,5 +320,32 @@ class AppViewModel extends ChangeNotifier {
     stations[indexStation].devices.clear();
     stations.removeAt(indexStation);
     notifyListeners();
+  }
+
+  String incrementIP(String input) {
+    List<String> inputIPString = input.split(".");
+    List<int> inputIP = inputIPString.map((e) => int.parse(e)).toList();
+    var ip = (inputIP[0] << 24) |
+        (inputIP[1] << 16) |
+        (inputIP[2] << 8) |
+        (inputIP[3] << 0);
+    ip++;
+    return "${ip >> 24 & 0xff}.${ip >> 16 & 0xff}.${ip >> 8 & 0xff}.${ip >> 0 & 0xff}"; //0xff = 255
+  }
+
+  Future<void> findDevicesInNetwork() async {
+    SettingsViewModel settingsViewModel = getSettingsViewModel();
+    String? networkIP = settingsViewModel.ipRange;
+    String deviceIP = networkIP; //incrementIP(networkIP!)
+    String? broadcast = settingsViewModel.broadcast;
+    while (deviceIP != broadcast) {
+      print("Próba połączenia na adresie: $deviceIP");
+      LocalTcpSocketConnection temp = LocalTcpSocketConnection(deviceIP, 5025);
+      if (await temp.canConnect(1000)) {
+        print("Znaleziono urządzenia na $deviceIP");
+        await createDevice(deviceIP);
+      }
+      deviceIP = incrementIP(deviceIP);
+    }
   }
 }

@@ -13,20 +13,23 @@ class SettingsView extends StatelessWidget {
       return Column(
         children: [
           SettingsItem(
-            title: "Zakres skanowania adresów\nw sieci lokalnej",
+            title: "Adres sieci lokalnej",
             icon: Icons.network_wifi,
             settingsViewModel: settingsViewModel,
             textControllerText: settingsViewModel.ipRange,
             text: settingsViewModel.ipRange,
             dialogOnPressed: settingsViewModel.setNewIpRange,
+            textInputType: TextInputType.text,
           ),
           SettingsItem(
-              title: "Częstotliwość wysyłania polecenia",
-              icon: Icons.refresh,
-              settingsViewModel: settingsViewModel,
-              textControllerText: settingsViewModel.timeout.toString(),
-              text: "${settingsViewModel.timeout} ms",
-              dialogOnPressed: settingsViewModel.setNewTimeout),
+            title: "Częstotliwość wysyłania polecenia",
+            icon: Icons.refresh,
+            settingsViewModel: settingsViewModel,
+            textControllerText: settingsViewModel.timeout.toString(),
+            text: "${settingsViewModel.timeout} ms",
+            dialogOnPressed: settingsViewModel.setNewTimeout,
+            textInputType: TextInputType.number,
+          ),
         ],
       );
     });
