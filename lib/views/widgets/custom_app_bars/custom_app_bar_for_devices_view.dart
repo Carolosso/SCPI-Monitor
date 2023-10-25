@@ -144,11 +144,11 @@ class CustomAppBarForDevicesView extends StatelessWidget
                                     ));
 
                             // ScaffoldMessenger.of(context).showSnackBar(SnackBar( content: Text()));
-                            await viewModel.createDevice(ipTextController.text,
-                                port: 5025);
+                            await viewModel.createDevice(
+                                ipTextController.text, 5025);
                             // await Future.delayed(Duration(seconds: 2));
-                            await viewModel.createDevice(ipTextController.text,
-                                port: 5026);
+                            await viewModel.createDevice(
+                                ipTextController.text, 5026);
 
                             Navigator.of(context).pop();
                             Navigator.of(context).pop();

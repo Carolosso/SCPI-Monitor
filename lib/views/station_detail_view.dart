@@ -91,10 +91,10 @@ class StationDetailPage extends StatelessWidget {
                 width: double.infinity,
                 child: GestureDetector(
                   onTap: () {
-                    nameTextController.text =
-                        viewModel.devices[indexDevice].name;
-                    unitTextController.text =
-                        viewModel.devices[indexDevice].measuredUnit;
+                    nameTextController.text = viewModel
+                        .stations[stationIndex].devices[indexDevice].name;
+                    unitTextController.text = viewModel.stations[stationIndex]
+                        .devices[indexDevice].measuredUnit;
                     showDialog<void>(
                         context: context,
                         builder: (BuildContext context) {

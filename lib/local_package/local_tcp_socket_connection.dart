@@ -10,8 +10,8 @@ import 'package:test/providers/app_view_model.dart';
 import 'package:test/utils/navigation_service.dart';
 
 class LocalTcpSocketConnection {
-  late final String _ipAddress;
-  late final int _portAddress;
+  final String _ipAddress;
+  final int _portAddress;
   Socket? _server;
   bool _connected = false;
   bool _logPrintEnabled = false;
@@ -24,11 +24,11 @@ class LocalTcpSocketConnection {
     print("get value():${isConnected()}");
     //await sendMessageEOM('READ?', '\n');
     AppViewModel viewModel = getAppViewModel();
-
     try {
       if (!viewModel.isStopped) {
         sendMessageEOM('READ?', '\n');
-        return double.parse(message);
+        double result = double.parse(message);
+        return result;
       }
       return 0;
     } catch (exception) {
@@ -63,78 +63,11 @@ class LocalTcpSocketConnection {
     //check if it's possible to connect to the endpoint
   }
 
-  /// Initializes che class itself
-  ///  * @param  ip  the server's ip you are trying to connect to
-  ///  * @param  port the servers's port you are trying to connect to
-  ///
-  /* TcpSocketConnection(String ip, int port) {
-    _ipAddress = ip;
-    _portAddress = port;
-  } */
-
-  /// Initializes che class itself
-  ///  * @param  the ip  server's ip you are trying to connect to
-  ///  * @param  the port servers's port you are trying to connect to
-  ///  * @param  enable if set to true, then events will be printed in the console
-  /* LocalTcpSocketConnection.constructorWithPrint(
-      String ip, int port, bool enable) {
-    _ipAddress = ip;
-    _portAddress = port;
-    _logPrintEnabled = enable;
-  } */
-
   /// Shows events in the console with print method
   /// * @param  enable if set to true, then events will be printed in the console
   enableConsolePrint(bool enable) {
     _logPrintEnabled = enable;
   }
-
-/*
-  /// Initializes the connection. Socket starts listening to server for data.
-  /// 'callback' function will be called when 'eom' is received
-  ///
-  ///  * @param  timeOut  amount of time to attempt the connection in milliseconds
-  ///  * @param  separator  sequence of characters to use between commands
-  ///  * @param  eom  sequence of characters at the end of each single message
-  ///  * @param  callback  function called when received a message. It must take 2 'String' as params. The first one is the command received, the second one is the message itself.
-  ///  * @param  attempts  number of attempts before stop trying to connect. Default is 1.
-  connectWithCommand(int timeOut, String separator, String eom,  Function callback, {int attempts=1}) async{
-    if(_ipAddress==null){
-      print("Class not initialized. You must call the constructor!");
-      return;
-    }
-    _eom=eom;
-    _separator=separator;
-    int k=1;
-    while(k<=attempts){
-      try{
-        _server = await Socket.connect(_ipAddress, _portAddress, timeout: new Duration(milliseconds: timeOut));
-        break;
-      }catch(Exception){
-        _printData(k.toString()+" attempt: Socket not connected (Timeout reached)");
-        if(k==attempts){
-          return;
-        }
-      }
-      k++;
-    }
-    _connected=true;
-    _printData("Socket successfully connected");
-    String message="";
-    _server.listen((List<int> event) async {
-      message += (utf8.decode(event));
-      if(message.contains(eom)){
-        List<String> commands=message.split(_separator);
-        _printData("Message received: "+message);
-        callback(commands[0],commands[1].split(eom)[0]);
-        if(commands[1].split(eom).length>1){
-          message=commands[1].split(eom)[1];
-        }else{
-          message="";
-        }
-      }
-    });
-  }*/
 
   /// Initializes the connection. Socket starts listening to server for data
   /// 'callback' function will be called whenever data is received. The developer elaborates the message received however he wants
@@ -144,11 +77,19 @@ class LocalTcpSocketConnection {
   ///  * @param  attempts  the number of attempts before stop trying to connect. Default is 1.
   Future<void> connect(int timeOut, Function callback,
       {int attempts = 1}) async {
+    print("CONNECT: $_portAddress");
     int k = 1;
     while (k <= attempts) {
       try {
         _server = await Socket.connect(_ipAddress, _portAddress,
             timeout: Duration(milliseconds: timeOut));
+        _connected = true;
+        _printData("Socket successfully connected");
+        _server!.listen((List<int> event) {
+          String received = (utf8.decode(event));
+          _printData("Message received: $received");
+          callback(received);
+        });
         break;
       } catch (ex) {
         _printData("$k attempt: Socket not connected (Timeout reached)");
@@ -158,13 +99,13 @@ class LocalTcpSocketConnection {
       }
       k++;
     }
-    _connected = true;
+    /*   _connected = true;
     _printData("Socket successfully connected");
     _server!.listen((List<int> event) {
       String received = (utf8.decode(event));
       _printData("Message received: $received");
       callback(received);
-    });
+    }); */
   }
 
   /// Initializes the connection. Socket starts listening to server for data
@@ -218,6 +159,7 @@ class LocalTcpSocketConnection {
     if (_server != null) {
       try {
         _server!.close();
+        //_server!.destroy();
         _printData("Socket disconnected successfully");
       } catch (exception) {
         print("ERROR$exception");
@@ -235,12 +177,16 @@ class LocalTcpSocketConnection {
   /// Message will be sent as 'message'
   ///  * @param  message  message to send to server
   void sendMessage(String message) async {
-    if (_server != null && _connected) {
-      _server!.add(utf8.encode(message));
-      _printData("Message sent: $message");
-    } else {
-      print(
-          "Socket not initialized before sending message! Make sure you have already called the method 'connect()'");
+    try {
+      if (_server != null && _connected) {
+        _server!.add(utf8.encode(message));
+        _printData("Message sent: $message");
+      } else {
+        print(
+            "Socket not initialized before sending message! Make sure you have already called the method 'connect()'");
+      }
+    } catch (e) {
+      print("ERROR $e");
     }
   }
 
@@ -248,7 +194,7 @@ class LocalTcpSocketConnection {
   /// Message will be sent as 'message'+'eom'
   ///  * @param  message  the message to send to server
   ///  * @param  eom  the end of message to send to server
-  Future<void> sendMessageEOM(String message, String eom) async {
+  void sendMessageEOM(String message, String eom) {
     try {
       if (_server != null && _connected) {
         _server!.add(utf8.encode(message + eom));
@@ -258,22 +204,9 @@ class LocalTcpSocketConnection {
             "sending message: Socket not initialized before sending message! Make sure you have already called the method 'connect()'");
       }
     } catch (e) {
-      print(e);
+      print("ERROR: $e");
     }
   }
-/*
-  /// Send message to server with a command. Make sure to have established a connection before calling this method. Never use this if the connection is established with the 'simpleConnnect()' method
-  /// Message will be sent as 'command'+'separator'+'message'+'separator'+'eom'
-  ///  * @param  message  message to send to server
-  ///  * @param  command  tells the server what to do with the message
-  void sendMessageWithCommand(String message, String command) async{
-    if(_server!=null){
-      _server.add(utf8.encode(command+_separator+message+_separator+_eom));
-      _printData("Message sent: "+command+_separator+message+_separator+_eom);
-    }else{
-      print("Socket not initialized before sending message! Make sure you have alreadt called the method 'connect()'");
-    }
-  }*/
 
   /// Test the connection. It will try to connect to the endpoint and if it does, it will disconnect and return 'true' (otherwise false)
   ///  * @param  timeOut  the amount of time to attempt the connection in milliseconds
