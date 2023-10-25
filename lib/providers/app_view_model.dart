@@ -330,6 +330,9 @@ class AppViewModel extends ChangeNotifier {
   }
 
   void removeStation(int indexStation) {
+    for (Device device in stations[indexStation].devices) {
+      device.connection.disconnect();
+    }
     stations[indexStation].devices.clear();
     stations.removeAt(indexStation);
     notifyListeners();

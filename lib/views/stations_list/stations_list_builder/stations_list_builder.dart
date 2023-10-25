@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:test/providers/app_view_model.dart';
@@ -14,36 +15,51 @@ class StationsListBuilder extends StatelessWidget {
   final AppViewModel viewModel;
   @override
   Widget build(BuildContext context) {
-    return ReorderableListView.builder(
-      shrinkWrap: true,
-      itemCount: viewModel.stationsCount,
-      onReorderStart: (index) {
-        HapticFeedback.mediumImpact();
-      },
-      onReorder: (oldIndex, newIndex) {
-        viewModel.onStationReorder(oldIndex, newIndex);
-      },
-      itemBuilder: (context, indexStation) {
-        return GestureDetector(
-          key: ValueKey(viewModel.stations[indexStation].key),
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      StationDetailPage(indexStation: indexStation),
-                ));
-          },
-          child: viewModel.stations[indexStation].devices.isEmpty
-              ? StationItemEmpty(
-                  viewModel: viewModel,
-                  indexStation: indexStation,
-                )
-              //if not empty show styled Card
-              : StationItemGridBuilder(
-                  viewModel: viewModel, indexStation: indexStation),
-        );
-      },
+    return Theme(
+      //to keep box decoration
+      data: ThemeData(canvasColor: Colors.transparent),
+      child: ReorderableListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        //prevent to move while one item
+        buildDefaultDragHandles: viewModel.stationsCount <= 1 ? false : true,
+        shrinkWrap: true,
+        itemCount: viewModel.stationsCount,
+        onReorderStart: (index) {
+          HapticFeedback.mediumImpact();
+        },
+        onReorder: (oldIndex, newIndex) {
+          viewModel.onStationReorder(oldIndex, newIndex);
+        },
+        itemBuilder: (context, indexStation) {
+          return Dismissible(
+            key: ValueKey(viewModel.stations[indexStation].key),
+            onDismissed: (direction) {
+              viewModel.removeStation(indexStation);
+            },
+            direction: viewModel.isStopped
+                ? DismissDirection.endToStart
+                : DismissDirection.none,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          StationDetailPage(indexStation: indexStation),
+                    ));
+              },
+              child: viewModel.stations[indexStation].devices.isEmpty
+                  ? StationItemEmpty(
+                      viewModel: viewModel,
+                      indexStation: indexStation,
+                    )
+                  //if not empty show styled Card
+                  : StationItemGridBuilder(
+                      viewModel: viewModel, indexStation: indexStation),
+            ),
+          );
+        },
+      ),
     );
   }
 }
