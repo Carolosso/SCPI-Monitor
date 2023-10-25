@@ -173,17 +173,11 @@ class AppViewModel extends ChangeNotifier {
       String ip = device.ip;
       int port = device.port;
       print("REFRESH FNC PORT: $port");
-      if (device.status == "Online" &&
-          await device.connection.canConnect(5000)) {
-        //device.status = "Online";
-        //notifyListeners();
-      } else if (device.status == "Offline" &&
+      if (device.status == "Offline" &&
           await device.connection.canConnect(5000)) {
         device.status = "Online";
         devices.remove(device);
         createDevice(ip, port);
-      } else if (!await device.connection.canConnect(5000)) {
-        device.status = "Offline";
       }
       notifyListeners();
     }
