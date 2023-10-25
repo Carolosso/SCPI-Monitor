@@ -64,7 +64,7 @@ class AppViewModel extends ChangeNotifier {
   }
 
   void createStation(String name) {
-    stations.add(Station(name, [], stationsCount + 1));
+    stations.add(Station(UniqueKey(), name, [], stationsCount + 1));
     notifyListeners();
   }
 
@@ -364,5 +364,14 @@ class AppViewModel extends ChangeNotifier {
         print(e);
       }
     }
+  }
+
+  void onStationReorder(int oldIndex, int newIndex) {
+    if (oldIndex < newIndex) {
+      newIndex--;
+    }
+    Station station = stations.removeAt(oldIndex);
+    stations.insert(newIndex, station);
+    notifyListeners();
   }
 }
