@@ -5,7 +5,7 @@ import 'package:test/style/theme.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/providers/navigation_view_model.dart';
 import 'package:test/utils/navigation_service.dart';
-import 'package:test/views/pages/home_page.dart';
+import 'package:test/pages/home_page.dart';
 
 void main() async {
   runApp(const MyApp());

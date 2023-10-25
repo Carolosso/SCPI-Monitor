@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test/providers/settings_view_model.dart';
-import 'package:test/views/widgets/settings_view/settings_item.dart';
+import 'package:test/views/settings/settings_item/settings_item.dart';
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});

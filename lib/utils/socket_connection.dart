@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+// BASED ON TCPSOCKETCONNECTION PACKAGE
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
@@ -9,14 +11,14 @@ import 'package:provider/provider.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/utils/navigation_service.dart';
 
-class LocalTcpSocketConnection {
+class SocketConnection {
   final String _ipAddress;
   final int _portAddress;
   Socket? _server;
   bool _connected = false;
   bool _logPrintEnabled = false;
 
-  LocalTcpSocketConnection(this._ipAddress, this._portAddress);
+  SocketConnection(this._ipAddress, this._portAddress);
 
   String message = '';
 

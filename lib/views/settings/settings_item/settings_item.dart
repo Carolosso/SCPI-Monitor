@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:test/providers/settings_view_model.dart';
 import 'package:test/style/theme.dart';
-import 'package:test/views/widgets/settings_view/settings_item_dialog.dart';
+import 'package:test/views/settings/settings_item/settings_item_dialog.dart';
 
 class SettingsItem extends StatelessWidget {
   SettingsItem(

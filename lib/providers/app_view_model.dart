@@ -8,7 +8,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:test/local_package/local_tcp_socket_connection.dart';
+import 'package:test/utils/socket_connection.dart';
 import 'package:test/models/device_model.dart';
 import 'package:test/models/station_model.dart';
 import 'package:test/providers/settings_view_model.dart';
@@ -69,8 +69,7 @@ class AppViewModel extends ChangeNotifier {
   }
 
   Future<String> createDevice(String ip, int port) async {
-    LocalTcpSocketConnection socketConnection =
-        LocalTcpSocketConnection(ip, port);
+    SocketConnection socketConnection = SocketConnection(ip, port);
 
     Completer completer = Completer();
     String name = "Unknown";
@@ -193,9 +192,9 @@ class AppViewModel extends ChangeNotifier {
   }
 
   Future<void> addDeviceToStation(int indexStation, Device device) async {
-    // kopiowanie obiektu - ogarnąć to - TODO
-    LocalTcpSocketConnection socketConnection =
-        LocalTcpSocketConnection(device.ip, device.port);
+    // TODO kopiowanie obiektu - ogarnąć to -
+    SocketConnection socketConnection =
+        SocketConnection(device.ip, device.port);
     Device newDevice = Device(
         device.name,
         device.ip,
@@ -266,7 +265,7 @@ class AppViewModel extends ChangeNotifier {
   void setNewParametersToDeviceInList(int index, String name, String ip) {
     devices[index].name = name;
     devices[index].ip = ip;
-    devices[index].connection = LocalTcpSocketConnection(ip, 5025);
+    devices[index].connection = SocketConnection(ip, 5025);
     notifyListeners();
   }
 
@@ -355,8 +354,7 @@ class AppViewModel extends ChangeNotifier {
     while (deviceIP != broadcast) {
       try {
         print("Próba połączenia na adresie: $deviceIP");
-        LocalTcpSocketConnection socketConnection =
-            LocalTcpSocketConnection(deviceIP, 5025);
+        SocketConnection socketConnection = SocketConnection(deviceIP, 5025);
         if (await socketConnection.canConnect(1000)) {
           print("Znaleziono urządzenia na $deviceIP");
           await createDevice(deviceIP, 5025);

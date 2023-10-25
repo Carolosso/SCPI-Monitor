@@ -1,0 +1,44 @@
+import 'package:flutter/material.dart';
+import 'package:test/providers/app_view_model.dart';
+import 'package:test/views/station_detail/station_detail_view.dart';
+import 'package:test/views/stations_list/stations_list_builder/station_item/station_item_grid_builder.dart';
+import 'package:test/views/stations_list/stations_list_builder/station_item/station_item_empty.dart';
+
+class StationsListBuilder extends StatelessWidget {
+  const StationsListBuilder({
+    super.key,
+    required this.viewModel,
+  });
+
+  final AppViewModel viewModel;
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: viewModel.stationsCount,
+      itemBuilder: (context, indexStation) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 5),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        StationDetailPage(indexStation: indexStation),
+                  ));
+            },
+            child: viewModel.stations[indexStation].devices.isEmpty
+                ? StationItemEmpty(
+                    viewModel: viewModel,
+                    indexStation: indexStation,
+                  )
+                //if not empty show styled Card
+                : StationItemGridBuilder(
+                    viewModel: viewModel, indexStation: indexStation),
+          ),
+        );
+      },
+    );
+  }
+}

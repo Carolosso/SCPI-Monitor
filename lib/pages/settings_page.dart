@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:test/views/settings_view.dart';
+import 'package:test/views/settings/settings_view.dart';
 import 'package:test/views/widgets/custom_app_bars/custom_app_bar_for_settings.dart';
 
 class SettingsPage extends StatelessWidget {
