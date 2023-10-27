@@ -7,7 +7,7 @@ import 'package:test/providers/navigation_view_model.dart';
 import 'package:test/utils/navigation_service.dart';
 import 'package:test/pages/home_page.dart';
 
-void main() async {
+void main() {
   runApp(const MyApp());
 }
 
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ScreenIndexProvider()),
       ],
       child: MaterialApp(
-          theme: Styles.themeData(true, context),
+          theme: Styles.themeData(),
           home: const HomePage(),
           navigatorKey: NavigationService.navigatorKey),
     );

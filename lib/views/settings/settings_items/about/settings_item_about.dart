@@ -1,27 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:test/providers/settings_view_model.dart';
 import 'package:test/style/theme.dart';
-import 'package:test/views/settings/settings_item/settings_item_dialog.dart';
+import 'package:test/views/settings/settings_items/about/settings_item_about_dialog.dart';
 
-class SettingsItem extends StatelessWidget {
-  SettingsItem(
-      {super.key,
-      required this.title,
-      required this.icon,
-      required this.settingsViewModel,
-      required this.textControllerText,
-      required this.text,
-      required this.dialogOnPressed,
-      required this.textInputType});
+class SettingsItemAbout extends StatelessWidget {
+  const SettingsItemAbout({super.key, required this.title, required this.icon});
 
-  final SettingsViewModel settingsViewModel;
   final String title;
-  final String textControllerText;
-  final String text;
   final IconData icon;
-  final TextEditingController textController = TextEditingController();
-  final Function dialogOnPressed;
-  final TextInputType textInputType;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -31,9 +16,7 @@ class SettingsItem extends StatelessWidget {
         children: [
           TextButton(
               onPressed: () {
-                textController.text = textControllerText;
-                settingsItemDialog(
-                    context, textController, dialogOnPressed, textInputType);
+                settingsItemDialogAbout(context);
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -58,9 +41,6 @@ class SettingsItem extends StatelessWidget {
                           //softWrap: true,
                         ),
                         const SizedBox(height: 10),
-                        Text(text,
-                            style: TextStyle(
-                                fontSize: 16, color: Styles.primaryColor)),
                       ],
                     ),
                   ),

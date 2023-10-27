@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test/providers/settings_view_model.dart';
-import 'package:test/views/settings/settings_item/settings_item.dart';
+import 'package:test/style/theme.dart';
+import 'package:test/views/settings/settings_items/about/settings_item_about.dart';
+import 'package:test/views/settings/settings_items/delay/settings_item_delay.dart';
+import 'package:test/views/settings/settings_items/network_address/settings_item_network.dart';
+import 'package:test/views/settings/settings_items/theme/settings_item_theme.dart';
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
@@ -12,16 +16,13 @@ class SettingsView extends StatelessWidget {
         builder: (context, settingsViewModel, child) {
       return Column(
         children: [
-          SettingsItem(
+          SettingsItemNetwork(
             title: "Adres sieci lokalnej",
             icon: Icons.network_wifi,
             settingsViewModel: settingsViewModel,
-            textControllerText: settingsViewModel.ipRange,
             text: settingsViewModel.ipRange,
-            dialogOnPressed: settingsViewModel.setNewIpRange,
-            textInputType: TextInputType.text,
           ),
-          SettingsItem(
+          SettingsItemDelay(
             title: "Częstotliwość wysyłania polecenia",
             icon: Icons.refresh,
             settingsViewModel: settingsViewModel,
@@ -30,6 +31,16 @@ class SettingsView extends StatelessWidget {
             dialogOnPressed: settingsViewModel.setNewTimeout,
             textInputType: TextInputType.number,
           ),
+          SettingsItemTheme(
+            title: "Motyw aplikacji",
+            icon: Icons.invert_colors,
+            settingsViewModel: settingsViewModel,
+            text: Styles.isDarkTheme ? "Ciemny" : "Jasny",
+          ),
+          const SettingsItemAbout(
+            title: "O aplikacji",
+            icon: Icons.info_outline_rounded,
+          )
         ],
       );
     });

@@ -30,14 +30,13 @@ class DeviceItem extends StatelessWidget {
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Container(
+        child: SizedBox(
           width: double.infinity,
-          color: Styles.backgroundColor, //Styles.backgroundColor
           child: Padding(
             padding: const EdgeInsets.all(6.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   viewModel.devices[indexDevice].name,
@@ -45,6 +44,9 @@ class DeviceItem extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 20,
                   ),
+                ),
+                const SizedBox(
+                  height: 5,
                 ),
                 Text(
                   'IP: ${viewModel.devices[indexDevice].ip}',
@@ -88,9 +90,10 @@ class DeviceItem extends StatelessWidget {
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         fontSize: 15,
-                        color: viewModel.devices[indexDevice].status == 'Online'
-                            ? Styles.surfaceColor
-                            : Colors.red,
+                        color:
+                            viewModel.devices[indexDevice].status == 'available'
+                                ? Styles.surfaceColor
+                                : Colors.red,
                       ),
                     )
                   ],

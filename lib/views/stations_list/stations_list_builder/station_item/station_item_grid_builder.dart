@@ -20,31 +20,36 @@ class StationItemGridBuilder extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.0),
       ),
       color: Styles.primaryColor,
-      child: Column(
-        children: [
-          Text(
-            viewModel.getStationName(indexStation),
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          GridView.builder(
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 200,
-                childAspectRatio: 1 / .4, //1/ .4
-                crossAxisSpacing: 2,
-                mainAxisSpacing: 2),
-            itemCount: viewModel.getStationsDevicesCount(indexStation),
-            itemBuilder: (context, indexDevice) {
-              return StationDeviceItem(
-                viewModel: viewModel,
-                indexStation: indexStation,
-                indexDevice: indexDevice,
-              );
-            },
-            shrinkWrap: true,
-            physics: const ClampingScrollPhysics(),
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(3.0),
+        child: Column(
+          children: [
+            Text(
+              viewModel.getStationName(indexStation),
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18),
+            ),
+            GridView.builder(
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 200,
+                  childAspectRatio: 1 / .4, //1/ .4
+                  crossAxisSpacing: 2,
+                  mainAxisSpacing: 2),
+              itemCount: viewModel.getStationsDevicesCount(indexStation),
+              itemBuilder: (context, indexDevice) {
+                return StationDeviceItem(
+                  viewModel: viewModel,
+                  indexStation: indexStation,
+                  indexDevice: indexDevice,
+                );
+              },
+              shrinkWrap: true,
+              physics: const ClampingScrollPhysics(),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -22,6 +22,7 @@ class SocketConnection {
 
   String message = '';
 
+  /// Getting value from received message from device by sending "READ?" command
   double getValue() {
     print("get value():${isConnected()}");
     //await sendMessageEOM('READ?', '\n');

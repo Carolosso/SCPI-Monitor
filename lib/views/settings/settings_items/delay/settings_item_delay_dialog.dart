@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:test/style/theme.dart';
 
-Future<dynamic> settingsItemDialog(
+Future<dynamic> settingsItemDialogDelay(
     BuildContext context,
     TextEditingController textController,
     Function dialogOnPressed,

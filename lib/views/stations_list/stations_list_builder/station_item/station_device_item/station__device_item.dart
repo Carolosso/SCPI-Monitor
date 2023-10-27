@@ -16,6 +16,7 @@ class StationDeviceItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      margin: const EdgeInsets.all(6),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),

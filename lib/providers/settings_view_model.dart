@@ -1,20 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:test/style/theme.dart';
 import 'package:test/utils/validators.dart';
 
 class SettingsViewModel extends ChangeNotifier {
   int timeout = 1000;
   String ipRange = "";
   String? broadcast = "";
+  bool isDarkTheme = false;
+
+  bool get darkTheme => isDarkTheme;
+
+  set darkTheme(bool value) {
+    isDarkTheme = value;
+    notifyListeners();
+  }
 
   String setNewTimeout(String newTimeout) {
-    int newTo = int.parse(newTimeout);
-    if (newTo > 300 && newTo < 10000) {
-      timeout = newTo;
+    int newTO = int.parse(newTimeout);
+    int sRange = 300;
+    int eRange = 10000;
+    if (newTO >= sRange && newTO <= eRange) {
+      timeout = newTO;
       // print(timeout.toString());
       notifyListeners();
       return "Ustawiono nową wartość na $newTimeout ms";
     }
-    return "Wartość musi byc w przedziale od 500 do 10 000 ms";
+    return "Wartość musi byc w przedziale od $sRange do $eRange ms";
   }
 
   String setNewIpRange(String newRange) {
@@ -25,5 +36,10 @@ class SettingsViewModel extends ChangeNotifier {
     } else {
       return "Błąd";
     }
+  }
+
+  void switchTheme() {
+    Styles.isDarkTheme = !Styles.isDarkTheme;
+    notifyListeners();
   }
 }
