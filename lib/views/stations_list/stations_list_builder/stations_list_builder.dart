@@ -17,47 +17,56 @@ class StationsListBuilder extends StatelessWidget {
     return Theme(
       //to keep box decoration
       data: ThemeData(canvasColor: Colors.transparent),
-      child: ReorderableListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 5),
-        //prevent to move while one item
-        buildDefaultDragHandles: viewModel.stationsCount <= 1 ? false : true,
-        shrinkWrap: true,
-        itemCount: viewModel.stationsCount,
-        onReorderStart: (index) {
-          HapticFeedback.mediumImpact();
-        },
-        onReorder: (oldIndex, newIndex) {
-          viewModel.onStationReorder(oldIndex, newIndex);
-        },
-        itemBuilder: (context, indexStation) {
-          return Dismissible(
-            key: ValueKey(viewModel.stations[indexStation].key),
-            onDismissed: (direction) {
-              viewModel.removeStation(indexStation);
-            },
-            direction: viewModel.isStopped
-                ? DismissDirection.endToStart
-                : DismissDirection.none,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          StationDetailPage(indexStation: indexStation),
-                    ));
+      //Overlay to set boundaries to reorderable list view
+      //https://stackoverflow.com/questions/75418523/setting-boundaries-to-reorderablelistview
+      child: Overlay(
+        initialEntries: [
+          OverlayEntry(builder: (context) {
+            return ReorderableListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              //prevent to move while one item
+              buildDefaultDragHandles:
+                  viewModel.stationsCount <= 1 ? false : true,
+              shrinkWrap: true,
+              itemCount: viewModel.stationsCount,
+              onReorderStart: (index) {
+                HapticFeedback.mediumImpact();
               },
-              child: viewModel.stations[indexStation].devices.isEmpty
-                  ? StationItemEmpty(
-                      viewModel: viewModel,
-                      indexStation: indexStation,
-                    )
-                  //if not empty show styled Card
-                  : StationItemGridBuilder(
-                      viewModel: viewModel, indexStation: indexStation),
-            ),
-          );
-        },
+              onReorder: (oldIndex, newIndex) {
+                viewModel.onStationReorder(oldIndex, newIndex);
+              },
+              itemBuilder: (context, indexStation) {
+                return Dismissible(
+                  key: ValueKey(viewModel.stations[indexStation].key),
+                  onDismissed: (direction) {
+                    viewModel.removeStation(indexStation);
+                  },
+                  direction: viewModel.isStopped
+                      ? DismissDirection.endToStart
+                      : DismissDirection.none,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                StationDetailPage(indexStation: indexStation),
+                          ));
+                    },
+                    child: viewModel.stations[indexStation].devices.isEmpty
+                        ? StationItemEmpty(
+                            viewModel: viewModel,
+                            indexStation: indexStation,
+                          )
+                        //if not empty show styled Card
+                        : StationItemGridBuilder(
+                            viewModel: viewModel, indexStation: indexStation),
+                  ),
+                );
+              },
+            );
+          })
+        ],
       ),
     );
   }
