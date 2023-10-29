@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/views/stations_list/stations_list_builder/stations_list_builder.dart';
-import 'package:test/views/widgets/custom_app_bars/custom_app_bar_for_stations_view.dart';
+import 'package:test/views/widgets/custom_app_bars/stations_list_app_bar/custom_app_bar_for_stations_view.dart';
 import 'package:test/views/widgets/floating_button/floating_action_button_view.dart';
 
 class StationsListView extends StatelessWidget {

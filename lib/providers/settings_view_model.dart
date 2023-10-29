@@ -16,16 +16,20 @@ class SettingsViewModel extends ChangeNotifier {
   }
 
   String setNewTimeout(String newTimeout) {
-    int newTO = int.parse(newTimeout);
-    int sRange = 300;
-    int eRange = 10000;
-    if (newTO >= sRange && newTO <= eRange) {
-      timeout = newTO;
-      // print(timeout.toString());
-      notifyListeners();
-      return "Ustawiono nową wartość na $newTimeout ms";
+    try {
+      int newTO = int.parse(newTimeout);
+      int sRange = 300;
+      int eRange = 10000;
+      if (newTO >= sRange && newTO <= eRange) {
+        timeout = newTO;
+        // print(timeout.toString());
+        notifyListeners();
+        return "Ustawiono nową wartość na $newTimeout ms";
+      }
+      return "Wartość musi byc w przedziale od $sRange do $eRange ms";
+    } catch (ex) {
+      return "Liczba musi mieć postać całkowitą";
     }
-    return "Wartość musi byc w przedziale od $sRange do $eRange ms";
   }
 
   String setNewIpRange(String newRange) {

@@ -25,6 +25,14 @@ class AppViewModel extends ChangeNotifier {
   //late Timer timer;
   bool isStopped = true;
   bool connectedToWIFI = false;
+  String textInfo = "";
+  String getTextInfo() => textInfo;
+  late bool findDevicesInNetworkBreak;
+
+  void switchFindDevicesInNetworkBreak() {
+    findDevicesInNetworkBreak = !findDevicesInNetworkBreak;
+    //notifyListeners();
+  }
 
   void switchStartStop() {
     isStopped = !isStopped;
@@ -83,14 +91,16 @@ class AppViewModel extends ChangeNotifier {
     try {
       if (!isValidHost(ip)) {
         return "Zły format IP!";
+      } else if (!comparedByIP(ip)) {
+        return "Urządzenie znajduje się już na liście.";
       }
-      print("CREATE DEVICE CONNECT PORT:$port");
+      // debugPrint("CREATE DEVICE CONNECT PORT:$port");
       //initialize socket
       socket =
           await Socket.connect(ip, port, timeout: const Duration(seconds: 3));
       // listen to the received data event stream
       socket.listen((List<int> event) async {
-        //print(utf8.decode(event));
+        //debugPrint(utf8.decode(event));
         List<String> message = utf8.decode(event).split(',');
         if (message.length > 1) {
           name = message.elementAt(1).trim();
@@ -126,7 +136,7 @@ class AppViewModel extends ChangeNotifier {
         devices.add(device);
       }
       notifyListeners();
-      return "Nie udalo się nawiązać połączenia z urządzeniem!\n$ex";
+      return "Nie udalo się nawiązać połączenia z urządzeniem!";
     }
     return "Nawiązano połączenie z urządzeniem!";
   }
@@ -194,13 +204,15 @@ class AppViewModel extends ChangeNotifier {
     }
   }
 
-  /// Checks if device with its serial is already in station
+  /// Checks if device with its serial is already added in any station
   /// * @indexStation - Index of station we are on
   /// * @device - Device that we want to check
-  bool comparedBySerialInStation(int indexStation, Device device) {
-    for (Device sdevice in stations[indexStation].devices) {
-      if (device.serial == sdevice.serial) {
-        return false;
+  bool comparedBySerialInStations(Device device) {
+    for (Station station in stations) {
+      for (Device sdevice in station.devices) {
+        if (device.serial == sdevice.serial) {
+          return false;
+        }
       }
     }
     return true;
@@ -211,6 +223,17 @@ class AppViewModel extends ChangeNotifier {
   bool comparedBySerial(Device device) {
     for (Device sdevice in devices) {
       if (device.serial == sdevice.serial) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /// Checks if device with its IP is already in main devices list
+  /// * @ip - ip that we want to check
+  bool comparedByIP(String ip) {
+    for (Device sdevice in devices) {
+      if (ip == sdevice.ip) {
         return false;
       }
     }
@@ -234,7 +257,7 @@ class AppViewModel extends ChangeNotifier {
         device.value,
         socketConnection);
     print("ADD DEVICE TO STATION PORT: ${newDevice.port}");
-    if (comparedBySerialInStation(indexStation, newDevice) &&
+    if (comparedBySerialInStations(newDevice) &&
         newDevice.status == "available") {
       await newDevice.connection.startConnection();
       stations[indexStation].devices.add(newDevice);
@@ -399,22 +422,45 @@ class AppViewModel extends ChangeNotifier {
 
   /// Looking for devices in local network by trying to connect to them. Starting from network IP address, incrementing and checking till reaching broadcast IP address of this network. If can connect to device at specified port then adding this device to main devices list.
   Future<void> findDevicesInNetwork() async {
+    findDevicesInNetworkBreak = false;
     SettingsViewModel settingsViewModel = getSettingsViewModel();
     String? networkIP = settingsViewModel.ipRange;
     String deviceIP = networkIP; //incrementIP(networkIP!)
     String? broadcast = settingsViewModel.broadcast;
     if (connectedToWIFI) {
       while (deviceIP != broadcast) {
-        try {
-          print("Próba połączenia na adresie: $deviceIP");
-          SocketConnection socketConnection = SocketConnection(deviceIP, 5025);
-          if (await socketConnection.canConnect(1000)) {
-            print("Znaleziono urządzenia na $deviceIP");
-            await createDevice(deviceIP, 5025);
+        if (!findDevicesInNetworkBreak) {
+          try {
+            textInfo = "Próba połączenia z adresem: $deviceIP";
+            notifyListeners();
+            if (comparedByIP(deviceIP)) {
+              SocketConnection socketConnection =
+                  SocketConnection(deviceIP, 5025);
+              if (await socketConnection.canConnect(1000)) {
+                textInfo = "Znaleziono urządzenie na $deviceIP!";
+                notifyListeners();
+                await Future.delayed(const Duration(seconds: 1));
+                debugPrint("Znaleziono urządzenia na $deviceIP!");
+                await createDevice(deviceIP, 5025);
+                notifyListeners();
+              } else {
+                textInfo = "Nie znaleziono urządzenia o adresie $deviceIP";
+                notifyListeners();
+                await Future.delayed(const Duration(seconds: 1));
+              }
+            } else {
+              textInfo =
+                  "Urządzenie o adresie $deviceIP znajduje się już na liście.";
+              notifyListeners();
+              await Future.delayed(const Duration(seconds: 1));
+            }
+
+            deviceIP = incrementIP(deviceIP);
+          } catch (e) {
+            debugPrint(e.toString());
           }
-          deviceIP = incrementIP(deviceIP);
-        } catch (e) {
-          print(e);
+        } else {
+          break;
         }
       }
     }

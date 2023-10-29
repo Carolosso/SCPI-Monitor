@@ -6,11 +6,18 @@ Future<dynamic> settingsItemDialogAbout(BuildContext context) {
       context: context,
       builder: (context) {
         return AlertDialog(
+          title: const Text("O aplikacji"),
           //title: const Text('Dodaj urządzenie'),
           content: const SingleChildScrollView(
             child: Column(
               children: [
                 Padding(padding: EdgeInsets.only(top: 10, bottom: 10)),
+                Text(
+                  "Projekt inżynierski",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
+                ),
+                Text("Karol Bulanowski"),
+                Text("Jakub Wojturski"),
               ],
             ),
           ),

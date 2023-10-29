@@ -39,7 +39,8 @@ Future<void> deviceItemDialog(
                   ),
                 ),
                 const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
-                TextField(
+                //IP FIELD
+                /*     TextField(
                   controller: ipTextController,
                   onSubmitted: (value) {},
                   decoration: InputDecoration(
@@ -60,8 +61,8 @@ Future<void> deviceItemDialog(
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
                   ),
-                ),
-                const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                ), */
+                //const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                 SizedBox(
                   child: DropdownButton<int>(
                       /*   decoration: InputDecoration(

@@ -10,36 +10,46 @@ Future<dynamic> settingsItemDialogDelay(
       context: context,
       builder: (context) {
         return AlertDialog(
-          //title: const Text('Dodaj urządzenie'),
+          title: const Text("Opóźnienie wysyłania poleceń"),
           content: SingleChildScrollView(
-            child: Column(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Padding(padding: EdgeInsets.only(top: 10, bottom: 10)),
-                TextField(
-                  controller: textController,
-                  onSubmitted: (value) {
-                    // onSubmit(value);
-                  },
-                  keyboardType: inputType,
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      contentPadding: const EdgeInsets.only(
-                        bottom: 5,
-                      ),
-                      filled: true,
-                      //fillColor: viewModel.clrlvl2,
-                      focusedBorder: OutlineInputBorder(
+                //const Padding(padding: EdgeInsets.only(top: 10, bottom: 10)),
+                Flexible(
+                  flex: 1,
+                  child: TextField(
+                    //maxLength: 5,
+                    controller: textController,
+                    onSubmitted: (value) {
+                      // onSubmit(value);
+                    },
+                    keyboardType: inputType,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Styles.surfaceColor))),
-                  // autofocus: true,
-                  textAlign: TextAlign.center,
-                  textAlignVertical: TextAlignVertical.center,
-                  autocorrect: false,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
+                        ),
+                        contentPadding: const EdgeInsets.only(
+                          bottom: 5,
+                        ),
+                        filled: true,
+                        //fillColor: viewModel.clrlvl2,
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide:
+                                BorderSide(color: Styles.surfaceColor))),
+                    // autofocus: true,
+                    textAlign: TextAlign.center,
+                    textAlignVertical: TextAlignVertical.center,
+                    autocorrect: false,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
+                ),
+                const Flexible(
+                  flex: 1,
+                  child: Text("ms"),
                 ),
               ],
             ),

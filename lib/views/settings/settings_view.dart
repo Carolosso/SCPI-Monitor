@@ -4,6 +4,7 @@ import 'package:test/providers/settings_view_model.dart';
 import 'package:test/style/theme.dart';
 import 'package:test/views/settings/settings_items/about/settings_item_about.dart';
 import 'package:test/views/settings/settings_items/delay/settings_item_delay.dart';
+import 'package:test/views/settings/settings_items/language/settings_item_language.dart';
 import 'package:test/views/settings/settings_items/network_address/settings_item_network.dart';
 import 'package:test/views/settings/settings_items/theme/settings_item_theme.dart';
 
@@ -23,7 +24,7 @@ class SettingsView extends StatelessWidget {
             text: settingsViewModel.ipRange,
           ),
           SettingsItemDelay(
-            title: "Częstotliwość wysyłania polecenia",
+            title: "Opóźnienie wysyłania poleceń",
             icon: Icons.refresh,
             settingsViewModel: settingsViewModel,
             textControllerText: settingsViewModel.timeout.toString(),
@@ -36,6 +37,12 @@ class SettingsView extends StatelessWidget {
             icon: Icons.invert_colors,
             settingsViewModel: settingsViewModel,
             text: Styles.isDarkTheme ? "Ciemny" : "Jasny",
+          ),
+          SettingsItemLanguage(
+            title: "Język aplikacji",
+            icon: Icons.language,
+            settingsViewModel: settingsViewModel,
+            text: "polski",
           ),
           const SettingsItemAbout(
             title: "O aplikacji",
