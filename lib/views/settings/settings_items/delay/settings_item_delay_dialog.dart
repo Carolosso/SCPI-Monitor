@@ -47,6 +47,9 @@ Future<dynamic> settingsItemDialogDelay(
                     ),
                   ),
                 ),
+                const SizedBox(
+                  width: 10,
+                ),
                 const Flexible(
                   flex: 1,
                   child: Text("ms"),

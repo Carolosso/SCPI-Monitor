@@ -120,8 +120,8 @@ class AppViewModel extends ChangeNotifier {
       // .. and close the socket
       socket.close();
 
-      Device device = Device(name, ip, port, manufacturer, model, serial,
-          status, '-', 0.0, socketConnection);
+      Device device = Device(UniqueKey(), name, ip, port, manufacturer, model,
+          serial, status, '-', 0.0, socketConnection);
       print("CREATE DEVICE PORT: $port");
       // finally add device to main devices list if not already
       if (comparedBySerial(device)) {
@@ -130,8 +130,8 @@ class AppViewModel extends ChangeNotifier {
       notifyListeners();
     } catch (ex) {
       // if can't connect then add it too
-      Device device = Device(name, ip, port, manufacturer, model, serial,
-          status, '-', 0.0, socketConnection);
+      Device device = Device(UniqueKey(), name, ip, port, manufacturer, model,
+          serial, status, '-', 0.0, socketConnection);
       if (comparedBySerial(device)) {
         devices.add(device);
       }
@@ -246,6 +246,7 @@ class AppViewModel extends ChangeNotifier {
     SocketConnection socketConnection =
         SocketConnection(device.ip, device.port);
     Device newDevice = Device(
+        device.key,
         device.name,
         device.ip,
         device.port,
@@ -474,6 +475,17 @@ class AppViewModel extends ChangeNotifier {
     }
     Station station = stations.removeAt(oldIndex);
     stations.insert(newIndex, station);
+    notifyListeners();
+  }
+
+  /// Function for Reorderable list to swap devices positions in Station.
+  void onDeviceInStationReorder(int oldIndex, int newIndex, int indexStation) {
+    // for moving elements down the list
+    if (oldIndex < newIndex) {
+      newIndex--;
+    }
+    Device device = stations[indexStation].devices.removeAt(oldIndex);
+    stations[indexStation].devices.insert(newIndex, device);
     notifyListeners();
   }
 }

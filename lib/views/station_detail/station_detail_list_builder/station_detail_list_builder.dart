@@ -19,85 +19,122 @@ class StationDetailListBuilder extends StatelessWidget {
   final AppViewModel viewModel;
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: viewModel.stations[indexStation].devices.length, //
-      itemBuilder: (context, indexDevice) {
-        return Dismissible(
-          key: UniqueKey(),
-          direction: viewModel.isStopped
-              ? DismissDirection.endToStart
-              : DismissDirection.none,
-          onDismissed: (direction) {
-            viewModel.removeDeviceFromStation(indexStation, indexDevice);
-            HapticFeedback.lightImpact(); //vibration
+    return Theme(
+      //to keep box decoration
+      //TODO nie poprawic dzialanie
+      data: ThemeData(canvasColor: Colors.transparent),
+      //Overlay to set boundaries to reorderable list view
+      //https://stackoverflow.com/questions/75418523/setting-boundaries-to-reorderablelistview
+      child: Overlay(
+        initialEntries: [
+          OverlayEntry(
+            builder: (context) {
+              return ReorderableListView.builder(
+                buildDefaultDragHandles:
+                    viewModel.stations[indexStation].devices.length <= 1
+                        ? false
+                        : true,
+                onReorderStart: (index) {
+                  HapticFeedback.mediumImpact();
+                },
+                onReorder: (oldIndex, newIndex) {
+                  viewModel.onDeviceInStationReorder(
+                      oldIndex, newIndex, indexStation);
+                },
+                shrinkWrap: true,
+                itemCount: viewModel.stations[indexStation].devices.length, //
+                itemBuilder: (context, indexDevice) {
+                  return Dismissible(
+                    key: ValueKey(viewModel
+                        .stations[indexStation].devices[indexDevice].key),
+                    direction: viewModel.isStopped
+                        ? DismissDirection.endToStart
+                        : DismissDirection.none,
+                    onDismissed: (direction) {
+                      viewModel.removeDeviceFromStation(
+                          indexStation, indexDevice);
+                      HapticFeedback.lightImpact(); //vibration
 
-            //Toast
-            ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Usunięto urządzenie.')));
-          },
-          background: Container(
-            decoration: BoxDecoration(
-              color: Colors.red.shade300,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              Icons.delete,
-              color: Colors.red.shade700,
-            ),
-          ),
-          child: SizedBox(
-            width: double.infinity,
-            child: GestureDetector(
-              onTap: () {
-                nameTextController.text =
-                    viewModel.stations[indexStation].devices[indexDevice].name;
-                unitTextController.text = viewModel
-                    .stations[indexStation].devices[indexDevice].measuredUnit;
-                stationDetailItemDialog(context, indexDevice, viewModel,
-                    nameTextController, unitTextController, indexStation);
-              },
-              child: Card(
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-                color: Styles.primaryColor,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        viewModel.stations[indexStation].devices[indexDevice]
-                            .name, //
-                        textAlign: TextAlign.left,
-                        style: const TextStyle(
-                            fontSize: 14, color: Colors.white), //??????
+                      //Toast
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text('Usunięto urządzenie.')));
+                    },
+                    background: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade300,
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Wartość mierzona',
-                          style: TextStyle(
-                              fontSize: 8, color: Styles.surfaceColor),
+                      child: Icon(
+                        Icons.delete,
+                        color: Colors.red.shade700,
+                      ),
+                    ),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: GestureDetector(
+                        onTap: () {
+                          nameTextController.text = viewModel
+                              .stations[indexStation].devices[indexDevice].name;
+                          unitTextController.text = viewModel
+                              .stations[indexStation]
+                              .devices[indexDevice]
+                              .measuredUnit;
+                          stationDetailItemDialog(
+                              context,
+                              indexDevice,
+                              viewModel,
+                              nameTextController,
+                              unitTextController,
+                              indexStation);
+                        },
+                        child: Card(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          color: Styles.primaryColor,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  viewModel.stations[indexStation]
+                                      .devices[indexDevice].name, //
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white), //??????
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'Wartość mierzona',
+                                    style: TextStyle(
+                                        fontSize: 8,
+                                        color: Styles.surfaceColor),
+                                  ),
+                                ),
+                                Text(
+                                  '${viewModel.getDeviceValue(indexStation, indexDevice)}${viewModel.getDeviceMeasuredUnit(indexStation, indexDevice)}',
+                                  style: const TextStyle(
+                                      fontSize: 32,
+                                      //fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                      Text(
-                        '${viewModel.getDeviceValue(indexStation, indexDevice)}${viewModel.getDeviceMeasuredUnit(indexStation, indexDevice)}',
-                        style: const TextStyle(
-                            fontSize: 32,
-                            //fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
+                    ),
+                  );
+                },
+              );
+            },
+          )
+        ],
+      ),
     );
   }
 }

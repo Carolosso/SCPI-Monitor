@@ -90,6 +90,7 @@ Future<dynamic> devicesAppBarDialog2(
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(await viewModel.createDevice(
                         ipTextController.text, 5025))));
+                await viewModel.createDevice(ipTextController.text, 5026);
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },

@@ -42,7 +42,7 @@ class SettingsView extends StatelessWidget {
             title: "Język aplikacji",
             icon: Icons.language,
             settingsViewModel: settingsViewModel,
-            text: "polski",
+            text: "Polski",
           ),
           const SettingsItemAbout(
             title: "O aplikacji",
