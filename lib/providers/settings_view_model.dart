@@ -5,7 +5,7 @@ import 'package:test/utils/validators.dart';
 class SettingsViewModel extends ChangeNotifier {
   int timeout = 1000;
   String ipRange = "";
-  String? broadcast = "";
+  String broadcast = "";
   bool isDarkTheme = false;
 
   bool get darkTheme => isDarkTheme;
