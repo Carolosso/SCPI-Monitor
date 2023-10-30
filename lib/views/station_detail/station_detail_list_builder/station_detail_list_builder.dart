@@ -21,7 +21,6 @@ class StationDetailListBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     return Theme(
       //to keep box decoration
-      //TODO nie poprawic dzialanie
       data: ThemeData(canvasColor: Colors.transparent),
       //Overlay to set boundaries to reorderable list view
       //https://stackoverflow.com/questions/75418523/setting-boundaries-to-reorderablelistview

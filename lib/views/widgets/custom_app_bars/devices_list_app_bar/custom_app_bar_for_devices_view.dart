@@ -39,9 +39,11 @@ class CustomAppBarForDevicesView extends StatelessWidget
             color: Colors.black,
             iconSize: 40,
             onPressed: () async {
+              NavigatorState navigator = Navigator.of(context);
+
               devicesAppBarDialog1(context, viewModel);
               await viewModel.findDevicesInNetwork();
-              Navigator.of(context).pop();
+              navigator.pop();
             },
           ),
           IconButton(

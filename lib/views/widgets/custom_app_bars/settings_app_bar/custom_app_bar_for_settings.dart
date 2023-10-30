@@ -40,6 +40,7 @@ class CustomAppBarForSettingsView extends StatelessWidget
             color: Colors.black,
             iconSize: 40,
             onPressed: () async {
+              NavigatorState navigator = Navigator.of(context);
               showDialog(
                   context: context,
                   builder: (context) => Center(
@@ -49,7 +50,7 @@ class CustomAppBarForSettingsView extends StatelessWidget
                         ),
                       ));
               await viewModel.getNetworkInfo();
-              Navigator.of(context).pop();
+              navigator.pop();
             },
           )
         ],

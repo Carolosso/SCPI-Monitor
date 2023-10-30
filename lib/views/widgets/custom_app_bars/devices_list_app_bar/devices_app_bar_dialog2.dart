@@ -73,6 +73,7 @@ Future<dynamic> devicesAppBarDialog2(
               style: TextButton.styleFrom(foregroundColor: Styles.primaryColor),
               child: const Text('Dodaj'),
               onPressed: () async {
+                NavigatorState navigator = Navigator.of(context);
                 showDialog(
                     context: context,
                     builder: (context) => Center(
@@ -86,13 +87,11 @@ Future<dynamic> devicesAppBarDialog2(
                             ],
                           ),
                         ));
-
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(await viewModel.createDevice(
                         ipTextController.text, 5025))));
-                await viewModel.createDevice(ipTextController.text, 5026);
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                // await viewModel.createDevice(ipTextController.text, 5026);
+                navigator.pop();
               },
             ),
           ],
