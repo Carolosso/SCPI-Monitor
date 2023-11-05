@@ -44,23 +44,36 @@ class StationsListBuilder extends StatelessWidget {
                   direction: viewModel.isStopped
                       ? DismissDirection.endToStart
                       : DismissDirection.none,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                StationDetailPage(indexStation: indexStation),
-                          ));
-                    },
-                    child: viewModel.stations[indexStation].devices.isEmpty
-                        ? StationItemEmpty(
-                            viewModel: viewModel,
-                            indexStation: indexStation,
-                          )
-                        //if not empty show styled Card
-                        : StationItemGridBuilder(
-                            viewModel: viewModel, indexStation: indexStation),
+                  background: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade300,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.delete,
+                      color: Colors.red.shade700,
+                    ),
+                  ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  StationDetailPage(indexStation: indexStation),
+                            ));
+                      },
+                      child: viewModel.stations[indexStation].devices.isEmpty
+                          ? StationItemEmpty(
+                              viewModel: viewModel,
+                              indexStation: indexStation,
+                            )
+                          //if not empty show styled Card
+                          : StationItemGridBuilder(
+                              viewModel: viewModel, indexStation: indexStation),
+                    ),
                   ),
                 );
               },

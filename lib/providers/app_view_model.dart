@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -58,7 +56,7 @@ class AppViewModel extends ChangeNotifier {
           if (isStopped) {
             break;
           }
-          print("Próba pobrania informacji urzadzenia ${device.name}");
+          debugPrint("Próba pobrania informacji urzadzenia ${device.name}");
           refreshDeviceValue(device);
         }
       }
@@ -70,7 +68,7 @@ class AppViewModel extends ChangeNotifier {
   /// Creating new Station with specified name then adding to Stations.
   /// * @name
   void createStation(String name) {
-    stations.add(Station(UniqueKey(), name, [], stationsCount + 1));
+    stations.add(Station(UniqueKey(), name, []));
     notifyListeners();
   }
 
@@ -122,7 +120,7 @@ class AppViewModel extends ChangeNotifier {
 
       Device device = Device(UniqueKey(), name, ip, port, manufacturer, model,
           serial, status, '-', 0.0, socketConnection);
-      print("CREATE DEVICE PORT: $port");
+      debugPrint("CREATE DEVICE PORT: $port");
       // finally add device to main devices list if not already
       if (comparedBySerial(device)) {
         devices.add(device);
@@ -153,7 +151,7 @@ class AppViewModel extends ChangeNotifier {
   /// * @indexStation
   /// * @indexDevice
   void removeDeviceFromStation(int indexStation, int indexDevice) {
-    print(
+    debugPrint(
         "REMOVE DEVICE FROM STATION PORT: ${stations[indexStation].devices.elementAt(indexDevice).port}");
     stations[indexStation]
         .devices
@@ -167,24 +165,28 @@ class AppViewModel extends ChangeNotifier {
   /// Getting information from WIFI network interface: gateway and broadcast addresses.
   /// And setting connectedToWIFI variable.
   Future<void> getNetworkInfo() async {
-    String? gateway = "";
-    String? broadcast = "";
+    String? gateway = " ";
+    String? broadcast = " ";
+    connectedToWIFI = false;
+
     try {
       SettingsViewModel settingsViewModel = getSettingsViewModel();
-      connectedToWIFI = false;
       gateway = await NetworkInfo().getWifiGatewayIP();
       // String? mask = await NetworkInfo().getWifiSubmask();
       broadcast = await NetworkInfo().getWifiBroadcast();
-      if (broadcast != null && gateway != null) {
+      if (broadcast != null &&
+          broadcast.length > 1 &&
+          gateway != null &&
+          gateway.length > 1) {
         settingsViewModel.broadcast = broadcast;
         settingsViewModel.setNewIpRange(gateway);
         connectedToWIFI = true;
         notifyListeners();
       }
-      print(settingsViewModel.broadcast);
-      print(gateway);
+      debugPrint(settingsViewModel.broadcast);
+      debugPrint(gateway);
     } catch (e) {
-      print("Blad pobrania info o sieci WIFI $e");
+      debugPrint("Blad pobrania informacji o sieci WIFI $e");
     }
   }
 
@@ -193,7 +195,7 @@ class AppViewModel extends ChangeNotifier {
     for (Device device in devices) {
       String ip = device.ip;
       int port = device.port;
-      print("REFRESH FNC PORT: $port");
+      debugPrint("REFRESH FNC PORT: $port");
       if (device.status == "Offline" &&
           await device.connection.canConnect(5000)) {
         device.status = "available";
@@ -257,7 +259,7 @@ class AppViewModel extends ChangeNotifier {
         device.measuredUnit,
         device.value,
         socketConnection);
-    print("ADD DEVICE TO STATION PORT: ${newDevice.port}");
+    debugPrint("ADD DEVICE TO STATION PORT: ${newDevice.port}");
     if (comparedBySerialInStations(newDevice) &&
         newDevice.status == "available") {
       await newDevice.connection.startConnection();
@@ -268,14 +270,14 @@ class AppViewModel extends ChangeNotifier {
 
   /// Refreshes devices value
   void refreshDeviceValue(Device device) {
-    print("Wysyłanie wiadomosci do ${device.name}");
+    debugPrint("Wysyłanie wiadomosci do ${device.name}");
     try {
       double value = device.connection.getValue();
-      print(value);
+      debugPrint(value.toString());
       device.value = value;
       notifyListeners();
     } catch (e) {
-      print("ERROR: $e");
+      debugPrint("ERROR: $e");
     }
   }
 
@@ -331,7 +333,7 @@ class AppViewModel extends ChangeNotifier {
   /// * @rawValue
   String formatUnit(String rawValue) {
     String newValue = "";
-    //print(rawValue);
+    //debugPrint(rawValue);
     if (rawValue.contains('e') || rawValue.contains('E')) {
       int lastDigit = int.parse(rawValue.substring(rawValue.length - 1));
       double value = double.parse(rawValue.substring(0, rawValue.length - 3));
@@ -422,8 +424,9 @@ class AppViewModel extends ChangeNotifier {
   }
 
   /// Looking for devices in local network by trying to connect to them. Starting from network IP address, incrementing and checking till reaching broadcast IP address of this network. If can connect to device at specified port then adding this device to main devices list.
-  Future<void> findDevicesInNetwork() async {
+  Future<String> findDevicesInNetwork() async {
     findDevicesInNetworkBreak = false;
+    int newCount = 0;
     SettingsViewModel settingsViewModel = getSettingsViewModel();
     String? networkIP = settingsViewModel.ipRange;
     String deviceIP = networkIP; //incrementIP(networkIP!)
@@ -441,8 +444,9 @@ class AppViewModel extends ChangeNotifier {
                 textInfo = "Znaleziono urządzenie na $deviceIP!";
                 notifyListeners();
                 await Future.delayed(const Duration(seconds: 1));
-                debugPrint("Znaleziono urządzenia na $deviceIP!");
+                debugPrint("Znaleziono urządzenie na $deviceIP!");
                 await createDevice(deviceIP, 5025);
+                newCount++;
                 notifyListeners();
               } else {
                 textInfo = "Nie znaleziono urządzenia o adresie $deviceIP";
@@ -464,7 +468,10 @@ class AppViewModel extends ChangeNotifier {
           break;
         }
       }
+    } else {
+      return "Brak połączenia z siecią WIFI! Połącz się z siecią i pobierz jej adres w zakładce Ustawienia.";
     }
+    return 'Zakończono skanowanie. Dodano $newCount nowe urządzenia.';
   }
 
   /// Function for Reorderable list to swap stations positions in list.
@@ -487,5 +494,16 @@ class AppViewModel extends ChangeNotifier {
     Device device = stations[indexStation].devices.removeAt(oldIndex);
     stations[indexStation].devices.insert(newIndex, device);
     notifyListeners();
+  }
+
+  /// Find index of specified Station in stations by comparing stations key.
+  int findStationIndex(Station station) {
+    return stations.indexWhere((st) => st.key == station.key);
+    /* for (Station st in stations) {
+      //debugPrint("${station.key} == ${st.key}");
+      if (station.key == st.key) return stations.indexOf(st);
+    } 
+    return 0;
+    */
   }
 }

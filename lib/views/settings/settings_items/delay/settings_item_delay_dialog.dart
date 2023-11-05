@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:test/style/theme.dart';
+import 'package:test/views/widgets/snackbar/show_snackbar.dart';
 
 Future<dynamic> settingsItemDialogDelay(
     BuildContext context,
@@ -62,10 +63,7 @@ Future<dynamic> settingsItemDialogDelay(
               style: TextButton.styleFrom(foregroundColor: Styles.primaryColor),
               child: const Text('Zapisz'),
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(dialogOnPressed(textController.text)),
-                  backgroundColor: Styles.primaryColor,
-                ));
+                showSnackBar(context, dialogOnPressed(textController.text));
                 Navigator.of(context).pop();
               },
             ),

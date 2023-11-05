@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/views/widgets/custom_app_bars/devices_list_app_bar/devices_app_bar_dialog1.dart';
 import 'package:test/views/widgets/custom_app_bars/devices_list_app_bar/devices_app_bar_dialog2.dart';
+import 'package:test/views/widgets/snackbar/show_snackbar.dart';
 
 class CustomAppBarForDevicesView extends StatelessWidget
     implements PreferredSizeWidget {
@@ -40,9 +41,8 @@ class CustomAppBarForDevicesView extends StatelessWidget
             iconSize: 40,
             onPressed: () async {
               NavigatorState navigator = Navigator.of(context);
-
               devicesAppBarDialog1(context, viewModel);
-              await viewModel.findDevicesInNetwork();
+              showSnackBar(context, await viewModel.findDevicesInNetwork());
               navigator.pop();
             },
           ),

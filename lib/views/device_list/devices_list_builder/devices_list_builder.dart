@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:test/providers/app_view_model.dart';
-import 'package:test/style/theme.dart';
 import 'package:test/views/device_list/devices_list_builder/device_item/device_item.dart';
+import 'package:test/views/widgets/snackbar/show_snackbar.dart';
 
 class DevicesListBuilder extends StatelessWidget {
   const DevicesListBuilder({
@@ -29,10 +29,7 @@ class DevicesListBuilder extends StatelessWidget {
             viewModel.removeDeviceFromList(indexDevice);
             HapticFeedback.lightImpact(); //vibration
             //Toast
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: const Text('Urządzenie usunięte.'),
-              backgroundColor: Styles.primaryColor,
-            ));
+            showSnackBar(context, "Usunięto urządzenie");
           },
           background: Container(
             margin: const EdgeInsets.all(0),

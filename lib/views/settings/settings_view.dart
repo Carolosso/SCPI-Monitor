@@ -47,7 +47,7 @@ class SettingsView extends StatelessWidget {
           const SettingsItemAbout(
             title: "O aplikacji",
             icon: Icons.info_outline_rounded,
-          )
+          ),
         ],
       );
     });

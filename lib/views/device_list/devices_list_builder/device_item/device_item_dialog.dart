@@ -73,15 +73,14 @@ Future<void> deviceItemDialog(
                           ? const Text('brak stanowisk')
                           : const Text('wybierz stanowisko'),
                       isExpanded: true,
-                      //value: viewModel.devices[indexDevice].stationIndex,
                       items: viewModel.stations
                           .map((e) => DropdownMenuItem(
-                                value: e.stationID,
+                                value: viewModel.findStationIndex(e),
                                 child: Text(e.name),
                               ))
                           .toList(),
                       onChanged: (selectedStation) =>
-                          viewModel.addDeviceToStation(selectedStation! - 1,
+                          viewModel.addDeviceToStation(selectedStation!,
                               viewModel.devices[indexDevice])),
                 )
               ],
