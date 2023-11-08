@@ -90,7 +90,7 @@ Future<dynamic> devicesAppBarDialog2(
                         ));
                 showSnackBar(context,
                     await viewModel.createDevice(ipTextController.text, 5025));
-                // await viewModel.createDevice(ipTextController.text, 5026);
+                //await viewModel.createDevice(ipTextController.text, 5026);
                 navigator.pop();
               },
             ),

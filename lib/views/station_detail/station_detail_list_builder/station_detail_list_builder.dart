@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
-import 'package:test/utils/charts/chart_widget.dart';
+import 'package:test/views/widgets/charts/chart_widget.dart';
 import 'package:test/views/station_detail/station_detail_list_builder/station_detail_item/station_detial_item_dialog.dart';
 import 'package:test/views/widgets/snackbar/show_snackbar.dart';
 

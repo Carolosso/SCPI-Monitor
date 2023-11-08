@@ -76,7 +76,7 @@ Future<void> stationDetailItemDialog(
                               .devices[indexDevice].chartSelected,
                           onChanged: (onChanged) {
                             viewModel.setCheckBoxParameterToDeviceInStation(
-                                indexStation, indexDevice, onChanged!);
+                                indexDevice, indexStation, onChanged!);
                           });
                     })),
               ],
