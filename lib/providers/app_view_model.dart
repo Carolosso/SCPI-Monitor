@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -19,12 +20,18 @@ class AppViewModel extends ChangeNotifier {
   List<Station> stations = [];
   int get stationsCount => stations.length;
   int get devicesCount => devices.length;
-  // <- Timer
-  //late Timer timer;
+  //CHART
+  int limitCount = 10;
+  double xValue = 0;
+  double step = 0.1;
+  //
   bool isStopped = true;
+  //
   bool connectedToWIFI = false;
   String textInfo = "";
+
   String getTextInfo() => textInfo;
+
   late bool findDevicesInNetworkBreak;
 
   void switchFindDevicesInNetworkBreak() {
@@ -67,9 +74,15 @@ class AppViewModel extends ChangeNotifier {
 
   /// Creating new Station with specified name then adding to Stations.
   /// * @name
-  void createStation(String name) {
+  String createStation(String name) {
+    for (Station station in stations) {
+      if (station.name == name) {
+        return "Nazwa jest już w użyciu.";
+      }
+    }
     stations.add(Station(UniqueKey(), name, []));
     notifyListeners();
+    return "Utworzono stanowisko o nazwie: $name";
   }
 
   /// Creating new Device at specified IP address and port by checking if IP is valid > opening connection with this device > listening for response > sending "*IDN?" command. If information is reveived saving it and closing connection.
@@ -119,7 +132,7 @@ class AppViewModel extends ChangeNotifier {
       socket.close();
 
       Device device = Device(UniqueKey(), name, ip, port, manufacturer, model,
-          serial, status, '-', 0.0, socketConnection);
+          serial, status, '-', 0.0, [], socketConnection);
       debugPrint("CREATE DEVICE PORT: $port");
       // finally add device to main devices list if not already
       if (comparedBySerial(device)) {
@@ -129,7 +142,7 @@ class AppViewModel extends ChangeNotifier {
     } catch (ex) {
       // if can't connect then add it too
       Device device = Device(UniqueKey(), name, ip, port, manufacturer, model,
-          serial, status, '-', 0.0, socketConnection);
+          serial, status, '-', 0.0, [], socketConnection);
       if (comparedBySerial(device)) {
         devices.add(device);
       }
@@ -151,14 +164,16 @@ class AppViewModel extends ChangeNotifier {
   /// * @indexStation
   /// * @indexDevice
   void removeDeviceFromStation(int indexStation, int indexDevice) {
-    debugPrint(
-        "REMOVE DEVICE FROM STATION PORT: ${stations[indexStation].devices.elementAt(indexDevice).port}");
+    //debugPrint("REMOVE DEVICE FROM STATION PORT: ${stations[indexStation].devices.elementAt(indexDevice).port}");
     stations[indexStation]
         .devices
         .elementAt(indexDevice)
         .connection
         .disconnect();
+    // have to clear this points cuz its stays in memory??? despite removing object from list
+    stations[indexStation].devices.elementAt(indexDevice).points.clear();
     stations[indexStation].devices.removeAt(indexDevice);
+    xValue = 0; //resetting X
     notifyListeners();
   }
 
@@ -258,6 +273,7 @@ class AppViewModel extends ChangeNotifier {
         device.status,
         device.measuredUnit,
         device.value,
+        device.points,
         socketConnection);
     debugPrint("ADD DEVICE TO STATION PORT: ${newDevice.port}");
     if (comparedBySerialInStations(newDevice) &&
@@ -270,18 +286,29 @@ class AppViewModel extends ChangeNotifier {
 
   /// Refreshes devices value
   void refreshDeviceValue(Device device) {
+    debugPrint("PUNKTY PO RESECIE ${device.points.toString()}");
+
     debugPrint("Wysyłanie wiadomosci do ${device.name}");
     try {
       double value = device.connection.getValue();
       debugPrint(value.toString());
       device.value = value;
+      //move chart
+      if (device.points.length > limitCount) {
+        device.points.removeAt(0);
+        notifyListeners();
+      }
+      //add point to chart
+      device.points.add(FlSpot(xValue, value));
+      // debugPrint(device.points.toString());
+      xValue += step;
       notifyListeners();
     } catch (e) {
       debugPrint("ERROR: $e");
     }
   }
 
-  /// Retururing devices count in specified Station.
+  /// Returning devices count in specified Station.
   int getStationsDevicesCount(int index) {
     return stations[index].devices.length;
   }
@@ -394,9 +421,15 @@ class AppViewModel extends ChangeNotifier {
   /// Setting new name for the specified Station.
   /// * @indexStation
   /// * @newName
-  void setStationName(int indexStation, String newName) {
+  String setStationName(int indexStation, String newName) {
+    for (Station station in stations) {
+      if (station.name == newName) {
+        return "Nazwa jest już w użyciu.";
+      }
+    }
     stations[indexStation].name = newName;
     notifyListeners();
+    return "Zmieniono nazwę stanowiska.";
   }
 
   /// Remove specified Station; disconnecting and removing every Device in Station.

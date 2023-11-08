@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
+import 'package:test/views/widgets/snackbar/show_snackbar.dart';
 
 final TextEditingController nameTextController = TextEditingController();
 
@@ -17,7 +18,7 @@ Future<dynamic> stationsAppBarDialog(
                 TextField(
                   controller: nameTextController,
                   onSubmitted: (value) {
-                    viewModel.createStation(value);
+                    showSnackBar(context, viewModel.createStation(value));
                   },
                   decoration: InputDecoration(
                       border: OutlineInputBorder(

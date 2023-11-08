@@ -7,7 +7,8 @@ import 'package:test/providers/navigation_view_model.dart';
 import 'package:test/utils/navigation_service.dart';
 import 'package:test/pages/home_page.dart';
 
-void main() {
+Future<void> main() async {
+  //await Future.delayed(Duration(seconds: 5));
   runApp(const MyApp());
 }
 

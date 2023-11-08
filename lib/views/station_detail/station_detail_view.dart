@@ -5,6 +5,7 @@ import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
 import 'package:test/views/station_detail/station_detail_list_builder/station_detail_list_builder.dart';
 import 'package:test/views/widgets/floating_button/floating_action_button_view.dart';
+import 'package:test/views/widgets/snackbar/show_snackbar.dart';
 
 class StationDetailPage extends StatelessWidget {
   StationDetailPage({super.key, required this.indexStation});
@@ -27,7 +28,8 @@ class StationDetailPage extends StatelessWidget {
               children: [
                 TextField(
                   onSubmitted: (value) {
-                    viewModel.setStationName(indexStation, value);
+                    showSnackBar(
+                        context, viewModel.setStationName(indexStation, value));
                   },
                   // textAlign: TextAlign.start,
                   textAlignVertical: TextAlignVertical.center,

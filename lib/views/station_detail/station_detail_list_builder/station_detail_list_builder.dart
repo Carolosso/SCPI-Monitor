@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
+import 'package:test/utils/charts/chart_widget.dart';
 import 'package:test/views/station_detail/station_detail_list_builder/station_detail_item/station_detial_item_dialog.dart';
 import 'package:test/views/widgets/snackbar/show_snackbar.dart';
 
@@ -121,6 +122,27 @@ class StationDetailListBuilder extends StatelessWidget {
                                       //fontWeight: FontWeight.bold,
                                       color: Colors.white),
                                 ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'Wykres',
+                                    style: TextStyle(
+                                        fontSize: 8,
+                                        color: Styles.surfaceColor),
+                                  ),
+                                ),
+                                viewModel.stations[indexStation]
+                                        .devices[indexDevice].points.isEmpty
+                                    ? const SizedBox(
+                                        height: 12,
+                                        child: Text("Rozpocznij pomiar"),
+                                      )
+                                    : ChartWidget(
+                                        points: viewModel.stations[indexStation]
+                                            .devices[indexDevice].points,
+                                        step: viewModel.step,
+                                        limitCount: viewModel.limitCount,
+                                      ),
                               ],
                             ),
                           ),
