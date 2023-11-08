@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
 
@@ -13,7 +14,8 @@ Future<void> stationDetailItemDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Edytuj ${viewModel.devices[indexDevice].name}'),
+          title: Text(
+              'Edytuj ${viewModel.stations[indexStation].devices[indexDevice].name}'),
           content: SingleChildScrollView(
             child: Column(
               children: [
@@ -62,6 +64,21 @@ Future<void> stationDetailItemDialog(
                     fontWeight: FontWeight.w700,
                   ),
                 ),
+                const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                SizedBox(
+                    width: double.infinity,
+                    child: Consumer<AppViewModel>(
+                        builder: (context, viewModel, child) {
+                      return CheckboxListTile(
+                          title: const Text("Wykres"),
+                          controlAffinity: ListTileControlAffinity.leading,
+                          value: viewModel.stations[indexStation]
+                              .devices[indexDevice].chartSelected,
+                          onChanged: (onChanged) {
+                            viewModel.setCheckBoxParameterToDeviceInStation(
+                                indexStation, indexDevice, onChanged!);
+                          });
+                    })),
               ],
             ),
           ),

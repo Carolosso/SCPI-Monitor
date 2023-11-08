@@ -132,7 +132,7 @@ class AppViewModel extends ChangeNotifier {
       socket.close();
 
       Device device = Device(UniqueKey(), name, ip, port, manufacturer, model,
-          serial, status, '-', 0.0, [], socketConnection);
+          serial, status, '-', 0.0, false, [], socketConnection);
       debugPrint("CREATE DEVICE PORT: $port");
       // finally add device to main devices list if not already
       if (comparedBySerial(device)) {
@@ -142,7 +142,7 @@ class AppViewModel extends ChangeNotifier {
     } catch (ex) {
       // if can't connect then add it too
       Device device = Device(UniqueKey(), name, ip, port, manufacturer, model,
-          serial, status, '-', 0.0, [], socketConnection);
+          serial, status, '-', 0.0, false, [], socketConnection);
       if (comparedBySerial(device)) {
         devices.add(device);
       }
@@ -171,7 +171,7 @@ class AppViewModel extends ChangeNotifier {
         .connection
         .disconnect();
     // have to clear this points cuz its stays in memory??? despite removing object from list
-    stations[indexStation].devices.elementAt(indexDevice).points.clear();
+    //stations[indexStation].devices.elementAt(indexDevice).points.clear();
     stations[indexStation].devices.removeAt(indexDevice);
     xValue = 0; //resetting X
     notifyListeners();
@@ -273,9 +273,11 @@ class AppViewModel extends ChangeNotifier {
         device.status,
         device.measuredUnit,
         device.value,
-        device.points,
+        device.chartSelected,
+        //clearing points and adding one to prevent from crashing
+        [const FlSpot(0, 0)],
         socketConnection);
-    debugPrint("ADD DEVICE TO STATION PORT: ${newDevice.port}");
+    //debugPrint("ADD DEVICE TO STATION PORT: ${newDevice.port}");
     if (comparedBySerialInStations(newDevice) &&
         newDevice.status == "available") {
       await newDevice.connection.startConnection();
@@ -286,12 +288,12 @@ class AppViewModel extends ChangeNotifier {
 
   /// Refreshes devices value
   void refreshDeviceValue(Device device) {
-    debugPrint("PUNKTY PO RESECIE ${device.points.toString()}");
+    //debugPrint("PUNKTY PO RESECIE ${device.points.toString()}");
 
-    debugPrint("Wysyłanie wiadomosci do ${device.name}");
+    //debugPrint("Wysyłanie wiadomosci do ${device.name}");
     try {
       double value = device.connection.getValue();
-      debugPrint(value.toString());
+      //debugPrint(value.toString());
       device.value = value;
       //move chart
       if (device.points.length > limitCount) {
@@ -304,7 +306,7 @@ class AppViewModel extends ChangeNotifier {
       xValue += step;
       notifyListeners();
     } catch (e) {
-      debugPrint("ERROR: $e");
+      //debugPrint("ERROR: $e");
     }
   }
 
@@ -342,6 +344,16 @@ class AppViewModel extends ChangeNotifier {
       int indexDevice, int indexStation, String name, String unit) {
     stations[indexStation].devices[indexDevice].name = name;
     stations[indexStation].devices[indexDevice].measuredUnit = unit;
+    notifyListeners();
+  }
+
+  /// Setting new parameters to specified Device in specified Station.
+  /// * @indexDevice
+  /// * @indexStation
+  /// * @chartSelected
+  void setCheckBoxParameterToDeviceInStation(
+      int indexDevice, int indexStation, bool chartSelected) {
+    stations[indexStation].devices[indexDevice].chartSelected = chartSelected;
     notifyListeners();
   }
 

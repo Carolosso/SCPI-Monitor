@@ -13,6 +13,7 @@ class Device {
   String status;
   String measuredUnit;
   double value;
+  bool chartSelected;
   List<FlSpot> points;
   SocketConnection connection;
 
@@ -27,6 +28,7 @@ class Device {
       this.status,
       this.measuredUnit,
       this.value,
+      this.chartSelected,
       this.points,
       this.connection);
 }

@@ -122,27 +122,27 @@ class StationDetailListBuilder extends StatelessWidget {
                                       //fontWeight: FontWeight.bold,
                                       color: Colors.white),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'Wykres',
-                                    style: TextStyle(
-                                        fontSize: 8,
-                                        color: Styles.surfaceColor),
-                                  ),
-                                ),
                                 viewModel.stations[indexStation]
-                                        .devices[indexDevice].points.isEmpty
-                                    ? const SizedBox(
-                                        height: 12,
-                                        child: Text("Rozpocznij pomiar"),
+                                        .devices[indexDevice].chartSelected
+                                    ? Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'Wykres',
+                                          style: TextStyle(
+                                              fontSize: 8,
+                                              color: Styles.surfaceColor),
+                                        ),
                                       )
-                                    : ChartWidget(
+                                    : Container(),
+                                viewModel.stations[indexStation]
+                                        .devices[indexDevice].chartSelected
+                                    ? ChartWidget(
                                         points: viewModel.stations[indexStation]
                                             .devices[indexDevice].points,
                                         step: viewModel.step,
                                         limitCount: viewModel.limitCount,
-                                      ),
+                                      )
+                                    : Container(),
                               ],
                             ),
                           ),
