@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:test/providers/settings_view_model.dart';
 import 'package:test/style/theme.dart';
@@ -8,8 +9,20 @@ import 'package:test/utils/navigation_service.dart';
 import 'package:test/pages/home_page.dart';
 
 Future<void> main() async {
-  //await Future.delayed(Duration(seconds: 5));
+  //splash screen
+  await initApp();
   runApp(const MyApp());
+  //onloaded remove splashscreen
+  FlutterNativeSplash.remove();
+}
+
+initApp() {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  //AppViewModel viewModel = Provider.of<AppViewModel>(context!, listen: false);
+  //AppViewModel viewModel = AppViewModel();
+  //await viewModel.getNetworkInfo();
+  //FlutterNativeSplash.remove();
 }
 
 class MyApp extends StatelessWidget {
@@ -19,8 +32,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AppViewModel()),
-        ChangeNotifierProvider(create: (_) => SettingsViewModel()),
+        ChangeNotifierProvider(
+          create: (_) => SettingsViewModel(),
+          // create provider immediately, dont wait cuz we need it for AppViewModel
+          // lazy: false,
+        ),
+        ChangeNotifierProvider(
+          create: (_) => AppViewModel(),
+        ),
         ChangeNotifierProvider(create: (_) => ScreenIndexProvider()),
       ],
       child: MaterialApp(

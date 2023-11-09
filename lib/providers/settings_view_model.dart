@@ -15,6 +15,9 @@ class SettingsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  String get getBroadcast => broadcast;
+  String get getIPRange => ipRange;
+
   String setNewTimeout(String newTimeout) {
     try {
       int newTO = int.parse(newTimeout);

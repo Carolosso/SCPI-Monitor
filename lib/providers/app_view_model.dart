@@ -16,6 +16,10 @@ import 'package:test/utils/validators.dart';
 
 //TODO Unhandled Exception: SocketException: Connection reset by peer (OS Error: Connection reset by peer, errno = 104), address = 10.0.2.2, port = 52046
 class AppViewModel extends ChangeNotifier {
+  AppViewModel() {
+    //on provider creation call this
+    init();
+  }
   List<Device> devices = [];
   List<Station> stations = [];
   int get stationsCount => stations.length;
@@ -49,6 +53,7 @@ class AppViewModel extends ChangeNotifier {
   /// Returing SettingViewModel.
   SettingsViewModel getSettingsViewModel() {
     BuildContext? context = NavigationService.navigatorKey.currentContext;
+    debugPrint(context.toString());
     SettingsViewModel settingsViewModel =
         Provider.of<SettingsViewModel>(context!, listen: false);
     return settingsViewModel;
@@ -180,12 +185,13 @@ class AppViewModel extends ChangeNotifier {
   /// Getting information from WIFI network interface: gateway and broadcast addresses.
   /// And setting connectedToWIFI variable.
   Future<void> getNetworkInfo() async {
+    debugPrint("APP VIEW MODEL");
     String? gateway = " ";
     String? broadcast = " ";
     connectedToWIFI = false;
-
     try {
       SettingsViewModel settingsViewModel = getSettingsViewModel();
+      //SettingsViewModel settingsViewModel = SettingsViewModel();
       gateway = await NetworkInfo().getWifiGatewayIP();
       // String? mask = await NetworkInfo().getWifiSubmask();
       broadcast = await NetworkInfo().getWifiBroadcast();
@@ -193,6 +199,39 @@ class AppViewModel extends ChangeNotifier {
           broadcast.length > 1 &&
           gateway != null &&
           gateway.length > 1) {
+        settingsViewModel.broadcast = broadcast;
+        settingsViewModel.setNewIpRange(gateway);
+        connectedToWIFI = true;
+        notifyListeners();
+      }
+      debugPrint(settingsViewModel.broadcast);
+      debugPrint(gateway);
+    } catch (e) {
+      debugPrint("Blad pobrania informacji o sieci WIFI $e");
+    }
+  }
+
+  /// Getting information from WIFI network interface: gateway and broadcast addresses.
+  /// And setting connectedToWIFI variable.
+  Future<void> getNetworkInfoInit() async {
+    debugPrint("JEST0");
+    String? gateway = " ";
+    String? broadcast = " ";
+    connectedToWIFI = false;
+    debugPrint("JEST00");
+    try {
+      debugPrint("JEST11");
+      SettingsViewModel settingsViewModel = getSettingsViewModel();
+      //SettingsViewModel settingsViewModel = SettingsViewModel();
+      debugPrint("JEST1");
+      gateway = await NetworkInfo().getWifiGatewayIP();
+      // String? mask = await NetworkInfo().getWifiSubmask();
+      broadcast = await NetworkInfo().getWifiBroadcast();
+      if (broadcast != null &&
+          broadcast.length > 1 &&
+          gateway != null &&
+          gateway.length > 1) {
+        debugPrint("JEST2");
         settingsViewModel.broadcast = broadcast;
         settingsViewModel.setNewIpRange(gateway);
         connectedToWIFI = true;
@@ -551,5 +590,9 @@ class AppViewModel extends ChangeNotifier {
     } 
     return 0;
     */
+  }
+
+  void init() async {
+    await getNetworkInfo();
   }
 }

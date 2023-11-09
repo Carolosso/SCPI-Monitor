@@ -5,8 +5,6 @@ import 'package:test/style/theme.dart';
 class ChartWidget extends StatelessWidget {
   const ChartWidget({super.key, required this.points});
 
-//TODO NEED FIX, MULTI CHARTS NOT WORKING ITS CONNECTED SOMEHOW
-
   //getting values
   final List<FlSpot> points;
 
@@ -57,8 +55,8 @@ class ChartWidget extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 5.0, top: 5),
             child: LineChart(
               LineChartData(
-                minY: minYvalue(),
-                maxY: maxYvalue(),
+                minY: 0, //minYvalue()
+                maxY: maxYvalue()! + 10,
                 minX: points.first.x,
                 maxX: points.last.x,
                 lineTouchData: const LineTouchData(enabled: false),
