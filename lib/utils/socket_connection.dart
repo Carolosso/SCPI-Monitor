@@ -24,7 +24,7 @@ class SocketConnection {
 
   /// Getting value from received message from device by sending "READ?" command
   double getValue() {
-    print("get value():${isConnected()}");
+    debugPrint("get value():${isConnected()}");
     //await sendMessageEOM('READ?', '\n');
     AppViewModel viewModel = getAppViewModel();
     try {
@@ -53,7 +53,7 @@ class SocketConnection {
         message = msg;
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
 
     //readValue();
@@ -80,7 +80,7 @@ class SocketConnection {
   ///  * @param  attempts  the number of attempts before stop trying to connect. Default is 1.
   Future<void> connect(int timeOut, Function callback,
       {int attempts = 1}) async {
-    print("CONNECT: $_portAddress");
+    _printData("CONNECT: $_portAddress");
     int k = 1;
     while (k <= attempts) {
       try {
@@ -185,11 +185,11 @@ class SocketConnection {
         _server!.add(utf8.encode(message));
         _printData("Message sent: $message");
       } else {
-        print(
+        _printData(
             "Socket not initialized before sending message! Make sure you have already called the method 'connect()'");
       }
     } catch (e) {
-      print("ERROR $e");
+      _printData("ERROR $e");
     }
   }
 
@@ -203,11 +203,11 @@ class SocketConnection {
         _server!.add(utf8.encode(message + eom));
         _printData("Message sent: $message$eom");
       } else {
-        print(
+        _printData(
             "sending message: Socket not initialized before sending message! Make sure you have already called the method 'connect()'");
       }
     } catch (e) {
-      print("ERROR: $e");
+      _printData("ERROR: $e");
     }
   }
 
@@ -238,7 +238,7 @@ class SocketConnection {
 
   void _printData(String data) {
     if (_logPrintEnabled) {
-      print(data);
+      debugPrint(data);
     }
   }
 }

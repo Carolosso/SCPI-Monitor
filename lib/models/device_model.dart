@@ -15,6 +15,7 @@ class Device {
   double value;
   bool chartSelected;
   List<FlSpot> points;
+  double xValue;
   SocketConnection connection;
 
   Device(
@@ -30,5 +31,6 @@ class Device {
       this.value,
       this.chartSelected,
       this.points,
+      this.xValue,
       this.connection);
 }

@@ -3,16 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:test/style/theme.dart';
 
 class ChartWidget extends StatelessWidget {
-  const ChartWidget(
-      {super.key,
-      required this.points,
-      required this.step,
-      required this.limitCount});
+  const ChartWidget({super.key, required this.points});
+
+//TODO NEED FIX, MULTI CHARTS NOT WORKING ITS CONNECTED SOMEHOW
 
   //getting values
-  final int limitCount;
   final List<FlSpot> points;
-  final double step;
 
   //simple line style
   LineChartBarData line() {

@@ -21,7 +21,7 @@ class AppViewModel extends ChangeNotifier {
   int get stationsCount => stations.length;
   int get devicesCount => devices.length;
   //CHART
-  int limitCount = 10;
+  int limitCount = 20;
   double xValue = 0;
   double step = 0.1;
   //
@@ -132,7 +132,7 @@ class AppViewModel extends ChangeNotifier {
       socket.close();
 
       Device device = Device(UniqueKey(), name, ip, port, manufacturer, model,
-          serial, status, '-', 0.0, false, [], socketConnection);
+          serial, status, '-', 0.0, false, [], xValue, socketConnection);
       debugPrint("CREATE DEVICE PORT: $port");
       // finally add device to main devices list if not already
       if (comparedBySerial(device)) {
@@ -142,7 +142,7 @@ class AppViewModel extends ChangeNotifier {
     } catch (ex) {
       // if can't connect then add it too
       Device device = Device(UniqueKey(), name, ip, port, manufacturer, model,
-          serial, status, '-', 0.0, false, [], socketConnection);
+          serial, status, '-', 0.0, false, [], xValue, socketConnection);
       if (comparedBySerial(device)) {
         devices.add(device);
       }
@@ -276,6 +276,7 @@ class AppViewModel extends ChangeNotifier {
         device.chartSelected,
         //clearing points and adding one to prevent from crashing
         [const FlSpot(0, 0)],
+        device.xValue,
         socketConnection);
     //debugPrint("ADD DEVICE TO STATION PORT: ${newDevice.port}");
     if (comparedBySerialInStations(newDevice) &&
@@ -301,9 +302,9 @@ class AppViewModel extends ChangeNotifier {
         notifyListeners();
       }
       //add point to chart
-      device.points.add(FlSpot(xValue, value));
+      device.points.add(FlSpot(device.xValue, value));
       // debugPrint(device.points.toString());
-      xValue += step;
+      device.xValue += step;
       notifyListeners();
     } catch (e) {
       //debugPrint("ERROR: $e");

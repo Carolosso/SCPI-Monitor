@@ -139,8 +139,6 @@ class StationDetailListBuilder extends StatelessWidget {
                                     ? ChartWidget(
                                         points: viewModel.stations[indexStation]
                                             .devices[indexDevice].points,
-                                        step: viewModel.step,
-                                        limitCount: viewModel.limitCount,
                                       )
                                     : Container(),
                               ],
