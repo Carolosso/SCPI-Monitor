@@ -18,7 +18,7 @@ Future<dynamic> settingsItemDialogAbout(BuildContext context) {
                 ),
                 Text("Karol Bulanowski"),
                 Text("Jakub Wojturski"),
-                Text("v0.8.3"),
+                Text("v0.8.4"),
               ],
             ),
           ),

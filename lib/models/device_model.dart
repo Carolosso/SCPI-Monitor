@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:test/models/chart_model.dart';
 import 'package:test/utils/socket_connection.dart';
 
 class Device {
@@ -14,8 +15,7 @@ class Device {
   String measuredUnit;
   double value;
   bool chartSelected;
-  List<FlSpot> points;
-  double xValue;
+  Chart chart;
   SocketConnection connection;
 
   Device(
@@ -30,7 +30,6 @@ class Device {
       this.measuredUnit,
       this.value,
       this.chartSelected,
-      this.points,
-      this.xValue,
+      this.chart,
       this.connection);
 }

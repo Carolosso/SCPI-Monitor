@@ -20,16 +20,22 @@ class SocketConnection {
 
   SocketConnection(this._ipAddress, this._portAddress);
 
+  //Completer
+  Completer completer = Completer();
+
   String message = '';
 
   /// Getting value from received message from device by sending "READ?" command
-  double getValue() {
-    debugPrint("get value():${isConnected()}");
-    //await sendMessageEOM('READ?', '\n');
+  Future<double> getValue() async {
+    // debugPrint("get value():${isConnected()}");
     AppViewModel viewModel = getAppViewModel();
     try {
       if (!viewModel.isStopped) {
+        //send READ?
         sendMessageEOM('READ?', '\n');
+        //wait for messageReceiver()
+        await completer.future;
+        //get and return value
         double result = double.parse(message);
         return result;
       }
@@ -46,11 +52,15 @@ class SocketConnection {
     return appViewModel;
   }
 
-  //receiving and sending back a custom message
+  //receiving message
   void messageReceiver(String msg) {
     try {
       if (msg.isNotEmpty) {
         message = msg;
+        //on succesfull message received complete completer
+        completer.complete();
+        //create new completer
+        completer = Completer();
       }
     } catch (e) {
       debugPrint(e.toString());

@@ -138,7 +138,7 @@ class StationDetailListBuilder extends StatelessWidget {
                                         .devices[indexDevice].chartSelected
                                     ? ChartWidget(
                                         points: viewModel.stations[indexStation]
-                                            .devices[indexDevice].points,
+                                            .devices[indexDevice].chart.points,
                                       )
                                     : Container(),
                               ],

@@ -3,7 +3,7 @@ import 'package:test/style/theme.dart';
 import 'package:test/utils/validators.dart';
 
 class SettingsViewModel extends ChangeNotifier {
-  int timeout = 1000;
+  int timeout = 100;
   String ipRange = "";
   String broadcast = "";
   bool isDarkTheme = false;
@@ -21,7 +21,7 @@ class SettingsViewModel extends ChangeNotifier {
   String setNewTimeout(String newTimeout) {
     try {
       int newTO = int.parse(newTimeout);
-      int sRange = 300;
+      int sRange = 0;
       int eRange = 10000;
       if (newTO >= sRange && newTO <= eRange) {
         timeout = newTO;

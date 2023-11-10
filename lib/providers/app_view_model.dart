@@ -7,6 +7,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:test/models/chart_model.dart';
 import 'package:test/utils/socket_connection.dart';
 import 'package:test/models/device_model.dart';
 import 'package:test/models/station_model.dart';
@@ -69,7 +70,7 @@ class AppViewModel extends ChangeNotifier {
             break;
           }
           debugPrint("Próba pobrania informacji urzadzenia ${device.name}");
-          refreshDeviceValue(device);
+          await refreshDeviceValue(device);
         }
       }
       //delay
@@ -137,7 +138,7 @@ class AppViewModel extends ChangeNotifier {
       socket.close();
 
       Device device = Device(UniqueKey(), name, ip, port, manufacturer, model,
-          serial, status, '-', 0.0, false, [], xValue, socketConnection);
+          serial, status, '-', 0.0, false, Chart([], xValue), socketConnection);
       debugPrint("CREATE DEVICE PORT: $port");
       // finally add device to main devices list if not already
       if (comparedBySerial(device)) {
@@ -147,7 +148,7 @@ class AppViewModel extends ChangeNotifier {
     } catch (ex) {
       // if can't connect then add it too
       Device device = Device(UniqueKey(), name, ip, port, manufacturer, model,
-          serial, status, '-', 0.0, false, [], xValue, socketConnection);
+          serial, status, '-', 0.0, false, Chart([], xValue), socketConnection);
       if (comparedBySerial(device)) {
         devices.add(device);
       }
@@ -185,7 +186,8 @@ class AppViewModel extends ChangeNotifier {
   /// Getting information from WIFI network interface: gateway and broadcast addresses.
   /// And setting connectedToWIFI variable.
   Future<void> getNetworkInfo() async {
-    debugPrint("APP VIEW MODEL");
+    // debugPrint("APP VIEW MODEL");
+    //TODO nie dziala za dobrze to pobieranie, po rozlaczeniu nadal jest polaczenie
     String? gateway = " ";
     String? broadcast = " ";
     connectedToWIFI = false;
@@ -195,43 +197,8 @@ class AppViewModel extends ChangeNotifier {
       gateway = await NetworkInfo().getWifiGatewayIP();
       // String? mask = await NetworkInfo().getWifiSubmask();
       broadcast = await NetworkInfo().getWifiBroadcast();
-      if (broadcast != null &&
-          broadcast.length > 1 &&
-          gateway != null &&
-          gateway.length > 1) {
-        settingsViewModel.broadcast = broadcast;
-        settingsViewModel.setNewIpRange(gateway);
-        connectedToWIFI = true;
-        notifyListeners();
-      }
-      debugPrint(settingsViewModel.broadcast);
-      debugPrint(gateway);
-    } catch (e) {
-      debugPrint("Blad pobrania informacji o sieci WIFI $e");
-    }
-  }
-
-  /// Getting information from WIFI network interface: gateway and broadcast addresses.
-  /// And setting connectedToWIFI variable.
-  Future<void> getNetworkInfoInit() async {
-    debugPrint("JEST0");
-    String? gateway = " ";
-    String? broadcast = " ";
-    connectedToWIFI = false;
-    debugPrint("JEST00");
-    try {
-      debugPrint("JEST11");
-      SettingsViewModel settingsViewModel = getSettingsViewModel();
-      //SettingsViewModel settingsViewModel = SettingsViewModel();
-      debugPrint("JEST1");
-      gateway = await NetworkInfo().getWifiGatewayIP();
-      // String? mask = await NetworkInfo().getWifiSubmask();
-      broadcast = await NetworkInfo().getWifiBroadcast();
-      if (broadcast != null &&
-          broadcast.length > 1 &&
-          gateway != null &&
-          gateway.length > 1) {
-        debugPrint("JEST2");
+      if ((broadcast != null && broadcast != "0.0.0.0") &&
+          (gateway != null && gateway != "0.0.0.0")) {
         settingsViewModel.broadcast = broadcast;
         settingsViewModel.setNewIpRange(gateway);
         connectedToWIFI = true;
@@ -313,9 +280,8 @@ class AppViewModel extends ChangeNotifier {
         device.measuredUnit,
         device.value,
         device.chartSelected,
+        Chart([const FlSpot(0, 0)], 0),
         //clearing points and adding one to prevent from crashing
-        [const FlSpot(0, 0)],
-        device.xValue,
         socketConnection);
     //debugPrint("ADD DEVICE TO STATION PORT: ${newDevice.port}");
     if (comparedBySerialInStations(newDevice) &&
@@ -327,23 +293,23 @@ class AppViewModel extends ChangeNotifier {
   }
 
   /// Refreshes devices value
-  void refreshDeviceValue(Device device) {
+  Future<void> refreshDeviceValue(Device device) async {
     //debugPrint("PUNKTY PO RESECIE ${device.points.toString()}");
 
     //debugPrint("Wysyłanie wiadomosci do ${device.name}");
     try {
-      double value = device.connection.getValue();
+      double value = await device.connection.getValue();
       //debugPrint(value.toString());
       device.value = value;
       //move chart
-      if (device.points.length > limitCount) {
-        device.points.removeAt(0);
+      if (device.chart.points.length > limitCount) {
+        device.chart.points.removeAt(0);
         notifyListeners();
       }
       //add point to chart
-      device.points.add(FlSpot(device.xValue, value));
+      device.chart.points.add(FlSpot(device.chart.xValue, value));
       // debugPrint(device.points.toString());
-      device.xValue += step;
+      device.chart.xValue += step;
       notifyListeners();
     } catch (e) {
       //debugPrint("ERROR: $e");
