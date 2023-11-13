@@ -41,7 +41,7 @@ dependencies:
   network_info_plus: ^4.1.0
   fl_chart: ^0.64.0
   flutter_native_splash: ^2.3.5
-
+  connectivity_plus: ^5.0.1
   #async: ^2.11.0
 dev_dependencies:
   flutter_test:

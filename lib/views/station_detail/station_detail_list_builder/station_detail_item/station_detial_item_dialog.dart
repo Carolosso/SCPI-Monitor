@@ -70,7 +70,9 @@ Future<void> stationDetailItemDialog(
                     child: Consumer<AppViewModel>(
                         builder: (context, viewModel, child) {
                       return CheckboxListTile(
-                          title: const Text("Wykres"),
+                          checkColor: Styles.surfaceColor,
+                          activeColor: Styles.primaryColor,
+                          title: const Text("Pokaż wykres"),
                           controlAffinity: ListTileControlAffinity.leading,
                           value: viewModel.stations[indexStation]
                               .devices[indexDevice].chartSelected,
@@ -84,7 +86,16 @@ Future<void> stationDetailItemDialog(
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Zapisz'),
+              style: OutlinedButton.styleFrom(
+                backgroundColor: Styles.primaryColor,
+              ),
+              child: Text(
+                'Zapisz',
+                style: TextStyle(
+                  color: Styles.surfaceColor,
+                  fontSize: 16,
+                ),
+              ),
               onPressed: () {
                 viewModel.setNewParametersToDeviceInStation(
                     indexDevice,

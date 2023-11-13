@@ -10,6 +10,8 @@ Future<dynamic> devicesAppBarDialog1(
       context: context,
       builder: (context) => Center(
             child: Container(
+              width: double.infinity,
+              margin: const EdgeInsets.symmetric(horizontal: 20),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Styles.primaryColor,
@@ -21,11 +23,10 @@ Future<dynamic> devicesAppBarDialog1(
                 children: [
                   Consumer<AppViewModel>(builder: (context, viewModel, child) {
                     return SizedBox(
-                        width: double.maxFinite,
                         child: Text(
-                          viewModel.textInfo,
-                          style: TextStyle(color: Styles.backgroundColor),
-                        ));
+                      viewModel.textInfo,
+                      style: TextStyle(color: Styles.backgroundColor),
+                    ));
                   }),
                   const SizedBox(
                     height: 10,

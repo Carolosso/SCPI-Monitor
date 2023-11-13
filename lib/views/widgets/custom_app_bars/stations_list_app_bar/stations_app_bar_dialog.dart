@@ -47,7 +47,7 @@ Future<dynamic> stationsAppBarDialog(
               ],
             ),
           ),
-          actions: <Widget>[
+          actions: [
             TextButton(
               style: TextButton.styleFrom(foregroundColor: Styles.primaryColor),
               child: const Text('Zamknij'),

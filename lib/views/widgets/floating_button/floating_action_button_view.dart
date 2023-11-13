@@ -12,12 +12,13 @@ class FloatingActionButtonView extends StatelessWidget {
       builder: (context, viewModel, child) {
         return FloatingActionButton(
             backgroundColor: Styles.surfaceColor,
-            onPressed: () {
-              if (viewModel.isStopped && viewModel.devicesInStations()) {
+            onPressed: () async {
+              if (viewModel.isStopped &&
+                  viewModel.devicesInStations() &&
+                  (await viewModel.checkConnectivityToWifi())) {
                 viewModel.switchStartStop();
                 viewModel.play();
               } else if (!viewModel.isStopped) {
-                //viewModel.stop();
                 viewModel.switchStartStop();
               }
             },

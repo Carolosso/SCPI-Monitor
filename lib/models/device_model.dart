@@ -1,4 +1,3 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:test/models/chart_model.dart';
 import 'package:test/utils/socket_connection.dart';
@@ -19,17 +18,17 @@ class Device {
   SocketConnection connection;
 
   Device(
-      this.key,
-      this.name,
-      this.ip,
-      this.port,
-      this.manufacturer,
-      this.model,
-      this.serial,
-      this.status,
-      this.measuredUnit,
-      this.value,
-      this.chartSelected,
-      this.chart,
-      this.connection);
+      {required this.key,
+      required this.name,
+      required this.ip,
+      required this.port,
+      required this.manufacturer,
+      required this.model,
+      required this.serial,
+      required this.status,
+      required this.measuredUnit,
+      required this.value,
+      required this.chartSelected,
+      required this.chart,
+      required this.connection});
 }

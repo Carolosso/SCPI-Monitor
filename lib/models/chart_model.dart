@@ -4,5 +4,5 @@ class Chart {
   List<FlSpot> points;
   double xValue;
 
-  Chart(this.points, this.xValue);
+  Chart({required this.points, required this.xValue});
 }

@@ -6,7 +6,5 @@ class Station {
   String name;
   List<Device> devices = [];
 
-  Station(this.key, this.name, this.devices);
-
-  List<Device> get stationDevices => devices;
+  Station({required this.key, required this.name, required this.devices});
 }

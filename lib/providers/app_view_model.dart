@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:network_info_plus/network_info_plus.dart';
@@ -16,6 +17,7 @@ import 'package:test/utils/navigation_service.dart';
 import 'package:test/utils/validators.dart';
 
 //TODO Unhandled Exception: SocketException: Connection reset by peer (OS Error: Connection reset by peer, errno = 104), address = 10.0.2.2, port = 52046
+//TODO TABLET FRIENDLY UI
 class AppViewModel extends ChangeNotifier {
   AppViewModel() {
     //on provider creation call this
@@ -26,13 +28,15 @@ class AppViewModel extends ChangeNotifier {
   int get stationsCount => stations.length;
   int get devicesCount => devices.length;
   //CHART
-  int limitCount = 20;
+  int limitCount = 50;
   double xValue = 0;
   double step = 0.1;
   //
-  bool isStopped = true;
   //
   bool connectedToWIFI = false;
+
+  bool isStopped = true;
+  //
   String textInfo = "";
 
   String getTextInfo() => textInfo;
@@ -54,7 +58,7 @@ class AppViewModel extends ChangeNotifier {
   /// Returing SettingViewModel.
   SettingsViewModel getSettingsViewModel() {
     BuildContext? context = NavigationService.navigatorKey.currentContext;
-    debugPrint(context.toString());
+    // debugPrint(context.toString());
     SettingsViewModel settingsViewModel =
         Provider.of<SettingsViewModel>(context!, listen: false);
     return settingsViewModel;
@@ -66,9 +70,7 @@ class AppViewModel extends ChangeNotifier {
     while (!isStopped) {
       for (Station station in stations) {
         for (Device device in station.devices) {
-          if (isStopped) {
-            break;
-          }
+          if (isStopped) break;
           debugPrint("Próba pobrania informacji urzadzenia ${device.name}");
           await refreshDeviceValue(device);
         }
@@ -86,7 +88,7 @@ class AppViewModel extends ChangeNotifier {
         return "Nazwa jest już w użyciu.";
       }
     }
-    stations.add(Station(UniqueKey(), name, []));
+    stations.add(Station(key: UniqueKey(), name: name, devices: []));
     notifyListeners();
     return "Utworzono stanowisko o nazwie: $name";
   }
@@ -137,8 +139,20 @@ class AppViewModel extends ChangeNotifier {
       // .. and close the socket
       socket.close();
 
-      Device device = Device(UniqueKey(), name, ip, port, manufacturer, model,
-          serial, status, '-', 0.0, false, Chart([], xValue), socketConnection);
+      Device device = Device(
+          key: UniqueKey(),
+          name: name,
+          ip: ip,
+          port: port,
+          manufacturer: manufacturer,
+          model: model,
+          serial: serial,
+          status: status,
+          measuredUnit: '-',
+          value: 0.0,
+          chartSelected: false,
+          chart: Chart(points: [], xValue: xValue),
+          connection: socketConnection);
       debugPrint("CREATE DEVICE PORT: $port");
       // finally add device to main devices list if not already
       if (comparedBySerial(device)) {
@@ -147,8 +161,20 @@ class AppViewModel extends ChangeNotifier {
       notifyListeners();
     } catch (ex) {
       // if can't connect then add it too
-      Device device = Device(UniqueKey(), name, ip, port, manufacturer, model,
-          serial, status, '-', 0.0, false, Chart([], xValue), socketConnection);
+      Device device = Device(
+          key: UniqueKey(),
+          name: name,
+          ip: ip,
+          port: port,
+          manufacturer: manufacturer,
+          model: model,
+          serial: serial,
+          status: status,
+          measuredUnit: '-',
+          value: 0.0,
+          chartSelected: false,
+          chart: Chart(points: [], xValue: xValue),
+          connection: socketConnection);
       if (comparedBySerial(device)) {
         devices.add(device);
       }
@@ -186,23 +212,22 @@ class AppViewModel extends ChangeNotifier {
   /// Getting information from WIFI network interface: gateway and broadcast addresses.
   /// And setting connectedToWIFI variable.
   Future<void> getNetworkInfo() async {
-    // debugPrint("APP VIEW MODEL");
     //TODO nie dziala za dobrze to pobieranie, po rozlaczeniu nadal jest polaczenie
     String? gateway = " ";
     String? broadcast = " ";
-    connectedToWIFI = false;
+    SettingsViewModel settingsViewModel = getSettingsViewModel();
+
     try {
-      SettingsViewModel settingsViewModel = getSettingsViewModel();
-      //SettingsViewModel settingsViewModel = SettingsViewModel();
-      gateway = await NetworkInfo().getWifiGatewayIP();
-      // String? mask = await NetworkInfo().getWifiSubmask();
-      broadcast = await NetworkInfo().getWifiBroadcast();
-      if ((broadcast != null && broadcast != "0.0.0.0") &&
-          (gateway != null && gateway != "0.0.0.0")) {
-        settingsViewModel.broadcast = broadcast;
-        settingsViewModel.setNewIpRange(gateway);
-        connectedToWIFI = true;
-        notifyListeners();
+      if (await checkConnectivityToWifi()) {
+        //SettingsViewModel settingsViewModel = SettingsViewModel();
+        gateway = await NetworkInfo().getWifiGatewayIP();
+        // String? mask = await NetworkInfo().getWifiSubmask();
+        broadcast = await NetworkInfo().getWifiBroadcast();
+        if (broadcast != null && gateway != null) {
+          settingsViewModel.broadcast = broadcast;
+          settingsViewModel.setNewIpRange(gateway);
+          notifyListeners();
+        }
       }
       debugPrint(settingsViewModel.broadcast);
       debugPrint(gateway);
@@ -211,12 +236,23 @@ class AppViewModel extends ChangeNotifier {
     }
   }
 
+  /// Checking if device is connected to Wifi Network
+  Future<bool> checkConnectivityToWifi() async {
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.wifi) {
+      connectedToWIFI = true;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /// Refreshes devices in main devices list by checking if can connect with device if so then creates new device.
   Future<void> refreshFunction() async {
     for (Device device in devices) {
       String ip = device.ip;
       int port = device.port;
-      debugPrint("REFRESH FNC PORT: $port");
+      //debugPrint("REFRESH FNC PORT: $port");
       if (device.status == "Offline" &&
           await device.connection.canConnect(5000)) {
         device.status = "available";
@@ -266,23 +302,24 @@ class AppViewModel extends ChangeNotifier {
   /// Adds device to designated Station, creates new object(device) from this device, checks if is not already in station and if status is ok, if not opens connection and adds device to station
   Future<void> addDeviceToStation(int indexStation, Device device) async {
     // TODO kopiowanie obiektu - ogarnąć to -
-    SocketConnection socketConnection =
+    SocketConnection newSocketConnection =
         SocketConnection(device.ip, device.port);
+    Chart newChart = Chart(points: [const FlSpot(0, 0)], xValue: 0);
     Device newDevice = Device(
-        device.key,
-        device.name,
-        device.ip,
-        device.port,
-        device.manufacturer,
-        device.model,
-        device.serial,
-        device.status,
-        device.measuredUnit,
-        device.value,
-        device.chartSelected,
-        Chart([const FlSpot(0, 0)], 0),
-        //clearing points and adding one to prevent from crashing
-        socketConnection);
+        key: device.key,
+        name: device.name,
+        ip: device.ip,
+        port: device.port,
+        manufacturer: device.manufacturer,
+        model: device.model,
+        serial: device.serial,
+        status: device.status,
+        measuredUnit: device.measuredUnit,
+        value: device.value,
+        chartSelected: device.chartSelected,
+        chart:
+            newChart, //clearing points and adding one to prevent from crashing
+        connection: newSocketConnection);
     //debugPrint("ADD DEVICE TO STATION PORT: ${newDevice.port}");
     if (comparedBySerialInStations(newDevice) &&
         newDevice.status == "available") {
@@ -482,7 +519,7 @@ class AppViewModel extends ChangeNotifier {
     String? networkIP = settingsViewModel.ipRange;
     String deviceIP = networkIP; //incrementIP(networkIP!)
     String? broadcast = settingsViewModel.broadcast;
-    if (connectedToWIFI) {
+    if (await checkConnectivityToWifi()) {
       while (deviceIP != broadcast) {
         if (!findDevicesInNetworkBreak) {
           try {

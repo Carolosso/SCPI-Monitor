@@ -19,10 +19,6 @@ Future<void> main() async {
 initApp() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  //AppViewModel viewModel = Provider.of<AppViewModel>(context!, listen: false);
-  //AppViewModel viewModel = AppViewModel();
-  //await viewModel.getNetworkInfo();
-  //FlutterNativeSplash.remove();
 }
 
 class MyApp extends StatelessWidget {

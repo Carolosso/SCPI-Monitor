@@ -98,11 +98,18 @@ class SocketConnection {
             timeout: Duration(milliseconds: timeOut));
         _connected = true;
         _printData("Socket successfully connected");
-        _server!.listen((List<int> event) {
-          String received = (utf8.decode(event));
-          _printData("Message received: $received");
-          callback(received);
-        });
+        _server!.listen(
+          (List<int> event) {
+            String received = (utf8.decode(event));
+            _printData("Message received: $received");
+            callback(received);
+          },
+          cancelOnError: true,
+          onError: (e) {
+            debugPrint("EXCEPTION ERROR ");
+          },
+          //onDone: () => completer.complete(),
+        );
         break;
       } catch (ex) {
         _printData("$k attempt: Socket not connected (Timeout reached)");
@@ -112,59 +119,6 @@ class SocketConnection {
       }
       k++;
     }
-    /*   _connected = true;
-    _printData("Socket successfully connected");
-    _server!.listen((List<int> event) {
-      String received = (utf8.decode(event));
-      _printData("Message received: $received");
-      callback(received);
-    }); */
-  }
-
-  /// Initializes the connection. Socket starts listening to server for data
-  /// 'callback' function will be called when 'eom' is received
-  ///  * @param  the timeOut  amount of time to attempt the connection in milliseconds
-  ///  * @param  the eom  sequence of characters at the end of each single message
-  ///  * @param  the callback  function called when received a message. It must take a 'String' as param which is the message received
-  ///  * @param  the attempts  number of attempts before stop trying to connect. Default is 1
-  connectEOM(int timeOut, String eom, Function callback,
-      {int attempts = 1}) async {
-    int k = 1;
-    while (k <= attempts) {
-      try {
-        _server = await Socket.connect(_ipAddress, _portAddress,
-            timeout: Duration(milliseconds: timeOut));
-        break;
-      } catch (exception) {
-        _printData("$k attempt: Socket not connected (Timeout reached)");
-        if (k == attempts) {
-          return;
-        }
-      }
-      k++;
-    }
-    _connected = true;
-    _printData("Socket successfully connected");
-    StringBuffer message = StringBuffer();
-    _server!.listen((List<int> event) async {
-      String received = (utf8.decode(event));
-      message.write(received);
-      if (received.contains(eom)) {
-        _printData("Message received: $message");
-
-        List<String> messages = message.toString().split(eom);
-        if (!received.endsWith(eom)) {
-          message.clear();
-          message.write(messages.last);
-          messages.removeLast();
-        } else {
-          message.clear();
-        }
-        for (String m in messages) {
-          callback(m);
-        }
-      }
-    });
   }
 
   /// Stops the connection and close the socket
