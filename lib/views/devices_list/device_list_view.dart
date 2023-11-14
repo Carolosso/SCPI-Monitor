@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test/style/theme.dart';
 import 'package:test/providers/app_view_model.dart';
-import 'package:test/views/device_list/devices_list_builder/devices_list_builder.dart';
+import 'package:test/views/devices_list/devices_list_builder/devices_list_builder.dart';
 import 'package:test/views/widgets/custom_app_bars/devices_list_app_bar/custom_app_bar_for_devices_view.dart';
 
 class DevicesListView extends StatelessWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
-import 'package:test/views/device_list/devices_list_builder/device_item/device_item_dialog.dart';
+import 'package:test/views/devices_list/devices_list_builder/device_item/device_item_dialog.dart';
 
 class DeviceItem extends StatelessWidget {
   const DeviceItem({
@@ -48,14 +48,14 @@ class DeviceItem extends StatelessWidget {
                   height: 5,
                 ),
                 Text(
-                  'IP: ${viewModel.devices[indexDevice].ip}',
+                  'Adres IP: ${viewModel.devices[indexDevice].ip}',
                   textAlign: TextAlign.left,
                   style: const TextStyle(
                     fontSize: 15,
                   ),
                 ),
                 Text(
-                  'Manufacturer: ${viewModel.devices[indexDevice].manufacturer}',
+                  'Producent: ${viewModel.devices[indexDevice].manufacturer}',
                   textAlign: TextAlign.left,
                   style: const TextStyle(
                     fontSize: 15,

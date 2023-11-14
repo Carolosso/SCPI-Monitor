@@ -64,6 +64,7 @@ Future<void> deviceItemDialog(
                         hint: viewModel.stations.isEmpty
                             ? const Text('brak stanowisk')
                             : const Text('wybierz stanowisko'),
+                        value: null,
                         isExpanded: true,
                         items: viewModel.stations
                             .map((e) => DropdownMenuItem(
@@ -71,21 +72,6 @@ Future<void> deviceItemDialog(
                                   child: Text(e.name,
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w700)),
-                                  /*  child: Container(
-                                    width: double.infinity,
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 5),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Styles.surfaceColor,
-                                    ),
-                                    child: Container(
-                                      padding: const EdgeInsets.all(5),
-                                      child: Text(e.name,
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.w700)),
-                                    ),
-                                  ), */
                                 ))
                             .toList(),
                         onChanged: (selectedStation) =>

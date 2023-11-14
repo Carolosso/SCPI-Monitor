@@ -55,7 +55,7 @@ class StationDetailPage extends StatelessWidget {
                   ),
                 ),
                 const Text(
-                  'Widok szczegołowy',
+                  'Widok szczegółowy',
                   style: TextStyle(fontSize: 16),
                 )
               ],
