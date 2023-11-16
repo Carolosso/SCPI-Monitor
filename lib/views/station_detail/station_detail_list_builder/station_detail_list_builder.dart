@@ -122,8 +122,10 @@ class StationDetailListBuilder extends StatelessWidget {
                                       //fontWeight: FontWeight.bold,
                                       color: Colors.white),
                                 ),
-                                viewModel.stations[indexStation]
-                                        .devices[indexDevice].chartSelected
+                                viewModel
+                                        .stations[indexStation]
+                                        .devices[indexDevice]
+                                        .stationDetailsChartViewSelected
                                     ? Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Text(
@@ -134,8 +136,10 @@ class StationDetailListBuilder extends StatelessWidget {
                                         ),
                                       )
                                     : Container(),
-                                viewModel.stations[indexStation]
-                                        .devices[indexDevice].chartSelected
+                                viewModel
+                                        .stations[indexStation]
+                                        .devices[indexDevice]
+                                        .stationDetailsChartViewSelected
                                     ? ChartWidget(
                                         points: viewModel.stations[indexStation]
                                             .devices[indexDevice].chart.points,

@@ -69,17 +69,40 @@ Future<void> stationDetailItemDialog(
                     width: double.infinity,
                     child: Consumer<AppViewModel>(
                         builder: (context, viewModel, child) {
-                      return CheckboxListTile(
-                          checkColor: Styles.surfaceColor,
-                          activeColor: Styles.primaryColor,
-                          title: const Text("Pokaż wykres"),
-                          controlAffinity: ListTileControlAffinity.leading,
-                          value: viewModel.stations[indexStation]
-                              .devices[indexDevice].chartSelected,
-                          onChanged: (onChanged) {
-                            viewModel.setCheckBoxParameterToDeviceInStation(
-                                indexDevice, indexStation, onChanged!);
-                          });
+                      return Column(
+                        children: [
+                          CheckboxListTile(
+                              checkColor: Styles.surfaceColor,
+                              activeColor: Styles.primaryColor,
+                              title: const Text(
+                                  "Pokaż wykres w widoku szczegółowym"),
+                              controlAffinity: ListTileControlAffinity.leading,
+                              value: viewModel
+                                  .stations[indexStation]
+                                  .devices[indexDevice]
+                                  .stationDetailsChartViewSelected,
+                              onChanged: (onChanged) {
+                                viewModel
+                                    .setCheckBox1ParameterToDeviceInStation(
+                                        indexDevice, indexStation, onChanged!);
+                              }),
+                          CheckboxListTile(
+                              checkColor: Styles.surfaceColor,
+                              activeColor: Styles.primaryColor,
+                              title:
+                                  const Text("Pokaż wykres w widoku ogólnym"),
+                              controlAffinity: ListTileControlAffinity.leading,
+                              value: viewModel
+                                  .stations[indexStation]
+                                  .devices[indexDevice]
+                                  .stationsChartViewSelected,
+                              onChanged: (onChanged) {
+                                viewModel
+                                    .setCheckBox2ParameterToDeviceInStation(
+                                        indexDevice, indexStation, onChanged!);
+                              }),
+                        ],
+                      );
                     })),
               ],
             ),

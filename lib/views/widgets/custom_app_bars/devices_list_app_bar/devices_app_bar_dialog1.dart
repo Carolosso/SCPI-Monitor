@@ -23,9 +23,14 @@ Future<dynamic> devicesAppBarDialog1(
                 children: [
                   Consumer<AppViewModel>(builder: (context, viewModel, child) {
                     return SizedBox(
-                        child: Text(
-                      viewModel.textInfo,
-                      style: TextStyle(color: Styles.backgroundColor),
+                        child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        viewModel.textInfo,
+                        style: TextStyle(
+                          color: Styles.backgroundColor,
+                        ),
+                      ),
                     ));
                   }),
                   const SizedBox(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
+import 'package:test/views/widgets/charts/chart_widget.dart';
 
 class StationDeviceItem extends StatelessWidget {
   const StationDeviceItem({
@@ -19,37 +20,63 @@ class StationDeviceItem extends StatelessWidget {
       margin: const EdgeInsets.all(6),
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(15.0),
       ),
       color: Styles.surfaceColor,
       child: Padding(
         padding: const EdgeInsets.all(6.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              //alignment: Alignment.centerLeft,
-              flex: 1,
-              child: Text(
-                viewModel.stations[indexStation].devices[indexDevice].name,
-                textAlign: TextAlign.left,
-                style: const TextStyle(
-                  fontSize: 14,
+        child: SizedBox(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                //alignment: Alignment.centerLeft,
+                flex: 1,
+                child: Text(
+                  viewModel.stations[indexStation].devices[indexDevice].name,
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(
+                    fontSize: 14,
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              flex: 1,
-              //alignment: Alignment.centerLeft,
-              child: Text(
-                '${viewModel.getDeviceValue(indexStation, indexDevice)}${viewModel.getDeviceMeasuredUnit(indexStation, indexDevice)}',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                flex: 1,
+                //alignment: Alignment.centerLeft,
+                child: Text(
+                  '${viewModel.getDeviceValue(indexStation, indexDevice)}${viewModel.getDeviceMeasuredUnit(indexStation, indexDevice)}',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
-          ],
+              viewModel.stations[indexStation].devices[indexDevice]
+                      .stationsChartViewSelected
+                  ? Expanded(
+                      flex: 3,
+                      child: Card(
+                        margin: const EdgeInsets.all(0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        elevation: 0,
+                        color: Styles.primaryColor,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ChartWidget(
+                            points: viewModel.stations[indexStation]
+                                .devices[indexDevice].chart.points,
+                          ),
+                        ),
+                      ),
+                    )
+                  : Expanded(
+                      flex: 0,
+                      child: Container(),
+                    ),
+            ],
+          ),
         ),
       ),
     );

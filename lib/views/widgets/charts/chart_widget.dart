@@ -46,37 +46,32 @@ class ChartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        AspectRatio(
-          aspectRatio: 5,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 5.0, top: 5),
-            child: LineChart(
-              LineChartData(
-                minY: 0, //minYvalue()
-                maxY: maxYvalue()! + 10,
-                minX: points.first.x,
-                maxX: points.last.x,
-                lineTouchData: const LineTouchData(enabled: false),
-                clipData: const FlClipData.all(),
-                gridData: const FlGridData(
-                    show: true,
-                    drawVerticalLine: true,
-                    drawHorizontalLine: false),
-                borderData: FlBorderData(show: false),
-                lineBarsData: [
-                  line(),
-                ],
-                titlesData: const FlTitlesData(
-                  show: false,
-                ),
-              ),
+    return SizedBox(
+        //mainAxisAlignment: MainAxisAlignment.center,
+        child: AspectRatio(
+      aspectRatio: 5,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 5.0, top: 5),
+        child: LineChart(
+          LineChartData(
+            minY: 0, //minYvalue()
+            maxY: maxYvalue()! + 10,
+            minX: points.first.x,
+            maxX: points.last.x,
+            lineTouchData: const LineTouchData(enabled: false),
+            clipData: const FlClipData.all(),
+            gridData: const FlGridData(
+                show: true, drawVerticalLine: true, drawHorizontalLine: false),
+            borderData: FlBorderData(show: false),
+            lineBarsData: [
+              line(),
+            ],
+            titlesData: const FlTitlesData(
+              show: false,
             ),
           ),
-        )
-      ],
-    );
+        ),
+      ),
+    ));
   }
 }

@@ -13,7 +13,8 @@ class Device {
   String status;
   String measuredUnit;
   double value;
-  bool chartSelected;
+  bool stationDetailsChartViewSelected;
+  bool stationsChartViewSelected;
   Chart chart;
   SocketConnection connection;
 
@@ -28,7 +29,8 @@ class Device {
       required this.status,
       required this.measuredUnit,
       required this.value,
-      required this.chartSelected,
+      required this.stationDetailsChartViewSelected,
+      required this.stationsChartViewSelected,
       required this.chart,
       required this.connection});
 }

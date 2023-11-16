@@ -32,9 +32,11 @@ class StationItemGridBuilder extends StatelessWidget {
                   fontSize: 18),
             ),
             GridView.builder(
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent: 200,
-                  childAspectRatio: 1 / .4, //1/ .4
+                  childAspectRatio: viewModel.chartInStation(indexStation)
+                      ? 1 / 1
+                      : 1 / 0.4, //1/ .4
                   crossAxisSpacing: 2,
                   mainAxisSpacing: 2),
               itemCount: viewModel.getStationsDevicesCount(indexStation),

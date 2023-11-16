@@ -48,6 +48,13 @@ class AppViewModel extends ChangeNotifier {
     //notifyListeners();
   }
 
+  bool chartInStation(int indexStation) {
+    for (Device device in stations.elementAt(indexStation).devices) {
+      if (device.stationsChartViewSelected) return true;
+    }
+    return false;
+  }
+
   void switchStartStop() {
     isStopped = !isStopped;
     notifyListeners();
@@ -150,7 +157,8 @@ class AppViewModel extends ChangeNotifier {
           status: status,
           measuredUnit: '-',
           value: 0.0,
-          chartSelected: false,
+          stationDetailsChartViewSelected: false,
+          stationsChartViewSelected: false,
           chart: Chart(points: [], xValue: xValue),
           connection: socketConnection);
       debugPrint("CREATE DEVICE PORT: $port");
@@ -172,7 +180,8 @@ class AppViewModel extends ChangeNotifier {
           status: status,
           measuredUnit: '-',
           value: 0.0,
-          chartSelected: false,
+          stationDetailsChartViewSelected: false,
+          stationsChartViewSelected: false,
           chart: Chart(points: [], xValue: xValue),
           connection: socketConnection);
       if (comparedBySerial(device)) {
@@ -232,7 +241,7 @@ class AppViewModel extends ChangeNotifier {
       debugPrint(settingsViewModel.broadcast);
       debugPrint(gateway);
     } catch (e) {
-      debugPrint("Blad pobrania informacji o sieci WIFI $e");
+      debugPrint("Błąd pobrania informacji o sieci Wi-Fi $e");
     }
   }
 
@@ -316,7 +325,8 @@ class AppViewModel extends ChangeNotifier {
         status: device.status,
         measuredUnit: device.measuredUnit,
         value: device.value,
-        chartSelected: device.chartSelected,
+        stationDetailsChartViewSelected: device.stationDetailsChartViewSelected,
+        stationsChartViewSelected: device.stationsChartViewSelected,
         chart:
             newChart, //clearing points and adding one to prevent from crashing
         connection: newSocketConnection);
@@ -390,13 +400,26 @@ class AppViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Setting new parameters to specified Device in specified Station.
-  /// * @indexDevice
-  /// * @indexStation
-  /// * @chartSelected
-  void setCheckBoxParameterToDeviceInStation(
+  /// CheckBox1 controller
+  /// * indexDevice
+  /// * indexStation
+  /// * chartSelected
+  void setCheckBox1ParameterToDeviceInStation(
       int indexDevice, int indexStation, bool chartSelected) {
-    stations[indexStation].devices[indexDevice].chartSelected = chartSelected;
+    stations[indexStation]
+        .devices[indexDevice]
+        .stationDetailsChartViewSelected = chartSelected;
+    notifyListeners();
+  }
+
+  /// CheckBox2 controller
+  /// * indexDevice
+  /// * indexStation
+  /// * chartSelected
+  void setCheckBox2ParameterToDeviceInStation(
+      int indexDevice, int indexStation, bool chartSelected) {
+    stations[indexStation].devices[indexDevice].stationsChartViewSelected =
+        chartSelected;
     notifyListeners();
   }
 
@@ -557,7 +580,7 @@ class AppViewModel extends ChangeNotifier {
         }
       }
     } else {
-      return "Brak połączenia z siecią WIFI! Połącz się z siecią i pobierz jej adres w zakładce Ustawienia.";
+      return "Brak połączenia z siecią Wi-Fi! Połącz się z siecią i pobierz jej adres w zakładce Ustawienia.";
     }
     return 'Zakończono skanowanie. Dodano $newCount nowe urządzenia.';
   }
