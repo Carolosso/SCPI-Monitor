@@ -7,7 +7,7 @@ class SettingsViewModel extends ChangeNotifier {
   String ipRange = "";
   String broadcast = "";
   bool isDarkTheme = false;
-
+  bool unitsConversion = false;
   bool get darkTheme => isDarkTheme;
 
   set darkTheme(bool value) {
@@ -47,6 +47,11 @@ class SettingsViewModel extends ChangeNotifier {
 
   void switchTheme() {
     Styles.isDarkTheme = !Styles.isDarkTheme;
+    notifyListeners();
+  }
+
+  void switchUnitsConversion() {
+    unitsConversion = !unitsConversion;
     notifyListeners();
   }
 }

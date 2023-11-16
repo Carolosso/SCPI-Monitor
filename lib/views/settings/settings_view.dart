@@ -7,6 +7,7 @@ import 'package:test/views/settings/settings_items/delay/settings_item_delay.dar
 import 'package:test/views/settings/settings_items/language/settings_item_language.dart';
 import 'package:test/views/settings/settings_items/network_address/settings_item_network.dart';
 import 'package:test/views/settings/settings_items/theme/settings_item_theme.dart';
+import 'package:test/views/settings/settings_items/units_converter/settings_item_units_converter.dart';
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
@@ -37,6 +38,12 @@ class SettingsView extends StatelessWidget {
             icon: Icons.invert_colors,
             settingsViewModel: settingsViewModel,
             text: Styles.isDarkTheme ? "Ciemny" : "Jasny",
+          ),
+          SettingsUnitsConverter(
+            title: "Konwertowanie jednostek",
+            icon: Icons.u_turn_right_sharp,
+            settingsViewModel: settingsViewModel,
+            text: settingsViewModel.unitsConversion ? "Włącz" : "Wyłącz",
           ),
           SettingsItemLanguage(
             title: "Język aplikacji",

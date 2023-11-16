@@ -487,7 +487,9 @@ class AppViewModel extends ChangeNotifier {
         .elementAt(indexDevice)
         .value
         .toStringAsExponential(3);
-    return formatUnit(value);
+    SettingsViewModel settingsViewModel = getSettingsViewModel();
+
+    return settingsViewModel.unitsConversion ? formatUnit(value) : value;
   }
 
   /// Returing specified Station's name.
