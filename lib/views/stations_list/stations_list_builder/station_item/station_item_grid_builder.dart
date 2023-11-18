@@ -15,9 +15,9 @@ class StationItemGridBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 0,
+      elevation: 5,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(15.0),
       ),
       color: Styles.primaryColor,
       child: Padding(
@@ -36,7 +36,7 @@ class StationItemGridBuilder extends StatelessWidget {
                   maxCrossAxisExtent: 200,
                   childAspectRatio: viewModel.chartInStation(indexStation)
                       ? 1 / 1
-                      : 1 / 0.4, //1/ .4
+                      : 1 / 0.43, //1/ .43
                   crossAxisSpacing: 2,
                   mainAxisSpacing: 2),
               itemCount: viewModel.getStationsDevicesCount(indexStation),

@@ -26,10 +26,9 @@ class DevicesListBuilder extends StatelessWidget {
               ? DismissDirection.endToStart
               : DismissDirection.none,
           onDismissed: (direction) {
-            viewModel.removeDeviceFromList(indexDevice);
             HapticFeedback.lightImpact(); //vibration
             //Toast
-            showSnackBar(context, "Usunięto urządzenie");
+            showSnackBar(context, viewModel.removeDeviceFromList(indexDevice));
           },
           background: Container(
             margin: const EdgeInsets.all(0),

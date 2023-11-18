@@ -40,8 +40,7 @@ Future<dynamic> devicesAppBarDialog1(
                     height: 32,
                     width: 32,
                     child: CircularProgressIndicator(
-                      backgroundColor: Styles.surfaceColor,
-                      color: Styles.primaryColor,
+                      color: Styles.surfaceColor,
                     ),
                   ),
                   const SizedBox(

@@ -7,6 +7,7 @@ final TextEditingController ipTextController = TextEditingController();
 
 Future<dynamic> devicesAppBarDialog2(
     BuildContext context, AppViewModel viewModel) {
+  NavigatorState navigator1 = Navigator.of(context);
   return showDialog(
       context: context,
       builder: (context) {
@@ -15,29 +16,6 @@ Future<dynamic> devicesAppBarDialog2(
           content: SingleChildScrollView(
             child: Column(
               children: [
-                /*                            TextField(
-                           //controller: nameTextController,
-                            onSubmitted: (value) {
-                              //onSubmit(value);
-                            },
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.only(
-                                bottom: 5,
-                              ),
-                              filled: true,
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Styles.surfaceColor)),
-                              labelText: ' Nazwa ',
-                            ),
-                            autofocus: true,
-                            textAlign: TextAlign.center,
-                            textAlignVertical: TextAlignVertical.center,
-                            autocorrect: false,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ), */
                 const Padding(padding: EdgeInsets.only(top: 10, bottom: 10)),
                 TextField(
                   controller: ipTextController,
@@ -46,7 +24,7 @@ Future<dynamic> devicesAppBarDialog2(
                   },
                   decoration: InputDecoration(
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(15),
                       ),
                       contentPadding: const EdgeInsets.only(
                         bottom: 5,
@@ -54,7 +32,7 @@ Future<dynamic> devicesAppBarDialog2(
                       filled: true,
                       //fillColor: viewModel.clrlvl2,
                       focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(15),
                           borderSide: BorderSide(color: Styles.surfaceColor)),
                       labelText: ' IP ',
                       labelStyle: TextStyle(color: Styles.primaryColor)),
@@ -69,12 +47,12 @@ Future<dynamic> devicesAppBarDialog2(
               ],
             ),
           ),
-          actions: <Widget>[
+          actions: [
             TextButton(
               style: TextButton.styleFrom(foregroundColor: Styles.primaryColor),
               child: const Text('Dodaj'),
               onPressed: () async {
-                NavigatorState navigator = Navigator.of(context);
+                NavigatorState navigator2 = Navigator.of(context);
                 showDialog(
                     context: context,
                     builder: (context) => Center(
@@ -92,7 +70,8 @@ Future<dynamic> devicesAppBarDialog2(
                     await viewModel.createDevice(ipTextController.text, 5025));
                 /* await viewModel.createDevice(
                     ipTextController.text, 5026); */
-                navigator.pop();
+                navigator1.pop();
+                navigator2.pop();
               },
             ),
           ],

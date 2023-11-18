@@ -4,6 +4,7 @@ import 'package:test/providers/app_view_model.dart';
 import 'package:test/views/station_detail/station_detail_view.dart';
 import 'package:test/views/stations_list/stations_list_builder/station_item/station_item_grid_builder.dart';
 import 'package:test/views/stations_list/stations_list_builder/station_item/station_item_empty.dart';
+import 'package:test/views/widgets/snackbar/show_snackbar.dart';
 
 class StationsListBuilder extends StatelessWidget {
   const StationsListBuilder({
@@ -26,7 +27,9 @@ class StationsListBuilder extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 5),
               //prevent to move while one item
               buildDefaultDragHandles:
-                  viewModel.stationsCount <= 1 ? false : true,
+                  (viewModel.stationsCount <= 1 || !viewModel.isStopped)
+                      ? false
+                      : true,
               shrinkWrap: true,
               itemCount: viewModel.stationsCount,
               onReorderStart: (index) {
@@ -39,6 +42,8 @@ class StationsListBuilder extends StatelessWidget {
                 return Dismissible(
                   key: ValueKey(viewModel.stations[indexStation].key),
                   onDismissed: (direction) {
+                    showSnackBar(context,
+                        "Usunięto stanowisko: ${viewModel.getStationName(indexStation)}");
                     viewModel.removeStation(indexStation);
                   },
                   direction: viewModel.isStopped

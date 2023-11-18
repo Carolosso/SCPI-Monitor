@@ -8,6 +8,7 @@ class SettingsViewModel extends ChangeNotifier {
   String broadcast = "";
   bool isDarkTheme = false;
   bool unitsConversion = false;
+  bool testOptionsAvailable = false;
   bool get darkTheme => isDarkTheme;
 
   set darkTheme(bool value) {
@@ -52,6 +53,11 @@ class SettingsViewModel extends ChangeNotifier {
 
   void switchUnitsConversion() {
     unitsConversion = !unitsConversion;
+    notifyListeners();
+  }
+
+  void switchTestOptionsAvailable() {
+    testOptionsAvailable = !testOptionsAvailable;
     notifyListeners();
   }
 }

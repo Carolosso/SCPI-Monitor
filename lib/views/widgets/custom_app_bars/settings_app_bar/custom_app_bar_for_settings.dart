@@ -31,7 +31,7 @@ class CustomAppBarForSettingsView extends StatelessWidget
                 fontSize: 24,
               ),
             )),
-        backgroundColor: Colors.white24,
+        backgroundColor: Colors.white,
         elevation: 0,
         //leading: const BackButton(),
         actions: [

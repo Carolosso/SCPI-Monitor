@@ -33,6 +33,8 @@ class SocketConnection {
       if (!viewModel.isStopped) {
         //send READ?
         sendMessageEOM('READ?', '\n');
+        // CONF?
+        // Typical Response:  "VOLT +1.000000E+01,+3.000000E-05"
         //wait for messageReceiver()
         await completer.future;
         //get and return value

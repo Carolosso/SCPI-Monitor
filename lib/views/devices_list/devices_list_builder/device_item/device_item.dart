@@ -20,7 +20,10 @@ class DeviceItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-          backgroundColor: Styles.primaryColor, foregroundColor: Colors.white),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          backgroundColor: Styles.primaryColor,
+          foregroundColor: Colors.white),
       onPressed: () {
         nameTextController.text = viewModel.devices[indexDevice].name;
         ipTextController.text = viewModel.devices[indexDevice].ip;

@@ -112,6 +112,7 @@ class AppViewModel extends ChangeNotifier {
     String model = "Unknown";
     String status = "Offline";
     String serial = "Unknown";
+    String measuredUnit = "-";
     Socket socket;
 
     try {
@@ -126,26 +127,47 @@ class AppViewModel extends ChangeNotifier {
           await Socket.connect(ip, port, timeout: const Duration(seconds: 3));
       // listen to the received data event stream
       socket.listen((List<int> event) async {
-        //debugPrint(utf8.decode(event));
+        debugPrint(utf8.decode(event));
         List<String> message = utf8.decode(event).split(',');
-        if (message.length > 1) {
-          name = message.elementAt(1).trim();
-          manufacturer = message.first;
+        if (message.length > 3) {
+          manufacturer = message.elementAt(0).trim();
           model = message.elementAt(1).trim();
+          name = "$manufacturer $model";
           serial = message.elementAt(2).trim();
+        } else if (message.length == 2) {
+          List<String> temp = message.toString().split(' ');
+          measuredUnit = temp.first;
         }
         status = "available";
         //we got response so
         //complete completer
         completer.complete(event);
+        completer = Completer();
       });
-      // send *IDN? ----> <Manufacturer>, <Model>, <Serial Number>, <Firmware Level>, <Options>.
+      // ------------------ TEST -------------------------------
+      SettingsViewModel vm = getSettingsViewModel();
+      if (vm.testOptionsAvailable) {
+        socket.add(
+            utf8.encode('CONF?\n')); //---> "VOLT +1.000000E+01,+3.000000E-05"
+        debugPrint("Zaczynamy timer!");
+        final timeoutTimer = Timer(const Duration(seconds: 3), () {
+          debugPrint("Koniec czasu");
+          textInfo = "Timeout";
+          notifyListeners();
+          completer.complete();
+        });
+        //await for response/completer
+        await completer.future;
+        timeoutTimer.cancel();
+      }
+      completer = Completer();
+      //--------------------- TEST --------------------------------
       socket.add(utf8.encode('*IDN?\n'));
+      // send *IDN? ----> <Manufacturer>, <Model>, <Serial Number>, <Firmware Level>, <Options>.
       //await for response/completer
       await completer.future;
       // .. and close the socket
       socket.close();
-
       Device device = Device(
           key: UniqueKey(),
           name: name,
@@ -155,7 +177,7 @@ class AppViewModel extends ChangeNotifier {
           model: model,
           serial: serial,
           status: status,
-          measuredUnit: '-',
+          measuredUnit: measuredUnit,
           value: 0.0,
           stationDetailsChartViewSelected: false,
           stationsChartViewSelected: false,
@@ -178,7 +200,7 @@ class AppViewModel extends ChangeNotifier {
           model: model,
           serial: serial,
           status: status,
-          measuredUnit: '-',
+          measuredUnit: measuredUnit,
           value: 0.0,
           stationDetailsChartViewSelected: false,
           stationsChartViewSelected: false,
@@ -195,10 +217,12 @@ class AppViewModel extends ChangeNotifier {
 
   /// Removing Device at specified index from main devices list.
   /// * @index
-  void removeDeviceFromList(int index) {
+  String removeDeviceFromList(int index) {
+    String name = devices.elementAt(index).name;
     devices.elementAt(index).connection.disconnect();
     devices.removeAt(index);
     notifyListeners();
+    return "Usunięto urządzenie: $name";
   }
 
   /// Removing Device at specified index from Specified Station.
@@ -489,7 +513,7 @@ class AppViewModel extends ChangeNotifier {
         .toStringAsExponential(3);
     SettingsViewModel settingsViewModel = getSettingsViewModel();
 
-    return settingsViewModel.unitsConversion ? formatUnit(value) : value;
+    return settingsViewModel.unitsConversion ? formatUnit(value) : "$value ";
   }
 
   /// Returing specified Station's name.
@@ -555,12 +579,19 @@ class AppViewModel extends ChangeNotifier {
                   SocketConnection(deviceIP, 5025);
               if (await socketConnection.canConnect(1000)) {
                 textInfo = "Znaleziono urządzenie na $deviceIP!";
-                notifyListeners();
-                await Future.delayed(const Duration(seconds: 1));
                 debugPrint("Znaleziono urządzenie na $deviceIP!");
+                notifyListeners();
+                await Future.delayed(const Duration(milliseconds: 500));
+                textInfo = "Pobieranie informacji urządzenia $deviceIP...";
+                debugPrint("Pobieranie informacji urządzenia $deviceIP...");
+                notifyListeners();
+                await Future.delayed(const Duration(milliseconds: 500));
                 await createDevice(deviceIP, 5025);
                 newCount++;
+                textInfo = "Dodano urządzenie $deviceIP!";
+                debugPrint("Dodano urządzenie $deviceIP!");
                 notifyListeners();
+                await Future.delayed(const Duration(seconds: 1));
               } else {
                 textInfo = "Nie znaleziono urządzenia o adresie $deviceIP";
                 notifyListeners();
@@ -572,7 +603,6 @@ class AppViewModel extends ChangeNotifier {
               notifyListeners();
               await Future.delayed(const Duration(seconds: 1));
             }
-
             deviceIP = incrementIP(deviceIP);
           } catch (e) {
             debugPrint(e.toString());

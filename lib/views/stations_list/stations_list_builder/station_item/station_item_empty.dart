@@ -14,7 +14,7 @@ class StationItemEmpty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-        elevation: 0,
+        elevation: 5,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
         ),

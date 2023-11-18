@@ -6,6 +6,7 @@ import 'package:test/views/settings/settings_items/about/settings_item_about.dar
 import 'package:test/views/settings/settings_items/delay/settings_item_delay.dart';
 import 'package:test/views/settings/settings_items/language/settings_item_language.dart';
 import 'package:test/views/settings/settings_items/network_address/settings_item_network.dart';
+import 'package:test/views/settings/settings_items/test/settings_item_test.dart';
 import 'package:test/views/settings/settings_items/theme/settings_item_theme.dart';
 import 'package:test/views/settings/settings_items/units_converter/settings_item_units_converter.dart';
 
@@ -41,9 +42,9 @@ class SettingsView extends StatelessWidget {
           ),
           SettingsUnitsConverter(
             title: "Konwertowanie jednostek",
-            icon: Icons.u_turn_right_sharp,
+            icon: Icons.autorenew,
             settingsViewModel: settingsViewModel,
-            text: settingsViewModel.unitsConversion ? "Włącz" : "Wyłącz",
+            text: settingsViewModel.unitsConversion ? "Włączone" : "Wyłączone",
           ),
           SettingsItemLanguage(
             title: "Język aplikacji",
@@ -54,6 +55,14 @@ class SettingsView extends StatelessWidget {
           const SettingsItemAbout(
             title: "O aplikacji",
             icon: Icons.info_outline_rounded,
+          ),
+          SettingsTest(
+            title: "Opcje testowe",
+            icon: Icons.warning,
+            settingsViewModel: settingsViewModel,
+            text: settingsViewModel.testOptionsAvailable
+                ? "Włączone"
+                : "Wyłączone",
           ),
         ],
       );

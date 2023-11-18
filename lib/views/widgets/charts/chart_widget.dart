@@ -55,7 +55,7 @@ class ChartWidget extends StatelessWidget {
         child: LineChart(
           LineChartData(
             minY: 0, //minYvalue()
-            maxY: maxYvalue()! + 10,
+            maxY: maxYvalue()! + maxYvalue()! / 10,
             minX: points.first.x,
             maxX: points.last.x,
             lineTouchData: const LineTouchData(enabled: false),
