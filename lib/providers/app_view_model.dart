@@ -87,6 +87,17 @@ class AppViewModel extends ChangeNotifier {
     }
   }
 
+  /// Starting measurements for every Device in every Station once.
+  void playOnce() async {
+    for (Station station in stations) {
+      for (Device device in station.devices) {
+        debugPrint("Próba pobrania informacji urzadzenia ${device.name}");
+        await refreshDeviceValue(device);
+        debugPrint("Pobrano");
+      }
+    }
+  }
+
   /// Creating new Station with specified name then adding to Stations.
   /// * @name
   String createStation(String name) {
@@ -366,7 +377,6 @@ class AppViewModel extends ChangeNotifier {
   /// Refreshes devices value
   Future<void> refreshDeviceValue(Device device) async {
     //debugPrint("PUNKTY PO RESECIE ${device.points.toString()}");
-
     //debugPrint("Wysyłanie wiadomosci do ${device.name}");
     try {
       double value = await device.connection.getValue();

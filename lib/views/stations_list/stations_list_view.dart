@@ -17,6 +17,7 @@ class StationsListView extends StatelessWidget {
           //TODO https://stackoverflow.com/questions/51119795/how-to-remove-scroll-glow
           child: StationsListBuilder(viewModel: viewModel),
         ),
+        //floatingActionButtonLocation: FloatingActionButtonLocation.startDocked,
         floatingActionButton: const FloatingActionButtonView(),
       );
     });
