@@ -1,4 +1,7 @@
 // Keysight Technologies Digital Multimeters with LAN connectivity
+import 'package:test/models/device_model/generator/generator_model.dart';
+import 'package:test/models/device_model/multimeter/multimeter_model.dart';
+
 List<String> multimeters = ["34470A", "EDU34450A", "34465A", "34461A"];
 // Keysight Technologies Digital Power Supplies with LAN connectivity
 List<String> powerSupplies = [
@@ -64,15 +67,15 @@ List<String> oscilloscopes = [
   "MSOX3012G",
 ];
 
-String detectDeviceType(String model) {
+Object detectDeviceType(String model) {
   if (multimeters.contains(model)) {
-    return "Multimetr";
+    return Multimeter();
   } else if (oscilloscopes.contains(model)) {
     return "Oscyloskop";
   } else if (powerSupplies.contains(model)) {
-    return "Zasilacz";
+    return "";
   } else if (generators.contains(model)) {
-    return "Generator";
+    return Generator();
   } else {
     return "Brak informacji";
   }

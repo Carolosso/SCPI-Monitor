@@ -22,7 +22,8 @@ Future<void> deviceItemDialog(
                   onSubmitted: (value) {},
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                        borderRadius:
+                            BorderRadius.circular(Styles.globalRadius)),
                     contentPadding: const EdgeInsets.only(
                       bottom: 5,
                     ),
@@ -57,10 +58,11 @@ Future<void> deviceItemDialog(
                               color: Styles.surfaceColor,
                             )),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius:
+                                  BorderRadius.circular(Styles.globalRadius),
                             )),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10)),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(Styles.globalRadius)),
                         hint: viewModel.stations.isEmpty
                             ? const Text('brak stanowisk')
                             : const Text('wybierz stanowisko'),

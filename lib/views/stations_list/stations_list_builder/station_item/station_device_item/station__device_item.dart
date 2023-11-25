@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
-import 'package:test/views/widgets/charts/chart_widget.dart';
 
 class StationDeviceItem extends StatelessWidget {
   const StationDeviceItem({
@@ -20,7 +19,7 @@ class StationDeviceItem extends StatelessWidget {
       margin: const EdgeInsets.all(6),
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
+        borderRadius: BorderRadius.circular(Styles.globalRadius),
       ),
       color: Styles.surfaceColor,
       child: Padding(
@@ -58,7 +57,7 @@ class StationDeviceItem extends StatelessWidget {
                       child: Card(
                         margin: const EdgeInsets.all(0),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
+                          borderRadius: BorderRadius.circular(Styles.globalRadius),
                         ),
                         elevation: 0,
                         color: Styles.primaryColor,

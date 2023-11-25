@@ -20,8 +20,8 @@ class DeviceItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(Styles.globalRadius)),
           backgroundColor: Styles.primaryColor,
           foregroundColor: Colors.white),
       onPressed: () {

@@ -9,7 +9,7 @@ class Styles {
       isDarkTheme ? Colors.white : const Color.fromRGBO(58, 241, 195, 1);
 
   static Color get backgroundColor => isDarkTheme ? Colors.black : Colors.white;
-
+  static double globalRadius = 20;
   static ThemeData themeData() {
     return ThemeData(
       //scaffoldBackgroundColor: Colors.black,

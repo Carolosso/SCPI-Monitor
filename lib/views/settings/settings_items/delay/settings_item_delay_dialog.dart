@@ -28,7 +28,8 @@ Future<dynamic> settingsItemDialogDelay(
                     keyboardType: inputType,
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius:
+                              BorderRadius.circular(Styles.globalRadius),
                         ),
                         contentPadding: const EdgeInsets.only(
                           bottom: 5,
@@ -36,7 +37,8 @@ Future<dynamic> settingsItemDialogDelay(
                         filled: true,
                         //fillColor: viewModel.clrlvl2,
                         focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius:
+                                BorderRadius.circular(Styles.globalRadius),
                             borderSide:
                                 BorderSide(color: Styles.surfaceColor))),
                     // autofocus: true,

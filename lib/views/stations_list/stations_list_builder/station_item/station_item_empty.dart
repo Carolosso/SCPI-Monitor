@@ -16,7 +16,7 @@ class StationItemEmpty extends StatelessWidget {
     return Card(
         elevation: 5,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
+          borderRadius: BorderRadius.circular(Styles.globalRadius),
         ),
         color: Styles.primaryColor,
         child: Padding(

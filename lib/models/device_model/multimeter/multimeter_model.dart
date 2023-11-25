@@ -1,7 +1,13 @@
-import 'package:test/models/device_model/multimeter/multimeter_channel_model.dart';
+import 'package:test/models/device_model/multimeter/multimeter_channel.dart';
 
 class Multimeter {
-  String type = "Multimeter";
+  String type = "Multimetr";
 
-  List<MultimeterChannel> channels = [MultimeterChannel()];
+  List<MultimeterChannel> channels = [MultimeterChannel(1)];
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return "Multimetr";
+  }
 }

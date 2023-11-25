@@ -8,7 +8,6 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:test/models/device_model/multimeter/multimeter_model.dart';
 import 'package:test/utils/devices_models.dart';
 //import 'package:test/models/chart_model.dart';
 import 'package:test/utils/socket_connection.dart';
@@ -47,7 +46,6 @@ class AppViewModel extends ChangeNotifier {
 
   void switchFindDevicesInNetworkBreak() {
     findDevicesInNetworkBreak = !findDevicesInNetworkBreak;
-    //notifyListeners();
   }
 
   /*  bool chartInStation(int indexStation) {
@@ -126,6 +124,7 @@ class AppViewModel extends ChangeNotifier {
     String status = "Offline";
     String serial = "Unknown";
     String type = "Unknown";
+    int channelCount = 0;
     String measuredUnit = "-";
     Socket socket;
 
@@ -146,7 +145,7 @@ class AppViewModel extends ChangeNotifier {
         if (message.length > 3) {
           manufacturer = message.elementAt(0).trim();
           model = message.elementAt(1).trim();
-          type = detectDeviceType(model);
+          type = detectDeviceType(model).toString();
           name = "$type $model";
           serial = message.elementAt(2).trim();
         } else if (message.length == 2) {
@@ -178,6 +177,10 @@ class AppViewModel extends ChangeNotifier {
       completer = Completer();
       //--------------------- TEST -------------------------------- */
       socket.add(utf8.encode('*IDN?\n'));
+      socket.add(utf8.encode('SYST:COUN?\n')); // channels count
+      //SYST:COMM:RLST REM Remote and Local do the same thing and are included for compatibility with other products. Both allow front panel control.
+      //SYSTem:COMMunicate:TCPip:CONTrol? zwraca port urzadzenia
+
       // send *IDN? ----> <Manufacturer>, <Model>, <Serial Number>, <Firmware Level>, <Options>.
       //await for response/completer
       final timeoutTimer = Timer(const Duration(seconds: 3), () {

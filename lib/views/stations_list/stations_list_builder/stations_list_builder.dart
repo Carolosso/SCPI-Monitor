@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:test/providers/app_view_model.dart';
+import 'package:test/style/theme.dart';
 import 'package:test/views/station_detail/station_detail_view.dart';
 import 'package:test/views/stations_list/stations_list_builder/station_item/station_item_grid_builder.dart';
 import 'package:test/views/stations_list/stations_list_builder/station_item/station_item_empty.dart';
@@ -52,7 +53,7 @@ class StationsListBuilder extends StatelessWidget {
                   background: Container(
                     decoration: BoxDecoration(
                       color: Colors.red.shade300,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(Styles.globalRadius),
                     ),
                     child: Icon(
                       Icons.delete,

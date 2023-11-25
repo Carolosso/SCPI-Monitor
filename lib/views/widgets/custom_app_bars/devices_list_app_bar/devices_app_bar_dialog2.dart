@@ -24,7 +24,8 @@ Future<dynamic> devicesAppBarDialog2(
                   },
                   decoration: InputDecoration(
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius:
+                            BorderRadius.circular(Styles.globalRadius),
                       ),
                       contentPadding: const EdgeInsets.only(
                         bottom: 5,
@@ -32,7 +33,8 @@ Future<dynamic> devicesAppBarDialog2(
                       filled: true,
                       //fillColor: viewModel.clrlvl2,
                       focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius:
+                              BorderRadius.circular(Styles.globalRadius),
                           borderSide: BorderSide(color: Styles.surfaceColor)),
                       labelText: ' IP ',
                       labelStyle: TextStyle(color: Styles.primaryColor)),

@@ -61,7 +61,8 @@ class StationDetailListBuilder extends StatelessWidget {
                     background: Container(
                       decoration: BoxDecoration(
                         color: Colors.red.shade300,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius:
+                            BorderRadius.circular(Styles.globalRadius),
                       ),
                       child: Icon(
                         Icons.delete,
@@ -73,70 +74,77 @@ class StationDetailListBuilder extends StatelessWidget {
                       child: Card(
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
+                          borderRadius:
+                              BorderRadius.circular(Styles.globalRadius),
                         ),
                         color: Styles.primaryColor,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      viewModel.stations[indexStation]
-                                          .devices[indexDevice].name, //
-                                      textAlign: TextAlign.left,
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.white), //??????
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    viewModel.stations[indexStation]
+                                        .devices[indexDevice].name, //
+                                    textAlign: TextAlign.left,
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.white), //??????
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'Wartość mierzona',
+                                      style: TextStyle(
+                                          fontSize: 8,
+                                          color: Styles.surfaceColor),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Wartość mierzona',
-                                        style: TextStyle(
-                                            fontSize: 8,
-                                            color: Styles.surfaceColor),
-                                      ),
-                                    ),
-                                    Text(
-                                      '${viewModel.getDeviceValue(indexStation, indexDevice)}${viewModel.getDeviceMeasuredUnit(indexStation, indexDevice)}',
-                                      style: const TextStyle(
-                                          fontSize: 32,
-                                          //fontWeight: FontWeight.bold,
-                                          color: Colors.white),
-                                    ),
-                                    /* viewModel
-                                            .stations[indexStation]
-                                            .devices[indexDevice]
-                                            .stationDetailsChartViewSelected
-                                        ? Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                              'Wykres',
-                                              style: TextStyle(
-                                                  fontSize: 8,
-                                                  color: Styles.surfaceColor),
-                                            ),
-                                          )
-                                        : Container(),
-                                    viewModel
-                                            .stations[indexStation]
-                                            .devices[indexDevice]
-                                            .stationDetailsChartViewSelected
-                                        ? ChartWidget(
-                                            points: viewModel.stations[indexStation]
-                                                .devices[indexDevice].chart.points,
-                                          )
-                                        : Container(), */
-                                  ],
-                                ),
+                                  ),
+                                  Text(
+                                    '${viewModel.getDeviceValue(indexStation, indexDevice)}${viewModel.getDeviceMeasuredUnit(indexStation, indexDevice)}',
+                                    style: const TextStyle(
+                                        fontSize: 32,
+                                        //fontWeight: FontWeight.bold,
+                                        color: Colors.white),
+                                  ),
+                                  /* viewModel
+                                          .stations[indexStation]
+                                          .devices[indexDevice]
+                                          .stationDetailsChartViewSelected
+                                      ? Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'Wykres',
+                                            style: TextStyle(
+                                                fontSize: 8,
+                                                color: Styles.surfaceColor),
+                                          ),
+                                        )
+                                      : Container(),
+                                  viewModel
+                                          .stations[indexStation]
+                                          .devices[indexDevice]
+                                          .stationDetailsChartViewSelected
+                                      ? ChartWidget(
+                                          points: viewModel.stations[indexStation]
+                                              .devices[indexDevice].chart.points,
+                                        )
+                                      : Container(), */
+                                ],
                               ),
-                              Expanded(
-                                  flex: 0,
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                  color: Styles.surfaceColor,
+                                  borderRadius: BorderRadius.only(
+                                      topRight:
+                                          Radius.circular(Styles.globalRadius),
+                                      bottomRight: Radius.circular(
+                                          Styles.globalRadius))),
+                              child: Expanded(
+                                  flex: 1,
                                   child: Column(
                                     children: [
                                       IconButton(
@@ -158,7 +166,7 @@ class StationDetailListBuilder extends StatelessWidget {
                                                 indexStation);
                                           },
                                           icon: Icon(
-                                              color: Styles.surfaceColor,
+                                              color: Styles.primaryColor,
                                               Icons.edit)),
                                       IconButton(
                                           onPressed: () {
@@ -172,11 +180,11 @@ class StationDetailListBuilder extends StatelessWidget {
                                                       .displayON
                                                   ? Icons.tv_off
                                                   : Icons.tv,
-                                              color: Styles.surfaceColor))
+                                              color: Styles.primaryColor))
                                     ],
                                   )),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),

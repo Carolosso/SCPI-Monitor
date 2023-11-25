@@ -1,7 +1,12 @@
-import 'package:test/models/device_model/multimeter/multimeter_channel_model.dart';
+import 'package:test/models/device_model/generator/generator_channel.dart';
 
 class Generator {
-  String type = "Multimeter";
+  String type = "Generator";
 
-  List<MultimeterChannel> channels = [MultimeterChannel()];
+  List<GeneratorChannel> channels = [GeneratorChannel(1), GeneratorChannel(2)];
+  @override
+  String toString() {
+    // TODO: implement toString
+    return "Generator";
+  }
 }

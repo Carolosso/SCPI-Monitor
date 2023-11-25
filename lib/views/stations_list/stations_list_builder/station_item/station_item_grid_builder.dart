@@ -17,7 +17,7 @@ class StationItemGridBuilder extends StatelessWidget {
     return Card(
       elevation: 5,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
+        borderRadius: BorderRadius.circular(Styles.globalRadius),
       ),
       color: Styles.primaryColor,
       child: Padding(
