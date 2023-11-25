@@ -65,7 +65,7 @@ Future<void> stationDetailItemDialog(
                   ),
                 ),
                 const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
-                SizedBox(
+                /* SizedBox(
                     width: double.infinity,
                     child: Consumer<AppViewModel>(
                         builder: (context, viewModel, child) {
@@ -103,7 +103,7 @@ Future<void> stationDetailItemDialog(
                               }),
                         ],
                       );
-                    })),
+                    })), */
               ],
             ),
           ),

@@ -72,6 +72,13 @@ class DeviceItem extends StatelessWidget {
                   ),
                 ),
                 Text(
+                  'Typ: ${viewModel.devices[indexDevice].type}',
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(
+                    fontSize: 15,
+                  ),
+                ),
+                Text(
                   'Serial: ${viewModel.devices[indexDevice].serial}',
                   textAlign: TextAlign.left,
                   style: const TextStyle(
@@ -93,7 +100,7 @@ class DeviceItem extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 15,
                         color:
-                            viewModel.devices[indexDevice].status == 'available'
+                            viewModel.devices[indexDevice].status == 'dostępny'
                                 ? Styles.surfaceColor
                                 : Colors.red,
                       ),

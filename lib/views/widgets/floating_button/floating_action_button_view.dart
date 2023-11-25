@@ -14,7 +14,8 @@ class FloatingActionButtonView extends StatelessWidget {
     return Consumer<AppViewModel>(
       builder: (context, viewModel, child) {
         return SpeedDial(
-            icon: Icons.video_settings_rounded,
+            label: const Text("Pomiar"),
+            icon: Icons.settings_remote,
             openCloseDial: isDialOpen,
             backgroundColor: Styles.surfaceColor,
             children: [
@@ -44,7 +45,7 @@ class FloatingActionButtonView extends StatelessWidget {
               SpeedDialChild(
                   label: "Pomiar pojedynczy",
                   child: const Icon(
-                    Icons.shortcut,
+                    Icons.play_for_work_rounded,
                     color: Colors.black,
                     size: 30,
                   ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test/models/device_model.dart';
+import 'package:test/models/device_model/device_model.dart';
 
 class Station {
   UniqueKey key;

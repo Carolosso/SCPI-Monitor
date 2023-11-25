@@ -8,6 +8,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:test/models/command_model.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/utils/navigation_service.dart';
 
@@ -20,6 +21,36 @@ class SocketConnection {
 
   SocketConnection(this._ipAddress, this._portAddress);
 
+  List<Command> keysightGeneratorCommands = [
+    Command(type: "GET", command: "source1:function?\n"),
+    Command(type: "GET", command: "source1:function?\n"),
+    Command(type: "GET", command: "source1:voltage?\n"),
+    Command(type: "GET", command: "source1:voltage:unit?\n"),
+    Command(type: "GET", command: "source1:voltage:unit?\n"),
+    Command(type: "GET", command: "source1:voltage:offset?\n"),
+    Command(type: "GET", command: "source1:frequency?\n")
+  ];
+  List<Command> keysightPowerSupplyCommands = [
+    Command(type: "SET", command: "source:voltage? ,(@1)\n"),
+    Command(type: "SET", command: "source:current? ,(@1)\n"),
+    Command(type: "GET", command: "measure:voltage? ch1\n"),
+    Command(type: "GET", command: "measure:current? ch1\n")
+  ];
+  List<Command> keysightOsciloscopeCommands = [
+    //wartość międzyszczytowa
+    Command(type: "GET", command: "measure:vpp? channel1\n"),
+    //wartość skuteczna
+    Command(type: "GET", command: "measure:vrms? cycle,ac,channel1\n"),
+    //składowa stała
+    Command(type: "GET", command: "measure:vaverage? cycle,channel1\n"),
+    //częstotliwość
+    Command(type: "GET", command: "measure:frequency? channel1\n")
+  ];
+  List<Command> keysightMultimeterCommands = [
+    Command(type: "GET", command: "FUNCTION?\n"),
+    Command(type: "GET", command: "READ?\n")
+  ];
+
   //Completer
   Completer completer = Completer();
 
@@ -28,18 +59,14 @@ class SocketConnection {
   /// Getting value from received message from device by sending "READ?" command
   Future<double> getValue() async {
     // debugPrint("get value():${isConnected()}");
-    AppViewModel viewModel = getAppViewModel();
     try {
-      if (!viewModel.isStopped) {
-        //send READ?
-        sendMessageEOM('READ?', '\n');
-        //wait for messageReceiver()
-        await completer.future;
-        //get and return value
-        double result = double.parse(message);
-        return result;
-      }
-      return 0;
+      //send READ?
+      sendMessageEOM('READ?', '\n');
+      //wait for messageReceiver()
+      await completer.future;
+      //get and return value
+      double result = double.parse(message);
+      return result;
     } catch (exception) {
       return 0;
     }

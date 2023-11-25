@@ -8,7 +8,6 @@ import 'package:test/providers/navigation_view_model.dart';
 import 'package:test/utils/navigation_service.dart';
 import 'package:test/pages/home_page.dart';
 
-//
 Future<void> main() async {
   //splash screen
   await initApp();

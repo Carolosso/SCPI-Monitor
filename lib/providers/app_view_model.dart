@@ -4,13 +4,15 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:fl_chart/fl_chart.dart';
+//import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:test/models/chart_model.dart';
+import 'package:test/models/device_model/multimeter/multimeter_model.dart';
+import 'package:test/utils/devices_models.dart';
+//import 'package:test/models/chart_model.dart';
 import 'package:test/utils/socket_connection.dart';
-import 'package:test/models/device_model.dart';
+import 'package:test/models/device_model/device_model.dart';
 import 'package:test/models/station_model.dart';
 import 'package:test/providers/settings_view_model.dart';
 import 'package:test/utils/navigation_service.dart';
@@ -27,10 +29,10 @@ class AppViewModel extends ChangeNotifier {
   List<Station> stations = [];
   int get stationsCount => stations.length;
   int get devicesCount => devices.length;
-  //CHART
+  /* //CHART
   int limitCount = 50;
   double xValue = 0;
-  double step = 0.1;
+  double step = 0.1; */
   //
   //
   bool connectedToWIFI = false;
@@ -48,12 +50,12 @@ class AppViewModel extends ChangeNotifier {
     //notifyListeners();
   }
 
-  bool chartInStation(int indexStation) {
+  /*  bool chartInStation(int indexStation) {
     for (Device device in stations.elementAt(indexStation).devices) {
       if (device.stationsChartViewSelected) return true;
     }
     return false;
-  }
+  } */
 
   void switchStartStop() {
     isStopped = !isStopped;
@@ -123,6 +125,7 @@ class AppViewModel extends ChangeNotifier {
     String model = "Unknown";
     String status = "Offline";
     String serial = "Unknown";
+    String type = "Unknown";
     String measuredUnit = "-";
     Socket socket;
 
@@ -143,19 +146,20 @@ class AppViewModel extends ChangeNotifier {
         if (message.length > 3) {
           manufacturer = message.elementAt(0).trim();
           model = message.elementAt(1).trim();
-          name = "$manufacturer $model";
+          type = detectDeviceType(model);
+          name = "$type $model";
           serial = message.elementAt(2).trim();
         } else if (message.length == 2) {
           List<String> temp = message.toString().split(' ');
           measuredUnit = temp.first;
         }
-        status = "available";
+        status = "dostępny";
         //we got response so
         //complete completer
         completer.complete(event);
         completer = Completer();
       });
-      // ------------------ TEST -------------------------------
+      /* // ------------------ TEST -------------------------------
       SettingsViewModel vm = getSettingsViewModel();
       if (vm.testOptionsAvailable) {
         socket.add(
@@ -172,16 +176,25 @@ class AppViewModel extends ChangeNotifier {
         timeoutTimer.cancel();
       }
       completer = Completer();
-      //--------------------- TEST --------------------------------
+      //--------------------- TEST -------------------------------- */
       socket.add(utf8.encode('*IDN?\n'));
       // send *IDN? ----> <Manufacturer>, <Model>, <Serial Number>, <Firmware Level>, <Options>.
       //await for response/completer
+      final timeoutTimer = Timer(const Duration(seconds: 3), () {
+        debugPrint("Koniec czasu");
+        textInfo = "Timeout";
+        notifyListeners();
+        completer.complete();
+      });
+      //await for response/completer
       await completer.future;
-      // .. and close the socket
+      timeoutTimer.cancel(); // .. and close the socket
       socket.close();
       Device device = Device(
           key: UniqueKey(),
           name: name,
+          displayON: true,
+          type: type,
           ip: ip,
           port: port,
           manufacturer: manufacturer,
@@ -190,9 +203,9 @@ class AppViewModel extends ChangeNotifier {
           status: status,
           measuredUnit: measuredUnit,
           value: 0.0,
-          stationDetailsChartViewSelected: false,
+          /* stationDetailsChartViewSelected: false,
           stationsChartViewSelected: false,
-          chart: Chart(points: [], xValue: xValue),
+          chart: Chart(points: [], xValue: xValue), */
           connection: socketConnection);
       debugPrint("CREATE DEVICE PORT: $port");
       // finally add device to main devices list if not already
@@ -204,7 +217,9 @@ class AppViewModel extends ChangeNotifier {
       // if can't connect then add it too
       Device device = Device(
           key: UniqueKey(),
+          displayON: true,
           name: name,
+          type: type,
           ip: ip,
           port: port,
           manufacturer: manufacturer,
@@ -213,9 +228,9 @@ class AppViewModel extends ChangeNotifier {
           status: status,
           measuredUnit: measuredUnit,
           value: 0.0,
-          stationDetailsChartViewSelected: false,
+          /* stationDetailsChartViewSelected: false,
           stationsChartViewSelected: false,
-          chart: Chart(points: [], xValue: xValue),
+          chart: Chart(points: [], xValue: xValue), */
           connection: socketConnection);
       if (comparedBySerial(device)) {
         devices.add(device);
@@ -249,7 +264,7 @@ class AppViewModel extends ChangeNotifier {
     // have to clear this points cuz its stays in memory??? despite removing object from list
     //stations[indexStation].devices.elementAt(indexDevice).points.clear();
     stations[indexStation].devices.removeAt(indexDevice);
-    xValue = 0; //resetting X
+    //xValue = 0; //resetting X
     notifyListeners();
   }
 
@@ -299,7 +314,7 @@ class AppViewModel extends ChangeNotifier {
       //debugPrint("REFRESH FNC PORT: $port");
       if (device.status == "Offline" &&
           await device.connection.canConnect(5000)) {
-        device.status = "available";
+        device.status = "dostępny";
         devices.remove(device);
         createDevice(ip, port);
       }
@@ -348,10 +363,12 @@ class AppViewModel extends ChangeNotifier {
     // TODO kopiowanie obiektu - ogarnąć to -
     SocketConnection newSocketConnection =
         SocketConnection(device.ip, device.port);
-    Chart newChart = Chart(points: [const FlSpot(0, 0)], xValue: 0);
+    // Chart newChart = Chart(points: [const FlSpot(0, 0)], xValue: 0);
     Device newDevice = Device(
         key: device.key,
         name: device.name,
+        displayON: device.displayON,
+        type: device.type,
         ip: device.ip,
         port: device.port,
         manufacturer: device.manufacturer,
@@ -360,14 +377,15 @@ class AppViewModel extends ChangeNotifier {
         status: device.status,
         measuredUnit: device.measuredUnit,
         value: device.value,
+        /* 
         stationDetailsChartViewSelected: device.stationDetailsChartViewSelected,
         stationsChartViewSelected: device.stationsChartViewSelected,
         chart:
-            newChart, //clearing points and adding one to prevent from crashing
+            newChart, //clearing points and adding one to prevent from crashing */
         connection: newSocketConnection);
     //debugPrint("ADD DEVICE TO STATION PORT: ${newDevice.port}");
     if (comparedBySerialInStations(newDevice) &&
-        newDevice.status == "available") {
+        newDevice.status == "dostępny") {
       await newDevice.connection.startConnection();
       stations[indexStation].devices.add(newDevice);
       notifyListeners();
@@ -382,7 +400,7 @@ class AppViewModel extends ChangeNotifier {
       double value = await device.connection.getValue();
       //debugPrint(value.toString());
       device.value = value;
-      //move chart
+      /* //move chart
       if (device.chart.points.length > limitCount) {
         device.chart.points.removeAt(0);
         notifyListeners();
@@ -390,7 +408,7 @@ class AppViewModel extends ChangeNotifier {
       //add point to chart
       device.chart.points.add(FlSpot(device.chart.xValue, value));
       // debugPrint(device.points.toString());
-      device.chart.xValue += step;
+      device.chart.xValue += step; */
       notifyListeners();
     } catch (e) {
       //debugPrint("ERROR: $e");
@@ -434,7 +452,7 @@ class AppViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// CheckBox1 controller
+  /*  /// CheckBox1 controller
   /// * indexDevice
   /// * indexStation
   /// * chartSelected
@@ -444,9 +462,9 @@ class AppViewModel extends ChangeNotifier {
         .devices[indexDevice]
         .stationDetailsChartViewSelected = chartSelected;
     notifyListeners();
-  }
+  } */
 
-  /// CheckBox2 controller
+  /* /// CheckBox2 controller
   /// * indexDevice
   /// * indexStation
   /// * chartSelected
@@ -455,7 +473,7 @@ class AppViewModel extends ChangeNotifier {
     stations[indexStation].devices[indexDevice].stationsChartViewSelected =
         chartSelected;
     notifyListeners();
-  }
+  } */
 
   /// Setting new parameters to specified Device in main devices list.
   /// * @index
@@ -658,6 +676,23 @@ class AppViewModel extends ChangeNotifier {
     } 
     return 0;
     */
+  }
+
+  void changeDisplayOnOff(int indexStation, int indexDevice) {
+    stations[indexStation].devices[indexDevice].displayON =
+        !stations[indexStation].devices[indexDevice].displayON;
+    if (stations[indexStation].devices[indexDevice].displayON) {
+      stations[indexStation]
+          .devices[indexDevice]
+          .connection
+          .sendMessage("DISPlay OFF\n");
+    } else if (!stations[indexStation].devices[indexDevice].displayON) {
+      stations[indexStation]
+          .devices[indexDevice]
+          .connection
+          .sendMessage("DISPlay ON\n");
+    }
+    notifyListeners();
   }
 
   void init() async {

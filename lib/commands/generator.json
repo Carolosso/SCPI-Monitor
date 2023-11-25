@@ -1,0 +1,11 @@
+{
+    "read": {
+        "commands": [
+            "source1:function?\n",
+            "source1:voltage?\n",
+            "source1:voltage:unit?\n",
+            "source1:voltage:offset?\n",
+            "source1:frequency?\n"
+        ]
+    }
+}

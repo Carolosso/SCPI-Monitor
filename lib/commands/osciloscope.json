@@ -1,0 +1,10 @@
+{
+    "read": {
+        "commands": [
+            "measure:vpp? channel1\n",
+            "measure:vrms? cycle,ac,channel1\n",
+            "measure:vaverage? cycle,channel1\n",
+            "measure:frequency? channel1\n"
+        ]
+    }
+}

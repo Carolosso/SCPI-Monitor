@@ -51,7 +51,7 @@ class StationDeviceItem extends StatelessWidget {
                   ),
                 ),
               ),
-              viewModel.stations[indexStation].devices[indexDevice]
+              /* viewModel.stations[indexStation].devices[indexDevice]
                       .stationsChartViewSelected
                   ? Expanded(
                       flex: 3,
@@ -74,7 +74,7 @@ class StationDeviceItem extends StatelessWidget {
                   : Expanded(
                       flex: 0,
                       child: Container(),
-                    ),
+                    ), */
             ],
           ),
         ),

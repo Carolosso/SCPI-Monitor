@@ -1,0 +1,14 @@
+{
+    "set": {
+        "commands": [
+            "source:voltage? ,(@1)\n",
+            "source:current? ,(@1)\n"
+        ]
+    },
+    "read": {
+        "commands": [
+            "measure:voltage? ch1\n",
+            "measure:current? ch1\n"
+        ]
+    }
+}

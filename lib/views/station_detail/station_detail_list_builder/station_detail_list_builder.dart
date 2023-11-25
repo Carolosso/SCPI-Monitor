@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
-import 'package:test/views/widgets/charts/chart_widget.dart';
 import 'package:test/views/station_detail/station_detail_list_builder/station_detail_item/station_detial_item_dialog.dart';
+//import 'package:test/views/widgets/charts/chart_widget.dart';
 import 'package:test/views/widgets/snackbar/show_snackbar.dart';
 
 class StationDetailListBuilder extends StatelessWidget {
@@ -55,7 +55,6 @@ class StationDetailListBuilder extends StatelessWidget {
                       viewModel.removeDeviceFromStation(
                           indexStation, indexDevice);
                       HapticFeedback.lightImpact(); //vibration
-
                       //Toast
                       showSnackBar(context, 'Usunięto urządzenie.');
                     },
@@ -71,82 +70,112 @@ class StationDetailListBuilder extends StatelessWidget {
                     ),
                     child: SizedBox(
                       width: double.infinity,
-                      child: GestureDetector(
-                        onTap: () {
-                          nameTextController.text = viewModel
-                              .stations[indexStation].devices[indexDevice].name;
-                          unitTextController.text = viewModel
-                              .stations[indexStation]
-                              .devices[indexDevice]
-                              .measuredUnit;
-                          stationDetailItemDialog(
-                              context,
-                              indexDevice,
-                              viewModel,
-                              nameTextController,
-                              unitTextController,
-                              indexStation);
-                        },
-                        child: Card(
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                          color: Styles.primaryColor,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  viewModel.stations[indexStation]
-                                      .devices[indexDevice].name, //
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white), //??????
+                      child: Card(
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        color: Styles.primaryColor,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      viewModel.stations[indexStation]
+                                          .devices[indexDevice].name, //
+                                      textAlign: TextAlign.left,
+                                      style: const TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.white), //??????
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        'Wartość mierzona',
+                                        style: TextStyle(
+                                            fontSize: 8,
+                                            color: Styles.surfaceColor),
+                                      ),
+                                    ),
+                                    Text(
+                                      '${viewModel.getDeviceValue(indexStation, indexDevice)}${viewModel.getDeviceMeasuredUnit(indexStation, indexDevice)}',
+                                      style: const TextStyle(
+                                          fontSize: 32,
+                                          //fontWeight: FontWeight.bold,
+                                          color: Colors.white),
+                                    ),
+                                    /* viewModel
+                                            .stations[indexStation]
+                                            .devices[indexDevice]
+                                            .stationDetailsChartViewSelected
+                                        ? Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              'Wykres',
+                                              style: TextStyle(
+                                                  fontSize: 8,
+                                                  color: Styles.surfaceColor),
+                                            ),
+                                          )
+                                        : Container(),
+                                    viewModel
+                                            .stations[indexStation]
+                                            .devices[indexDevice]
+                                            .stationDetailsChartViewSelected
+                                        ? ChartWidget(
+                                            points: viewModel.stations[indexStation]
+                                                .devices[indexDevice].chart.points,
+                                          )
+                                        : Container(), */
+                                  ],
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'Wartość mierzona',
-                                    style: TextStyle(
-                                        fontSize: 8,
-                                        color: Styles.surfaceColor),
-                                  ),
-                                ),
-                                Text(
-                                  '${viewModel.getDeviceValue(indexStation, indexDevice)}${viewModel.getDeviceMeasuredUnit(indexStation, indexDevice)}',
-                                  style: const TextStyle(
-                                      fontSize: 32,
-                                      //fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                                ),
-                                viewModel
-                                        .stations[indexStation]
-                                        .devices[indexDevice]
-                                        .stationDetailsChartViewSelected
-                                    ? Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Wykres',
-                                          style: TextStyle(
-                                              fontSize: 8,
-                                              color: Styles.surfaceColor),
-                                        ),
-                                      )
-                                    : Container(),
-                                viewModel
-                                        .stations[indexStation]
-                                        .devices[indexDevice]
-                                        .stationDetailsChartViewSelected
-                                    ? ChartWidget(
-                                        points: viewModel.stations[indexStation]
-                                            .devices[indexDevice].chart.points,
-                                      )
-                                    : Container(),
-                              ],
-                            ),
+                              ),
+                              Expanded(
+                                  flex: 0,
+                                  child: Column(
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {
+                                            nameTextController.text = viewModel
+                                                .stations[indexStation]
+                                                .devices[indexDevice]
+                                                .name;
+                                            unitTextController.text = viewModel
+                                                .stations[indexStation]
+                                                .devices[indexDevice]
+                                                .measuredUnit;
+                                            stationDetailItemDialog(
+                                                context,
+                                                indexDevice,
+                                                viewModel,
+                                                nameTextController,
+                                                unitTextController,
+                                                indexStation);
+                                          },
+                                          icon: Icon(
+                                              color: Styles.surfaceColor,
+                                              Icons.edit)),
+                                      IconButton(
+                                          onPressed: () {
+                                            viewModel.changeDisplayOnOff(
+                                                indexStation, indexDevice);
+                                          },
+                                          icon: Icon(
+                                              viewModel
+                                                      .stations[indexStation]
+                                                      .devices[indexDevice]
+                                                      .displayON
+                                                  ? Icons.tv_off
+                                                  : Icons.tv,
+                                              color: Styles.surfaceColor))
+                                    ],
+                                  )),
+                            ],
                           ),
                         ),
                       ),
