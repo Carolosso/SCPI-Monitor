@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:test/style/theme.dart';
 
-Expanded itemChannelBuilder(int i) {
+Expanded generatorChannelBuilder(int i) {
   return Expanded(
     child: Stack(
       children: [

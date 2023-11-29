@@ -1,20 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-//import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:test/models/device_model/device_model.dart';
 import 'package:test/models/device_model/generator/generator_model.dart';
 import 'package:test/models/device_model/multimeter/multimeter_model.dart';
+import 'package:test/models/device_model/oscilloscope/oscilloscope_model.dart';
 import 'package:test/utils/devices_models.dart';
 import 'package:test/utils/format_unit.dart';
 import 'package:test/utils/increment_ip.dart';
-//import 'package:test/models/chart_model.dart';
 import 'package:test/utils/socket_connection.dart';
 import 'package:test/models/station_model.dart';
 import 'package:test/providers/settings_view_model.dart';
@@ -34,12 +32,7 @@ class AppViewModel extends ChangeNotifier {
   ];
   int get stationsCount => stations.length;
   int get devicesCount => devices.length;
-  /* //CHART
-  int limitCount = 50;
-  double xValue = 0;
-  double step = 0.1; */
-  //
-  //
+
   bool connectedToWIFI = false;
 
   bool isStopped = true;
@@ -53,13 +46,6 @@ class AppViewModel extends ChangeNotifier {
   void switchFindDevicesInNetworkBreak() {
     findDevicesInNetworkBreak = !findDevicesInNetworkBreak;
   }
-
-  /*  bool chartInStation(int indexStation) {
-    for (Device device in stations.elementAt(indexStation).devices) {
-      if (device.stationsChartViewSelected) return true;
-    }
-    return false;
-  } */
 
   void switchStartStop() {
     isStopped = !isStopped;
@@ -213,9 +199,6 @@ class AppViewModel extends ChangeNotifier {
         model: model,
         serial: serial,
         status: status,
-        /* stationDetailsChartViewSelected: false,
-          stationsChartViewSelected: false,
-          chart: Chart(points: [], xValue: xValue), */
         connection: socketConnection);
     debugPrint("CREATE DEVICE PORT: $port");
     // finally add device to main devices list if not already
@@ -223,7 +206,7 @@ class AppViewModel extends ChangeNotifier {
       devices.add(device);
       devices.add(Device(
           key: UniqueKey(),
-          name: "name",
+          name: "Generator name",
           type: "Generator",
           ip: "127.0.0.2",
           port: 2313,
@@ -232,6 +215,17 @@ class AppViewModel extends ChangeNotifier {
           serial: "serial",
           status: "dostępny",
           connection: SocketConnection("128.12.12.2", 525)));
+      devices.add(Device(
+          key: UniqueKey(),
+          name: "Oscyloskop name2222",
+          type: "Oscyloskop",
+          ip: "127.0.0.222",
+          port: 2313,
+          manufacturer: "manufacturer",
+          model: "model",
+          serial: "serial22",
+          status: "dostępny",
+          connection: SocketConnection("128.12.12.22", 525)));
     }
     notifyListeners();
     return "Nawiązano połączenie z urządzeniem!";
@@ -402,6 +396,19 @@ class AppViewModel extends ChangeNotifier {
               status: device.status,
               connection: device.connection));
           break;
+        case "Oscyloskop":
+          stations[indexStation].devices.add(Oscilloscope(
+              key: UniqueKey(),
+              name: device.name,
+              displayON: true,
+              ip: device.ip,
+              port: device.port,
+              manufacturer: device.manufacturer,
+              model: device.model,
+              serial: device.serial,
+              status: device.status,
+              connection: device.connection));
+          break;
         default:
       }
       notifyListeners();
@@ -416,15 +423,7 @@ class AppViewModel extends ChangeNotifier {
       double value = await device.connection.getValue();
       //debugPrint(value.toString());
       device.value = value;
-      /* //move chart
-      if (device.chart.points.length > limitCount) {
-        device.chart.points.removeAt(0);
-        notifyListeners();
-      }
-      //add point to chart
-      device.chart.points.add(FlSpot(device.chart.xValue, value));
-      // debugPrint(device.points.toString());
-      device.chart.xValue += step; */
+
       notifyListeners();
     } catch (e) {
       //debugPrint("ERROR: $e");
@@ -472,29 +471,6 @@ class AppViewModel extends ChangeNotifier {
     stations[indexStation].devices[indexDevice].measuredUnit = unit;
     notifyListeners();
   }
-
-  /*  /// CheckBox1 controller
-  /// * indexDevice
-  /// * indexStation
-  /// * chartSelected
-  void setCheckBox1ParameterToDeviceInStation(
-      int indexDevice, int indexStation, bool chartSelected) {
-    stations[indexStation]
-        .devices[indexDevice]
-        .stationDetailsChartViewSelected = chartSelected;
-    notifyListeners();
-  } */
-
-  /* /// CheckBox2 controller
-  /// * indexDevice
-  /// * indexStation
-  /// * chartSelected
-  void setCheckBox2ParameterToDeviceInStation(
-      int indexDevice, int indexStation, bool chartSelected) {
-    stations[indexStation].devices[indexDevice].stationsChartViewSelected =
-        chartSelected;
-    notifyListeners();
-  } */
 
   /// Setting new parameters to specified Device in main devices list.
   /// * @index

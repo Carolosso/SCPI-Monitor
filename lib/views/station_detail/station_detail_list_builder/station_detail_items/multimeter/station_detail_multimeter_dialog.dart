@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
 
-Future<void> stationDetailItemDialog(
+Future<void> stationDetailMultimeterDialog(
     BuildContext context,
     int indexDevice,
     AppViewModel viewModel,

@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
-import 'package:test/views/station_detail/station_detail_list_builder/station_detail_items/station_detial_item_dialog.dart';
+import 'package:test/views/station_detail/station_detail_list_builder/station_detail_items/generator/station_detail_generator_dialog.dart';
+import 'package:test/views/station_detail/station_detail_list_builder/station_detail_items/multimeter/station_detail_multimeter_dialog.dart';
+import 'package:test/views/stations_list/stations_list_builder/station_item_generator/generator_channel_builder.dart';
 
-class StationDetailItemMultimeter extends StatelessWidget {
-  const StationDetailItemMultimeter({
+class StationDetailItemGenerator extends StatelessWidget {
+  const StationDetailItemGenerator({
     super.key,
     required this.viewModel,
     required this.indexStation,
     required this.nameTextController,
-    required this.unitTextController,
     required this.indexDevice,
   });
 
@@ -17,7 +18,6 @@ class StationDetailItemMultimeter extends StatelessWidget {
   final int indexStation;
   final int indexDevice;
   final TextEditingController nameTextController;
-  final TextEditingController unitTextController;
 
   @override
   Widget build(BuildContext context) {
@@ -45,47 +45,44 @@ class StationDetailItemMultimeter extends StatelessWidget {
                         fontSize: 14, color: Colors.white), //??????
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Wartość mierzona',
-                      style: TextStyle(fontSize: 8, color: Styles.surfaceColor),
+                    padding: const EdgeInsets.all(6.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            generatorChannelBuilder(1),
+                            const SizedBox(
+                              width: 6,
+                            ),
+                            generatorChannelBuilder(2)
+                          ],
+                        ),
+                      ],
                     ),
-                  ),
-                  Text(
-                    '${viewModel.getMultimeterValue(indexStation, indexDevice)}${viewModel.getDeviceMeasuredUnit(indexStation, indexDevice)}',
-                    style: const TextStyle(
-                        fontSize: 32,
-                        //fontWeight: FontWeight.bold,
-                        color: Colors.white),
                   ),
                 ],
               ),
             ),
             Positioned(
               right: 0,
+              top: 0,
               child: Container(
                 decoration: BoxDecoration(
                     color: Styles.surfaceColor,
                     borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(Styles.globalRadius),
-                        bottomRight: Radius.circular(Styles.globalRadius))),
-                child: Column(
+                      topRight: Radius.circular(Styles.globalRadius),
+                      bottomLeft: Radius.circular(Styles.globalRadius),
+                    )),
+                child: Row(
                   children: [
                     IconButton(
                         onPressed: () {
                           nameTextController.text = viewModel
                               .stations[indexStation].devices[indexDevice].name;
-                          unitTextController.text = viewModel
-                              .stations[indexStation]
-                              .devices[indexDevice]
-                              .measuredUnit;
-                          stationDetailItemDialog(
-                              context,
-                              indexDevice,
-                              viewModel,
-                              nameTextController,
-                              unitTextController,
-                              indexStation);
+                          stationDetailGeneratorDialog(context, indexDevice,
+                              viewModel, nameTextController, indexStation);
                         },
                         icon: Icon(color: Styles.primaryColor, Icons.edit)),
                     IconButton(

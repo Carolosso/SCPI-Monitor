@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
-import 'package:test/views/stations_list/stations_list_builder/station_item_generator/generator_channel_builder.dart';
+import 'package:test/views/stations_list/stations_list_builder/station_item_oscilloscope/oscilloscope_channel_builder.dart';
 
-class StationDeviceItemGenerator extends StatelessWidget {
-  const StationDeviceItemGenerator({
+class StationDeviceItemOscilloscope extends StatelessWidget {
+  const StationDeviceItemOscilloscope({
     super.key,
     required this.viewModel,
     required this.indexStation,
@@ -29,7 +29,7 @@ class StationDeviceItemGenerator extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
-              padding: const EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(6.0),
               child: Text(
                 viewModel.stations[indexStation].devices[indexDevice].name,
                 textAlign: TextAlign.left,
@@ -41,11 +41,19 @@ class StationDeviceItemGenerator extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                generatorChannelBuilder(1),
+                oscilloscopeChannelBuilder(1),
                 const SizedBox(
-                  width: 6,
+                  width: 3,
                 ),
-                generatorChannelBuilder(2)
+                oscilloscopeChannelBuilder(2),
+                const SizedBox(
+                  width: 3,
+                ),
+                oscilloscopeChannelBuilder(3),
+                const SizedBox(
+                  width: 3,
+                ),
+                oscilloscopeChannelBuilder(4)
               ],
             ),
           ],

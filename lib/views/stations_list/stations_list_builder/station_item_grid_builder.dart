@@ -3,6 +3,7 @@ import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
 import 'package:test/views/stations_list/stations_list_builder/station_item_generator/station_device_generator_item.dart';
 import 'package:test/views/stations_list/stations_list_builder/station_item_multimeter/station_device_multimeter_item.dart';
+import 'package:test/views/stations_list/stations_list_builder/station_item_oscilloscope/station_device_oscilloscope_item.dart';
 
 class StationItemGridBuilder extends StatelessWidget {
   const StationItemGridBuilder({
@@ -49,6 +50,12 @@ class StationItemGridBuilder extends StatelessWidget {
                       );
                     case "Generator":
                       return StationDeviceItemGenerator(
+                        viewModel: viewModel,
+                        indexStation: indexStation,
+                        indexDevice: indexDevice,
+                      );
+                    case "Oscyloskop":
+                      return StationDeviceItemOscilloscope(
                         viewModel: viewModel,
                         indexStation: indexStation,
                         indexDevice: indexDevice,

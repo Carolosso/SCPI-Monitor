@@ -13,10 +13,6 @@ class Generator {
   String model;
   String serial;
   String status;
-
-  /*  bool stationDetailsChartViewSelected;
-  bool stationsChartViewSelected;
-  Chart chart; */
   SocketConnection connection;
   List<GeneratorChannel> channels = [GeneratorChannel(1), GeneratorChannel(2)];
 
