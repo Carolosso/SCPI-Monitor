@@ -8,10 +8,14 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:test/models/device_model/device_model.dart';
+import 'package:test/models/device_model/generator/generator_model.dart';
+import 'package:test/models/device_model/multimeter/multimeter_model.dart';
 import 'package:test/utils/devices_models.dart';
+import 'package:test/utils/format_unit.dart';
+import 'package:test/utils/increment_ip.dart';
 //import 'package:test/models/chart_model.dart';
 import 'package:test/utils/socket_connection.dart';
-import 'package:test/models/device_model/device_model.dart';
 import 'package:test/models/station_model.dart';
 import 'package:test/providers/settings_view_model.dart';
 import 'package:test/utils/navigation_service.dart';
@@ -25,7 +29,9 @@ class AppViewModel extends ChangeNotifier {
     init();
   }
   List<Device> devices = [];
-  List<Station> stations = [];
+  List<Station> stations = [
+    Station(devices: [], key: UniqueKey(), name: "name")
+  ];
   int get stationsCount => stations.length;
   int get devicesCount => devices.length;
   /* //CHART
@@ -76,7 +82,7 @@ class AppViewModel extends ChangeNotifier {
     SettingsViewModel settingsViewModel = getSettingsViewModel();
     while (!isStopped) {
       for (Station station in stations) {
-        for (Device device in station.devices) {
+        for (var device in station.devices) {
           if (isStopped) break;
           debugPrint("Próba pobrania informacji urzadzenia ${device.name}");
           await refreshDeviceValue(device);
@@ -90,7 +96,7 @@ class AppViewModel extends ChangeNotifier {
   /// Starting measurements for every Device in every Station once.
   void playOnce() async {
     for (Station station in stations) {
-      for (Device device in station.devices) {
+      for (var device in station.devices) {
         debugPrint("Próba pobrania informacji urzadzenia ${device.name}");
         await refreshDeviceValue(device);
         debugPrint("Pobrano");
@@ -124,17 +130,16 @@ class AppViewModel extends ChangeNotifier {
     String status = "Offline";
     String serial = "Unknown";
     String type = "Unknown";
-    int channelCount = 0;
     String measuredUnit = "-";
     Socket socket;
-
+    int channelCount = 0;
     try {
       if (!isValidHost(ip)) {
         return "Zły format IP!";
       } else if (!comparedByIP(ip)) {
         return "Urządzenie znajduje się już na liście.";
       }
-      // debugPrint("CREATE DEVICE CONNECT PORT:$port");
+      //debugPrint("CREATE DEVICE CONNECT PORT:$port");
       //initialize socket
       socket =
           await Socket.connect(ip, port, timeout: const Duration(seconds: 3));
@@ -146,6 +151,7 @@ class AppViewModel extends ChangeNotifier {
           manufacturer = message.elementAt(0).trim();
           model = message.elementAt(1).trim();
           type = detectDeviceType(model).toString();
+          // debugPrint("$type");
           name = "$type $model";
           serial = message.elementAt(2).trim();
         } else if (message.length == 2) {
@@ -193,54 +199,41 @@ class AppViewModel extends ChangeNotifier {
       await completer.future;
       timeoutTimer.cancel(); // .. and close the socket
       socket.close();
-      Device device = Device(
-          key: UniqueKey(),
-          name: name,
-          displayON: true,
-          type: type,
-          ip: ip,
-          port: port,
-          manufacturer: manufacturer,
-          model: model,
-          serial: serial,
-          status: status,
-          measuredUnit: measuredUnit,
-          value: 0.0,
-          /* stationDetailsChartViewSelected: false,
-          stationsChartViewSelected: false,
-          chart: Chart(points: [], xValue: xValue), */
-          connection: socketConnection);
-      debugPrint("CREATE DEVICE PORT: $port");
-      // finally add device to main devices list if not already
-      if (comparedBySerial(device)) {
-        devices.add(device);
-      }
-      notifyListeners();
     } catch (ex) {
-      // if can't connect then add it too
-      Device device = Device(
-          key: UniqueKey(),
-          displayON: true,
-          name: name,
-          type: type,
-          ip: ip,
-          port: port,
-          manufacturer: manufacturer,
-          model: model,
-          serial: serial,
-          status: status,
-          measuredUnit: measuredUnit,
-          value: 0.0,
-          /* stationDetailsChartViewSelected: false,
-          stationsChartViewSelected: false,
-          chart: Chart(points: [], xValue: xValue), */
-          connection: socketConnection);
-      if (comparedBySerial(device)) {
-        devices.add(device);
-      }
-      notifyListeners();
       return "Nie udalo się nawiązać połączenia z urządzeniem!";
     }
+
+    Device device = Device(
+        key: UniqueKey(),
+        name: name,
+        type: type,
+        ip: ip,
+        port: port,
+        manufacturer: manufacturer,
+        model: model,
+        serial: serial,
+        status: status,
+        /* stationDetailsChartViewSelected: false,
+          stationsChartViewSelected: false,
+          chart: Chart(points: [], xValue: xValue), */
+        connection: socketConnection);
+    debugPrint("CREATE DEVICE PORT: $port");
+    // finally add device to main devices list if not already
+    if (comparedBySerial(device)) {
+      devices.add(device);
+      devices.add(Device(
+          key: UniqueKey(),
+          name: "name",
+          type: "Generator",
+          ip: "127.0.0.2",
+          port: 2313,
+          manufacturer: "manufacturer",
+          model: "model",
+          serial: "serial",
+          status: "dostępny",
+          connection: SocketConnection("128.12.12.2", 525)));
+    }
+    notifyListeners();
     return "Nawiązano połączenie z urządzeniem!";
   }
 
@@ -264,10 +257,7 @@ class AppViewModel extends ChangeNotifier {
         .elementAt(indexDevice)
         .connection
         .disconnect();
-    // have to clear this points cuz its stays in memory??? despite removing object from list
-    //stations[indexStation].devices.elementAt(indexDevice).points.clear();
     stations[indexStation].devices.removeAt(indexDevice);
-    //xValue = 0; //resetting X
     notifyListeners();
   }
 
@@ -328,10 +318,10 @@ class AppViewModel extends ChangeNotifier {
   /// Checks if device with its serial is already added in any station
   /// * @indexStation - Index of station we are on
   /// * @device - Device that we want to check
-  bool comparedBySerialInStations(Device device) {
+  bool comparedBySerialInStations(var device) {
     for (Station station in stations) {
-      for (Device sdevice in station.devices) {
-        if (device.serial == sdevice.serial) {
+      for (var device2 in station.devices) {
+        if (device2.serial == device.serial) {
           return false;
         }
       }
@@ -364,13 +354,12 @@ class AppViewModel extends ChangeNotifier {
   /// Adds device to designated Station, creates new object(device) from this device, checks if is not already in station and if status is ok, if not opens connection and adds device to station
   Future<void> addDeviceToStation(int indexStation, Device device) async {
     // TODO kopiowanie obiektu - ogarnąć to -
-    SocketConnection newSocketConnection =
+    /* SocketConnection newSocketConnection =
         SocketConnection(device.ip, device.port);
-    // Chart newChart = Chart(points: [const FlSpot(0, 0)], xValue: 0);
+
     Device newDevice = Device(
         key: device.key,
         name: device.name,
-        displayON: device.displayON,
         type: device.type,
         ip: device.ip,
         port: device.port,
@@ -378,25 +367,49 @@ class AppViewModel extends ChangeNotifier {
         model: device.model,
         serial: device.serial,
         status: device.status,
-        measuredUnit: device.measuredUnit,
-        value: device.value,
-        /* 
-        stationDetailsChartViewSelected: device.stationDetailsChartViewSelected,
-        stationsChartViewSelected: device.stationsChartViewSelected,
-        chart:
-            newChart, //clearing points and adding one to prevent from crashing */
-        connection: newSocketConnection);
+        connection: newSocketConnection); */
+
     //debugPrint("ADD DEVICE TO STATION PORT: ${newDevice.port}");
-    if (comparedBySerialInStations(newDevice) &&
-        newDevice.status == "dostępny") {
-      await newDevice.connection.startConnection();
-      stations[indexStation].devices.add(newDevice);
+    if (comparedBySerialInStations(device) && device.status == "dostępny") {
+      await device.connection.startConnection();
+      switch (device.type) {
+        case "Multimetr":
+          stations[indexStation].devices.add(Multimeter(
+              key: UniqueKey(),
+              name: device.name,
+              displayON: true,
+              ip: device.ip,
+              port: device.port,
+              manufacturer: device.manufacturer,
+              model: device.model,
+              serial: device.serial,
+              status: device.status,
+              measuredUnit: "-",
+              value: 0.0,
+              connection: device.connection));
+          break;
+
+        case "Generator":
+          stations[indexStation].devices.add(Generator(
+              key: UniqueKey(),
+              name: device.name,
+              displayON: true,
+              ip: device.ip,
+              port: device.port,
+              manufacturer: device.manufacturer,
+              model: device.model,
+              serial: device.serial,
+              status: device.status,
+              connection: device.connection));
+          break;
+        default:
+      }
       notifyListeners();
     }
   }
 
   /// Refreshes devices value
-  Future<void> refreshDeviceValue(Device device) async {
+  Future<void> refreshDeviceValue(var device) async {
     //debugPrint("PUNKTY PO RESECIE ${device.points.toString()}");
     //debugPrint("Wysyłanie wiadomosci do ${device.name}");
     try {
@@ -418,9 +431,14 @@ class AppViewModel extends ChangeNotifier {
     }
   }
 
-  /// Returning devices count in specified Station.
-  int getStationsDevicesCount(int index) {
-    return stations[index].devices.length;
+  /// Returning devices count of specified type in specified Station.
+  int getStationsDevicesCount(int indexStation, String type) {
+    debugPrint(
+        "$type: ${stations[indexStation].devices.where((device) => device.type == type).length}");
+    return stations[indexStation]
+        .devices
+        .where((device) => device.type == type)
+        .length;
   }
 
   /// Returing specified device's name in specified Station.
@@ -489,54 +507,10 @@ class AppViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Formatting value to SI base units. Returing formatted value.
-  /// * @rawValue
-  String formatUnit(String rawValue) {
-    String newValue = "";
-    //debugPrint(rawValue);
-    if (rawValue.contains('e') || rawValue.contains('E')) {
-      int lastDigit = int.parse(rawValue.substring(rawValue.length - 1));
-      double value = double.parse(rawValue.substring(0, rawValue.length - 3));
-      if (rawValue.contains('+')) {
-        if (lastDigit > 3 && lastDigit <= 6) {
-          value = value / pow(10, 6 - lastDigit);
-          newValue = "${value.toStringAsFixed(3)} M";
-        } else if (lastDigit == 3) {
-          value = value / pow(10, 3 - lastDigit);
-          newValue = "${value.toStringAsFixed(3)} k";
-        } else if (lastDigit > 6 && lastDigit <= 9) {
-          value = value / pow(10, 9 - lastDigit);
-          newValue = "${value.toStringAsFixed(3)} G";
-        } else {
-          value = value * pow(10, lastDigit);
-          newValue = "${value.toStringAsFixed(3)} ";
-//          newValue = rawValue.substring(0, rawValue.length - 3);
-        }
-      } else if (rawValue.contains('-')) {
-        if (lastDigit > 3 && lastDigit <= 6) {
-          value = value * pow(10, 6 - lastDigit);
-          newValue = "${value.toStringAsFixed(3)} u";
-        } else if (lastDigit > 0 && lastDigit <= 3) {
-          value = value * pow(10, 3 - lastDigit);
-          newValue = "${value.toStringAsFixed(3)} m";
-        } else if (lastDigit > 6 && lastDigit <= 9) {
-          value = value * pow(10, 9 - lastDigit);
-          newValue = "${value.toStringAsFixed(3)} n";
-        } else if (lastDigit > 9 && lastDigit <= 12) {
-          value = value * pow(10, 12 - lastDigit);
-          newValue = "${value.toStringAsFixed(3)} p";
-        }
-      }
-    } else {
-      newValue = rawValue;
-    }
-    return newValue;
-  }
-
   /// Returing specified Device's value in specified Station as formatted String.
   /// * @indexStation
   /// * @indexDevice
-  String getDeviceValue(int indexStation, int indexDevice) {
+  String getMultimeterValue(int indexStation, int indexDevice) {
     String value = stations[indexStation]
         .devices
         .elementAt(indexDevice)
@@ -570,25 +544,12 @@ class AppViewModel extends ChangeNotifier {
   /// Remove specified Station; disconnecting and removing every Device in Station.
   /// * @indexStation
   void removeStation(int indexStation) {
-    for (Device device in stations[indexStation].devices) {
+    for (var device in stations[indexStation].devices) {
       device.connection.disconnect();
     }
     stations[indexStation].devices.clear();
     stations.removeAt(indexStation);
     notifyListeners();
-  }
-
-  /// Increments IP and returs incremented.
-  /// * @input
-  String incrementIP(String input) {
-    List<String> inputIPString = input.split(".");
-    List<int> inputIP = inputIPString.map((e) => int.parse(e)).toList();
-    var ip = (inputIP[0] << 24) |
-        (inputIP[1] << 16) |
-        (inputIP[2] << 8) |
-        (inputIP[3] << 0);
-    ip++;
-    return "${ip >> 24 & 0xff}.${ip >> 16 & 0xff}.${ip >> 8 & 0xff}.${ip >> 0 & 0xff}"; //0xff = 255
   }
 
   /// Looking for devices in local network by trying to connect to them. Starting from network IP address, incrementing and checking till reaching broadcast IP address of this network. If can connect to device at specified port then adding this device to main devices list.
@@ -665,7 +626,7 @@ class AppViewModel extends ChangeNotifier {
     if (oldIndex < newIndex) {
       newIndex--;
     }
-    Device device = stations[indexStation].devices.removeAt(oldIndex);
+    var device = stations[indexStation].devices.removeAt(oldIndex);
     stations[indexStation].devices.insert(newIndex, device);
     notifyListeners();
   }
@@ -688,14 +649,21 @@ class AppViewModel extends ChangeNotifier {
       stations[indexStation]
           .devices[indexDevice]
           .connection
-          .sendMessage("DISPlay OFF\n");
+          .sendMessageEOM("DISPlay OFF", "\n");
     } else if (!stations[indexStation].devices[indexDevice].displayON) {
       stations[indexStation]
           .devices[indexDevice]
           .connection
-          .sendMessage("DISPlay ON\n");
+          .sendMessageEOM("DISPlay ON", "\n");
     }
     notifyListeners();
+  }
+
+  bool checkIfStationContainsDeviceType(int indexStation, String type) {
+    for (var device in stations[indexStation].devices) {
+      if (device.type == type) return true;
+    }
+    return false;
   }
 
   void init() async {

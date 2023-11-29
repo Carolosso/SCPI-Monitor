@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
-import 'package:test/views/station_detail/station_detail_list_builder/station_detail_item/station_detial_item_dialog.dart';
+import 'package:test/views/station_detail/station_detail_list_builder/station_detail_items/station_detail_generator.dart';
+import 'package:test/views/station_detail/station_detail_list_builder/station_detail_items/station_detail_multimeter.dart';
+import 'package:test/views/station_detail/station_detail_list_builder/station_detail_items/station_detial_item_dialog.dart';
 //import 'package:test/views/widgets/charts/chart_widget.dart';
 import 'package:test/views/widgets/snackbar/show_snackbar.dart';
 
@@ -45,149 +47,75 @@ class StationDetailListBuilder extends StatelessWidget {
                 shrinkWrap: true,
                 itemCount: viewModel.stations[indexStation].devices.length, //
                 itemBuilder: (context, indexDevice) {
-                  return Dismissible(
-                    key: ValueKey(viewModel
-                        .stations[indexStation].devices[indexDevice].key),
-                    direction: viewModel.isStopped
-                        ? DismissDirection.endToStart
-                        : DismissDirection.none,
-                    onDismissed: (direction) {
-                      viewModel.removeDeviceFromStation(
-                          indexStation, indexDevice);
-                      HapticFeedback.lightImpact(); //vibration
-                      //Toast
-                      showSnackBar(context, 'Usunięto urządzenie.');
-                    },
-                    background: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.red.shade300,
-                        borderRadius:
-                            BorderRadius.circular(Styles.globalRadius),
-                      ),
-                      child: Icon(
-                        Icons.delete,
-                        color: Colors.red.shade700,
-                      ),
-                    ),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: Card(
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(Styles.globalRadius),
+                  debugPrint(viewModel
+                      .stations[indexStation].devices[indexDevice].type);
+                  if (viewModel
+                          .stations[indexStation].devices[indexDevice].type ==
+                      "Multimetr") {
+                    return Dismissible(
+                        key: ValueKey(viewModel
+                            .stations[indexStation].devices[indexDevice].key),
+                        direction: viewModel.isStopped
+                            ? DismissDirection.endToStart
+                            : DismissDirection.none,
+                        onDismissed: (direction) {
+                          viewModel.removeDeviceFromStation(
+                              indexStation, indexDevice);
+                          HapticFeedback.lightImpact(); //vibration
+                          showSnackBar(context, 'Usunięto urządzenie.');
+                        },
+                        background: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade300,
+                            borderRadius:
+                                BorderRadius.circular(Styles.globalRadius),
+                          ),
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.red.shade700,
+                          ),
                         ),
-                        color: Styles.primaryColor,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    viewModel.stations[indexStation]
-                                        .devices[indexDevice].name, //
-                                    textAlign: TextAlign.left,
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.white), //??????
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      'Wartość mierzona',
-                                      style: TextStyle(
-                                          fontSize: 8,
-                                          color: Styles.surfaceColor),
-                                    ),
-                                  ),
-                                  Text(
-                                    '${viewModel.getDeviceValue(indexStation, indexDevice)}${viewModel.getDeviceMeasuredUnit(indexStation, indexDevice)}',
-                                    style: const TextStyle(
-                                        fontSize: 32,
-                                        //fontWeight: FontWeight.bold,
-                                        color: Colors.white),
-                                  ),
-                                  /* viewModel
-                                          .stations[indexStation]
-                                          .devices[indexDevice]
-                                          .stationDetailsChartViewSelected
-                                      ? Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'Wykres',
-                                            style: TextStyle(
-                                                fontSize: 8,
-                                                color: Styles.surfaceColor),
-                                          ),
-                                        )
-                                      : Container(),
-                                  viewModel
-                                          .stations[indexStation]
-                                          .devices[indexDevice]
-                                          .stationDetailsChartViewSelected
-                                      ? ChartWidget(
-                                          points: viewModel.stations[indexStation]
-                                              .devices[indexDevice].chart.points,
-                                        )
-                                      : Container(), */
-                                ],
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                  color: Styles.surfaceColor,
-                                  borderRadius: BorderRadius.only(
-                                      topRight:
-                                          Radius.circular(Styles.globalRadius),
-                                      bottomRight: Radius.circular(
-                                          Styles.globalRadius))),
-                              child: Expanded(
-                                  flex: 1,
-                                  child: Column(
-                                    children: [
-                                      IconButton(
-                                          onPressed: () {
-                                            nameTextController.text = viewModel
-                                                .stations[indexStation]
-                                                .devices[indexDevice]
-                                                .name;
-                                            unitTextController.text = viewModel
-                                                .stations[indexStation]
-                                                .devices[indexDevice]
-                                                .measuredUnit;
-                                            stationDetailItemDialog(
-                                                context,
-                                                indexDevice,
-                                                viewModel,
-                                                nameTextController,
-                                                unitTextController,
-                                                indexStation);
-                                          },
-                                          icon: Icon(
-                                              color: Styles.primaryColor,
-                                              Icons.edit)),
-                                      IconButton(
-                                          onPressed: () {
-                                            viewModel.changeDisplayOnOff(
-                                                indexStation, indexDevice);
-                                          },
-                                          icon: Icon(
-                                              viewModel
-                                                      .stations[indexStation]
-                                                      .devices[indexDevice]
-                                                      .displayON
-                                                  ? Icons.tv_off
-                                                  : Icons.tv,
-                                              color: Styles.primaryColor))
-                                    ],
-                                  )),
-                            ),
-                          ],
+                        child: StationDetailItemMultimeter(
+                            viewModel: viewModel,
+                            indexStation: indexStation,
+                            indexDevice: indexDevice,
+                            nameTextController: nameTextController,
+                            unitTextController: unitTextController));
+                  } else if (viewModel
+                          .stations[indexStation].devices[indexDevice].type ==
+                      "Generator") {
+                    return Dismissible(
+                        key: ValueKey(viewModel
+                            .stations[indexStation].devices[indexDevice].key),
+                        direction: viewModel.isStopped
+                            ? DismissDirection.endToStart
+                            : DismissDirection.none,
+                        onDismissed: (direction) {
+                          viewModel.removeDeviceFromStation(
+                              indexStation, indexDevice);
+                          HapticFeedback.lightImpact(); //vibration
+                          showSnackBar(context, 'Usunięto urządzenie.');
+                        },
+                        background: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade300,
+                            borderRadius:
+                                BorderRadius.circular(Styles.globalRadius),
+                          ),
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.red.shade700,
+                          ),
                         ),
-                      ),
-                    ),
+                        child: StationDetailItemGenerator(
+                            viewModel: viewModel,
+                            indexStation: indexStation,
+                            indexDevice: indexDevice,
+                            nameTextController: nameTextController,
+                            unitTextController: unitTextController));
+                  }
+                  return Container(
+                    key: UniqueKey(),
                   );
                 },
               );
