@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
 import 'package:test/views/station_detail/station_detail_list_builder/station_detail_items/generator/station_detail_generator_dialog.dart';
-import 'package:test/views/stations_list/stations_list_builder/station_item_generator/generator_channel_builder.dart';
+import 'package:test/views/stations_list/stations_list_builder/station_item_power_supply/power_supply_channel_builder.dart';
 
-class StationDetailItemGenerator extends StatelessWidget {
-  const StationDetailItemGenerator({
+class StationDetailItemPowerSupply extends StatelessWidget {
+  const StationDetailItemPowerSupply({
     super.key,
     required this.viewModel,
     required this.indexStation,
@@ -51,11 +51,15 @@ class StationDetailItemGenerator extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            generatorChannelBuilder(1),
+                            powerSupplyChannelBuilder(1),
                             const SizedBox(
                               width: 6,
                             ),
-                            generatorChannelBuilder(2)
+                            powerSupplyChannelBuilder(2),
+                            const SizedBox(
+                              width: 6,
+                            ),
+                            powerSupplyChannelBuilder(3)
                           ],
                         ),
                       ],

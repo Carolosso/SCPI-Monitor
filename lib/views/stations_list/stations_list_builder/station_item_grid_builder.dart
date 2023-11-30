@@ -4,6 +4,7 @@ import 'package:test/style/theme.dart';
 import 'package:test/views/stations_list/stations_list_builder/station_item_generator/station_device_generator_item.dart';
 import 'package:test/views/stations_list/stations_list_builder/station_item_multimeter/station_device_multimeter_item.dart';
 import 'package:test/views/stations_list/stations_list_builder/station_item_oscilloscope/station_device_oscilloscope_item.dart';
+import 'package:test/views/stations_list/stations_list_builder/station_item_power_supply/station_device_power_supply_item.dart';
 
 class StationItemGridBuilder extends StatelessWidget {
   const StationItemGridBuilder({
@@ -56,6 +57,12 @@ class StationItemGridBuilder extends StatelessWidget {
                       );
                     case "Oscyloskop":
                       return StationDeviceItemOscilloscope(
+                        viewModel: viewModel,
+                        indexStation: indexStation,
+                        indexDevice: indexDevice,
+                      );
+                    case "Zasilacz":
+                      return StationDeviceItemPowerSupply(
                         viewModel: viewModel,
                         indexStation: indexStation,
                         indexDevice: indexDevice,

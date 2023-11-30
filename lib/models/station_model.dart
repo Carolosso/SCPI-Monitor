@@ -4,7 +4,6 @@ class Station {
   UniqueKey key;
   String name;
   List devices = [];
-  //List<Oscillocope> oscilloscopes = [];
 
   Station({
     required this.devices,

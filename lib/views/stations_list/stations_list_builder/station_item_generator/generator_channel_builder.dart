@@ -6,7 +6,7 @@ Expanded generatorChannelBuilder(int i) {
     child: Stack(
       children: [
         Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
               color: i == 1
                   ? Styles.channel1BackgroundColor
@@ -32,7 +32,7 @@ Expanded generatorChannelBuilder(int i) {
                 height: 6,
               ),
               const Row(
-                //mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "Fun: ",
@@ -47,18 +47,21 @@ Expanded generatorChannelBuilder(int i) {
                 ],
               ),
               const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("Volt: ", style: TextStyle(color: Colors.white)),
                   Text("12.323 mV", style: TextStyle(color: Colors.white)),
                 ],
               ),
               const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("Offs: ", style: TextStyle(color: Colors.white)),
                   Text("12.323 mV", style: TextStyle(color: Colors.white)),
                 ],
               ),
               const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("Freq: ", style: TextStyle(color: Colors.white)),
                   Text("12.323 mV", style: TextStyle(color: Colors.white)),

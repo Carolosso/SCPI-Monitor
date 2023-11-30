@@ -10,6 +10,7 @@ import 'package:test/models/device_model/device_model.dart';
 import 'package:test/models/device_model/generator/generator_model.dart';
 import 'package:test/models/device_model/multimeter/multimeter_model.dart';
 import 'package:test/models/device_model/oscilloscope/oscilloscope_model.dart';
+import 'package:test/models/device_model/power_supply/power_supply_model.dart';
 import 'package:test/utils/devices_models.dart';
 import 'package:test/utils/format_unit.dart';
 import 'package:test/utils/increment_ip.dart';
@@ -226,6 +227,17 @@ class AppViewModel extends ChangeNotifier {
           serial: "serial22",
           status: "dostępny",
           connection: SocketConnection("128.12.12.22", 525)));
+      devices.add(Device(
+          key: UniqueKey(),
+          name: "Zasilacz name2222",
+          type: "Zasilacz",
+          ip: "127.0.0.2223",
+          port: 2313,
+          manufacturer: "manufacturer",
+          model: "model",
+          serial: "serial223333",
+          status: "dostępny",
+          connection: SocketConnection("128.12.12.22", 525)));
     }
     notifyListeners();
     return "Nawiązano połączenie z urządzeniem!";
@@ -398,6 +410,19 @@ class AppViewModel extends ChangeNotifier {
           break;
         case "Oscyloskop":
           stations[indexStation].devices.add(Oscilloscope(
+              key: UniqueKey(),
+              name: device.name,
+              displayON: true,
+              ip: device.ip,
+              port: device.port,
+              manufacturer: device.manufacturer,
+              model: device.model,
+              serial: device.serial,
+              status: device.status,
+              connection: device.connection));
+          break;
+        case "Zasilacz":
+          stations[indexStation].devices.add(PowerSupply(
               key: UniqueKey(),
               name: device.name,
               displayON: true,
