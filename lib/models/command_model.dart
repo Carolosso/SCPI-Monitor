@@ -1,6 +1,6 @@
 class Command {
   String type;
-  String command;
+  String query;
 
-  Command({required this.type, required this.command});
+  Command({required this.type, required this.query});
 }

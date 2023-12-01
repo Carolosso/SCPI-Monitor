@@ -61,6 +61,7 @@ class StationDetailItemMultimeter extends StatelessWidget {
               ),
             ),
             Positioned(
+              height: 40,
               right: 0,
               top: 0,
               child: Container(
@@ -88,7 +89,11 @@ class StationDetailItemMultimeter extends StatelessWidget {
                               unitTextController,
                               indexStation);
                         },
-                        icon: Icon(color: Styles.primaryColor, Icons.edit)),
+                        icon: Icon(
+                          color: Styles.primaryColor,
+                          Icons.edit,
+                          size: 20,
+                        )),
                     IconButton(
                         onPressed: () {
                           viewModel.changeDisplayOnOff(
@@ -99,6 +104,7 @@ class StationDetailItemMultimeter extends StatelessWidget {
                                     .devices[indexDevice].displayON
                                 ? Icons.tv_off
                                 : Icons.tv,
+                            size: 20,
                             color: Styles.primaryColor))
                   ],
                 ),

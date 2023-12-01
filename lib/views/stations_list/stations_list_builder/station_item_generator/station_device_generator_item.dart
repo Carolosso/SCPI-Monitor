@@ -41,11 +41,12 @@ class StationDeviceItemGenerator extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                generatorChannelBuilder(1),
+                generatorChannelBuilder(
+                    1, viewModel, indexStation, indexDevice),
                 const SizedBox(
                   width: 6,
                 ),
-                generatorChannelBuilder(2)
+                generatorChannelBuilder(2, viewModel, indexStation, indexDevice)
               ],
             ),
           ],

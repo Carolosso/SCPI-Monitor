@@ -35,7 +35,6 @@ class PowerSupply {
 
   @override
   String toString() {
-    // TODO: implement toString
-    return "Zasilacz";
+    return "Power Supply";
   }
 }

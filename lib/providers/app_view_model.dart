@@ -14,6 +14,7 @@ import 'package:test/models/device_model/power_supply/power_supply_model.dart';
 import 'package:test/utils/devices_models.dart';
 import 'package:test/utils/format_unit.dart';
 import 'package:test/utils/increment_ip.dart';
+import 'package:test/utils/refresh_device_values.dart';
 import 'package:test/utils/socket_connection.dart';
 import 'package:test/models/station_model.dart';
 import 'package:test/providers/settings_view_model.dart';
@@ -27,9 +28,46 @@ class AppViewModel extends ChangeNotifier {
     //on provider creation call this
     init();
   }
-  List<Device> devices = [];
+  List<Device> devices = [
+    Device(
+        key: UniqueKey(),
+        name: "Generator name",
+        type: "Generator",
+        ip: "127.0.0.2",
+        port: 2313,
+        manufacturer: "manufacturer",
+        model: "model",
+        serial: "serial",
+        status: "dostępny",
+        channelCount: 2,
+        connection: SocketConnection("128.12.12.2", 525)),
+    Device(
+        key: UniqueKey(),
+        name: "Oscyloskop name2222",
+        type: "Oscyloskop",
+        ip: "127.0.0.222",
+        port: 2313,
+        manufacturer: "manufacturer",
+        model: "model",
+        serial: "serial22",
+        status: "dostępny",
+        channelCount: 4,
+        connection: SocketConnection("128.12.12.22", 525)),
+    Device(
+        key: UniqueKey(),
+        name: "Zasilacz name2222",
+        type: "Zasilacz",
+        ip: "127.0.0.2223",
+        port: 2313,
+        manufacturer: "manufacturer",
+        model: "model",
+        serial: "serial223333",
+        status: "dostępny",
+        channelCount: 3,
+        connection: SocketConnection("128.12.12.22", 525))
+  ];
   List<Station> stations = [
-    Station(devices: [], key: UniqueKey(), name: "name")
+    Station(devices: [], key: UniqueKey(), name: "Stanowisko 1")
   ];
   int get stationsCount => stations.length;
   int get devicesCount => devices.length;
@@ -67,26 +105,47 @@ class AppViewModel extends ChangeNotifier {
   /// Starting measurements for every Device in every Station with time delay while not stopped.
   void play() async {
     SettingsViewModel settingsViewModel = getSettingsViewModel();
+    /*    if (isStopped) {
+      for (Station station in stations) {
+        for (var device in station.devices) {
+          debugPrint("Zaczynanie pomiarow dla ${device.name}");
+          device.connection.sendMessageEOM("SYSTem:REMote", '\n');
+        }
+      }
+    } */
     while (!isStopped) {
       for (Station station in stations) {
         for (var device in station.devices) {
           if (isStopped) break;
+          // device.connection.sendMessageEOM("SYSTem:LOCK:REQuest?", '\n');
           debugPrint("Próba pobrania informacji urzadzenia ${device.name}");
-          await refreshDeviceValue(device);
+          await refreshDeviceValues(device);
+          debugPrint("Pobrano dla ${device.name}");
+          notifyListeners();
         }
       }
       //delay
       await Future.delayed(Duration(milliseconds: settingsViewModel.timeout));
     }
+    if (isStopped) {
+      for (Station station in stations) {
+        for (var device in station.devices) {
+          debugPrint("Konczenie pomiarow dla ${device.name}");
+          device.connection.sendMessageEOM("SYSTem:LOCal", '\n');
+        }
+      }
+    }
   }
 
-  /// Starting measurements for every Device in every Station once.
+  /// Measurement for every Device in every Station once.
   void playOnce() async {
     for (Station station in stations) {
       for (var device in station.devices) {
         debugPrint("Próba pobrania informacji urzadzenia ${device.name}");
-        await refreshDeviceValue(device);
-        debugPrint("Pobrano");
+        await refreshDeviceValues(device);
+        notifyListeners();
+        device.connection.sendMessageEOM("SYSTem:LOCal", '\n');
+        debugPrint("Pobrano raz dla ${device.name}");
       }
     }
   }
@@ -117,7 +176,6 @@ class AppViewModel extends ChangeNotifier {
     String status = "Offline";
     String serial = "Unknown";
     String type = "Unknown";
-    String measuredUnit = "-";
     Socket socket;
     int channelCount = 0;
     try {
@@ -141,9 +199,8 @@ class AppViewModel extends ChangeNotifier {
           // debugPrint("$type");
           name = "$type $model";
           serial = message.elementAt(2).trim();
-        } else if (message.length == 2) {
-          List<String> temp = message.toString().split(' ');
-          measuredUnit = temp.first;
+        } else if (message.length == 1) {
+          channelCount = int.parse(message[0]);
         }
         status = "dostępny";
         //we got response so
@@ -171,7 +228,8 @@ class AppViewModel extends ChangeNotifier {
       //--------------------- TEST -------------------------------- */
       socket.add(utf8.encode('*IDN?\n'));
       socket.add(utf8.encode('SYST:COUN?\n')); // channels count
-      //SYST:COMM:RLST REM Remote and Local do the same thing and are included for compatibility with other products. Both allow front panel control.
+      //"SYST:COMMunicate:RLSTate REM" Remote and Local do the same thing and are included for compatibility with other products. Both allow front panel control.
+      //"SYSTem:LOCal".
       //SYSTem:COMMunicate:TCPip:CONTrol? zwraca port urzadzenia
 
       // send *IDN? ----> <Manufacturer>, <Model>, <Serial Number>, <Firmware Level>, <Options>.
@@ -200,44 +258,12 @@ class AppViewModel extends ChangeNotifier {
         model: model,
         serial: serial,
         status: status,
+        channelCount: channelCount,
         connection: socketConnection);
     debugPrint("CREATE DEVICE PORT: $port");
     // finally add device to main devices list if not already
     if (comparedBySerial(device)) {
       devices.add(device);
-      devices.add(Device(
-          key: UniqueKey(),
-          name: "Generator name",
-          type: "Generator",
-          ip: "127.0.0.2",
-          port: 2313,
-          manufacturer: "manufacturer",
-          model: "model",
-          serial: "serial",
-          status: "dostępny",
-          connection: SocketConnection("128.12.12.2", 525)));
-      devices.add(Device(
-          key: UniqueKey(),
-          name: "Oscyloskop name2222",
-          type: "Oscyloskop",
-          ip: "127.0.0.222",
-          port: 2313,
-          manufacturer: "manufacturer",
-          model: "model",
-          serial: "serial22",
-          status: "dostępny",
-          connection: SocketConnection("128.12.12.22", 525)));
-      devices.add(Device(
-          key: UniqueKey(),
-          name: "Zasilacz name2222",
-          type: "Zasilacz",
-          ip: "127.0.0.2223",
-          port: 2313,
-          manufacturer: "manufacturer",
-          model: "model",
-          serial: "serial223333",
-          status: "dostępny",
-          connection: SocketConnection("128.12.12.22", 525)));
     }
     notifyListeners();
     return "Nawiązano połączenie z urządzeniem!";
@@ -440,25 +466,11 @@ class AppViewModel extends ChangeNotifier {
     }
   }
 
-  /// Refreshes devices value
-  Future<void> refreshDeviceValue(var device) async {
-    //debugPrint("PUNKTY PO RESECIE ${device.points.toString()}");
-    //debugPrint("Wysyłanie wiadomosci do ${device.name}");
-    try {
-      double value = await device.connection.getValue();
-      //debugPrint(value.toString());
-      device.value = value;
-
-      notifyListeners();
-    } catch (e) {
-      //debugPrint("ERROR: $e");
-    }
-  }
-
   /// Returning devices count of specified type in specified Station.
   int getStationsDevicesCount(int indexStation, String type) {
     debugPrint(
         "$type: ${stations[indexStation].devices.where((device) => device.type == type).length}");
+
     return stations[indexStation]
         .devices
         .where((device) => device.type == type)

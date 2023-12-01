@@ -5,8 +5,8 @@ class MultimeterChannel {
   late List<Command> commands;
   MultimeterChannel(this.number) {
     commands = [
-      Command(type: "READ", command: "FUNCTION?"),
-      Command(type: "READ", command: "READ?")
+      Command(type: "READ", query: "FUNCTION?"),
+      Command(type: "READ", query: "READ?")
     ];
   }
 }

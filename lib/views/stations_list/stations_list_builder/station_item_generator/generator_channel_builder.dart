@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
 
-Expanded generatorChannelBuilder(int i) {
+Expanded generatorChannelBuilder(
+    int i, AppViewModel viewModel, int indexStation, int indexDevice) {
   return Expanded(
     child: Stack(
       children: [
@@ -31,40 +33,46 @@ Expanded generatorChannelBuilder(int i) {
               Container(
                 height: 6,
               ),
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     "Fun: ",
                     style: TextStyle(color: Colors.white),
                     textAlign: TextAlign.left,
                   ),
                   Text(
-                    "12.323 mV",
-                    style: TextStyle(color: Colors.white),
+                    "${viewModel.stations[indexStation].devices[indexDevice].channels[i - 1].function}",
+                    style: const TextStyle(color: Colors.white),
                     textAlign: TextAlign.right,
                   ),
                 ],
               ),
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Volt: ", style: TextStyle(color: Colors.white)),
-                  Text("12.323 mV", style: TextStyle(color: Colors.white)),
+                  const Text("Volt: ", style: TextStyle(color: Colors.white)),
+                  Text(
+                      "${viewModel.stations[indexStation].devices[indexDevice].channels[i - 1].voltageValue}",
+                      style: const TextStyle(color: Colors.white)),
                 ],
               ),
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Offs: ", style: TextStyle(color: Colors.white)),
-                  Text("12.323 mV", style: TextStyle(color: Colors.white)),
+                  const Text("Offs: ", style: TextStyle(color: Colors.white)),
+                  Text(
+                      "${viewModel.stations[indexStation].devices[indexDevice].channels[i - 1].voltageOffset}",
+                      style: const TextStyle(color: Colors.white)),
                 ],
               ),
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Freq: ", style: TextStyle(color: Colors.white)),
-                  Text("12.323 mV", style: TextStyle(color: Colors.white)),
+                  const Text("Freq: ", style: TextStyle(color: Colors.white)),
+                  Text(
+                      "${viewModel.stations[indexStation].devices[indexDevice].channels[i - 1].frequencyValue}",
+                      style: const TextStyle(color: Colors.white)),
                 ],
               ),
             ],

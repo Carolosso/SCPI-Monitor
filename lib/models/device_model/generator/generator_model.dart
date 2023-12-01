@@ -14,7 +14,10 @@ class Generator {
   String serial;
   String status;
   SocketConnection connection;
-  List<GeneratorChannel> channels = [GeneratorChannel(1), GeneratorChannel(2)];
+  List<GeneratorChannel> channels = [
+    GeneratorChannel(1, "-", 0, 0, 0),
+    GeneratorChannel(2, "-", 0, 0, 0)
+  ];
 
   Generator(
       {required this.key,
@@ -29,7 +32,6 @@ class Generator {
       required this.connection});
   @override
   String toString() {
-    // TODO: implement toString
     return "Generator";
   }
 }

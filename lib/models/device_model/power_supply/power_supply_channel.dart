@@ -6,12 +6,12 @@ class PowerSupplyChannel {
   late List<Command> readCommands;
   PowerSupplyChannel(this.number) {
     setCommands = [
-      Command(type: "SET", command: "source:voltage? ,(@$number)"),
-      Command(type: "SET", command: "source:current? ,(@$number)"),
+      Command(type: "SET", query: "source:voltage? ,(@$number)"),
+      Command(type: "SET", query: "source:current? ,(@$number)"),
     ];
     readCommands = [
-      Command(type: "READ", command: "measure:voltage? ch$number"),
-      Command(type: "READ", command: "measure:current? ch$number"),
+      Command(type: "READ", query: "measure:voltage? ch$number"),
+      Command(type: "READ", query: "measure:current? ch$number"),
     ];
   }
 }

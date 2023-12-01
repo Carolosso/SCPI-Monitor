@@ -8,6 +8,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:test/models/command_model.dart';
+import 'package:test/models/device_model/generator/generator_channel.dart';
+import 'package:test/models/device_model/generator/generator_model.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/utils/navigation_service.dart';
 
@@ -26,18 +29,47 @@ class SocketConnection {
   String message = '';
 
   /// Getting value from received message from device by sending "READ?" command
-  Future<double> getValue() async {
+  Future<List> getMultimeterValues() async {
     // debugPrint("get value():${isConnected()}");
+    List<String> generatorRawResponses = [];
+
     try {
       //send READ?
       sendMessageEOM('READ?', '\n');
       //wait for messageReceiver()
       await completer.future;
       //get and return value
-      double result = double.parse(message);
-      return result;
+      generatorRawResponses.add(message);
+      //send FUNCTION?
+      sendMessageEOM('*IDN?', '\n'); //sendMessageEOM('FUNCTION?', '\n'); //TODO
+      //wait for messageReceiver()
+      await completer.future;
+      //get and return value
+      generatorRawResponses.add(message.split(",").first.split("").first);
+      return generatorRawResponses;
     } catch (exception) {
-      return 0;
+      return List.empty();
+    }
+  }
+
+  /// Getting value from received message from device by sending "READ?" command
+  Future<List<List>> getGeneratorValues(Generator generator) async {
+    List<List<String>> generatorChannelsRawResponses = [];
+    int i = 0;
+    try {
+      for (GeneratorChannel channel in generator.channels) {
+        for (Command command in channel.commands) {
+          if (command.type == "READ") {
+            sendMessageEOM(command.query, '\n');
+            await completer.future;
+            generatorChannelsRawResponses[i].add(message);
+          }
+        }
+        i++;
+      }
+      return generatorChannelsRawResponses;
+    } catch (exception) {
+      return List.empty();
     }
   }
 

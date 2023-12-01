@@ -51,11 +51,13 @@ class StationDetailItemGenerator extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            generatorChannelBuilder(1),
+                            generatorChannelBuilder(
+                                1, viewModel, indexStation, indexDevice),
                             const SizedBox(
                               width: 6,
                             ),
-                            generatorChannelBuilder(2)
+                            generatorChannelBuilder(
+                                2, viewModel, indexStation, indexDevice)
                           ],
                         ),
                       ],
@@ -65,6 +67,7 @@ class StationDetailItemGenerator extends StatelessWidget {
               ),
             ),
             Positioned(
+              height: 40,
               right: 0,
               top: 0,
               child: Container(
@@ -83,7 +86,11 @@ class StationDetailItemGenerator extends StatelessWidget {
                           stationDetailGeneratorDialog(context, indexDevice,
                               viewModel, nameTextController, indexStation);
                         },
-                        icon: Icon(color: Styles.primaryColor, Icons.edit)),
+                        icon: Icon(
+                          color: Styles.primaryColor,
+                          Icons.edit,
+                          size: 20,
+                        )),
                     IconButton(
                         onPressed: () {
                           viewModel.changeDisplayOnOff(
@@ -94,6 +101,7 @@ class StationDetailItemGenerator extends StatelessWidget {
                                     .devices[indexDevice].displayON
                                 ? Icons.tv_off
                                 : Icons.tv,
+                            size: 20,
                             color: Styles.primaryColor))
                   ],
                 ),

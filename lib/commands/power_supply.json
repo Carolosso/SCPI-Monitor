@@ -1,8 +1,8 @@
 {
     "set": {
         "commands": [
-            "source:voltage? ,(@1)\n",
-            "source:current? ,(@1)\n"
+            "source:voltage ,(@1)\n",
+            "source:current ,(@1)\n"
         ]
     },
     "read": {

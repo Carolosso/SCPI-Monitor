@@ -69,6 +69,7 @@ class StationDetailItemPowerSupply extends StatelessWidget {
               ),
             ),
             Positioned(
+              height: 40,
               right: 0,
               top: 0,
               child: Container(
@@ -87,7 +88,11 @@ class StationDetailItemPowerSupply extends StatelessWidget {
                           stationDetailGeneratorDialog(context, indexDevice,
                               viewModel, nameTextController, indexStation);
                         },
-                        icon: Icon(color: Styles.primaryColor, Icons.edit)),
+                        icon: Icon(
+                          color: Styles.primaryColor,
+                          Icons.edit,
+                          size: 20,
+                        )),
                     IconButton(
                         onPressed: () {
                           viewModel.changeDisplayOnOff(
@@ -98,6 +103,7 @@ class StationDetailItemPowerSupply extends StatelessWidget {
                                     .devices[indexDevice].displayON
                                 ? Icons.tv_off
                                 : Icons.tv,
+                            size: 20,
                             color: Styles.primaryColor))
                   ],
                 ),

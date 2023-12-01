@@ -35,7 +35,6 @@ class Multimeter {
 
   @override
   String toString() {
-    // TODO: implement toString
-    return "Multimetr";
+    return "Multimeter";
   }
 }
