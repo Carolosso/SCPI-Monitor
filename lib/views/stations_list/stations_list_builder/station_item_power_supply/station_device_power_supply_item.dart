@@ -41,15 +41,18 @@ class StationDeviceItemPowerSupply extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                powerSupplyChannelBuilder(1),
+                powerSupplyChannelBuilder(
+                    1, viewModel, indexStation, indexDevice),
                 const SizedBox(
                   width: 3,
                 ),
-                powerSupplyChannelBuilder(2),
+                powerSupplyChannelBuilder(
+                    2, viewModel, indexStation, indexDevice),
                 const SizedBox(
                   width: 3,
                 ),
-                powerSupplyChannelBuilder(3),
+                powerSupplyChannelBuilder(
+                    3, viewModel, indexStation, indexDevice),
               ],
             ),
           ],

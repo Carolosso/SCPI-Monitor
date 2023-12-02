@@ -228,6 +228,7 @@ class AppViewModel extends ChangeNotifier {
       //--------------------- TEST -------------------------------- */
       socket.add(utf8.encode('*IDN?\n'));
       socket.add(utf8.encode('SYST:COUN?\n')); // channels count
+      socket.add(utf8.encode('SYSTem:LOCal\n')); // channels count
       //"SYST:COMMunicate:RLSTate REM" Remote and Local do the same thing and are included for compatibility with other products. Both allow front panel control.
       //"SYSTem:LOCal".
       //SYSTem:COMMunicate:TCPip:CONTrol? zwraca port urzadzenia
@@ -417,7 +418,7 @@ class AppViewModel extends ChangeNotifier {
               serial: device.serial,
               status: device.status,
               measuredUnit: "-",
-              value: 0.0,
+              value: "0.0",
               connection: device.connection));
           break;
 
@@ -524,10 +525,8 @@ class AppViewModel extends ChangeNotifier {
   /// * @indexStation
   /// * @indexDevice
   String getMultimeterValue(int indexStation, int indexDevice) {
-    String value = stations[indexStation]
-        .devices
-        .elementAt(indexDevice)
-        .value
+    String value = double.parse(
+            stations[indexStation].devices.elementAt(indexDevice).value.trim())
         .toStringAsExponential(3);
     SettingsViewModel settingsViewModel = getSettingsViewModel();
 

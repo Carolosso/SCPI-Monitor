@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
 
-Expanded oscilloscopeChannelBuilder(int i) {
+Expanded oscilloscopeChannelBuilder(
+    int i, AppViewModel viewModel, int indexStation, int indexDevice) {
   return Expanded(
     child: Stack(
       children: [
@@ -35,33 +37,39 @@ Expanded oscilloscopeChannelBuilder(int i) {
               Container(
                 height: 6,
               ),
-              const Text("Fun: ",
+              const Text("Vpp: ",
                   style: TextStyle(
                     color: Colors.white,
                   )),
-              const Text("12.323 mV",
+              Text(
+                  viewModel.stations[indexStation].devices[indexDevice]
+                      .channels[i - 1].vpp,
                   maxLines: 1,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     //fontSize: double.maxFinite,
                   )),
-              const Text("Volt: ",
+              const Text("Vrms: ",
                   style: TextStyle(
                     color: Colors.white,
                   )),
-              const Text("12.323 mV",
+              Text(
+                  viewModel.stations[indexStation].devices[indexDevice]
+                      .channels[i - 1].vrms,
                   maxLines: 1,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     //fontSize: double.maxFinite,
                   )),
-              const Text("Offs: ",
+              const Text("Vaverage: ",
                   style: TextStyle(
                     color: Colors.white,
                   )),
-              const Text("12.323 mV",
+              Text(
+                  viewModel.stations[indexStation].devices[indexDevice]
+                      .channels[i - 1].vaverage,
                   maxLines: 1,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     // fontSize: double.maxFinite,
                   )),
@@ -69,9 +77,11 @@ Expanded oscilloscopeChannelBuilder(int i) {
                   style: TextStyle(
                     color: Colors.white,
                   )),
-              const Text("12.323 mV",
+              Text(
+                  viewModel.stations[indexStation].devices[indexDevice]
+                      .channels[i - 1].frequency,
                   maxLines: 1,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     // fontSize: double.maxFinite,
                   )),

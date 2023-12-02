@@ -15,8 +15,8 @@ class Generator {
   String status;
   SocketConnection connection;
   List<GeneratorChannel> channels = [
-    GeneratorChannel(1, "-", 0, 0, 0),
-    GeneratorChannel(2, "-", 0, 0, 0)
+    GeneratorChannel(1, "-", "0", "0", "0"),
+    GeneratorChannel(2, "-", "0", "0", "0")
   ];
 
   Generator(

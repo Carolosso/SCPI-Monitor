@@ -41,19 +41,23 @@ class StationDeviceItemOscilloscope extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                oscilloscopeChannelBuilder(1),
+                oscilloscopeChannelBuilder(
+                    1, viewModel, indexStation, indexDevice),
                 const SizedBox(
                   width: 3,
                 ),
-                oscilloscopeChannelBuilder(2),
+                oscilloscopeChannelBuilder(
+                    2, viewModel, indexStation, indexDevice),
                 const SizedBox(
                   width: 3,
                 ),
-                oscilloscopeChannelBuilder(3),
+                oscilloscopeChannelBuilder(
+                    3, viewModel, indexStation, indexDevice),
                 const SizedBox(
                   width: 3,
                 ),
-                oscilloscopeChannelBuilder(4)
+                oscilloscopeChannelBuilder(
+                    4, viewModel, indexStation, indexDevice)
               ],
             ),
           ],

@@ -3,9 +3,9 @@ import 'package:test/models/command_model.dart';
 class GeneratorChannel {
   final int number;
   String function;
-  double voltageValue;
-  double voltageOffset;
-  double frequencyValue;
+  String voltageValue; //double voltageValue;
+  String voltageOffset; //double voltageOffset;
+  String frequencyValue; //double frequencyValue;
 
   late List<Command> commands;
   GeneratorChannel(this.number, this.function, this.voltageValue,

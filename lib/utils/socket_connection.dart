@@ -11,6 +11,10 @@ import 'package:provider/provider.dart';
 import 'package:test/models/command_model.dart';
 import 'package:test/models/device_model/generator/generator_channel.dart';
 import 'package:test/models/device_model/generator/generator_model.dart';
+import 'package:test/models/device_model/oscilloscope/oscilloscope_channel.dart';
+import 'package:test/models/device_model/oscilloscope/oscilloscope_model.dart';
+import 'package:test/models/device_model/power_supply/power_supply_channel.dart';
+import 'package:test/models/device_model/power_supply/power_supply_model.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/utils/navigation_service.dart';
 
@@ -68,6 +72,53 @@ class SocketConnection {
         i++;
       }
       return generatorChannelsRawResponses;
+    } catch (exception) {
+      return List.empty();
+    }
+  }
+
+  /// Getting value from received message from device by sending "READ?" command
+  Future<List<List>> getPowerSupplyValues(PowerSupply powerSupply) async {
+    List<List<String>> powerSupplyChannelsRawResponses = [];
+    int i = 0;
+    try {
+      for (PowerSupplyChannel channel in powerSupply.channels) {
+        for (Command command in channel.commands) {
+          if (command.type == "READ") {
+            sendMessageEOM(command.query, '\n');
+            await completer.future;
+            powerSupplyChannelsRawResponses[i].add(message);
+          } else if (command.type == "SET" && !channel.isSet) {
+            sendMessageEOM(command.query, '\n');
+            await completer.future;
+            powerSupplyChannelsRawResponses[i].add(message);
+          }
+        }
+        channel.isSet = true;
+        i++;
+      }
+      return powerSupplyChannelsRawResponses;
+    } catch (exception) {
+      return List.empty();
+    }
+  }
+
+  /// Getting value from received message from device by sending "READ?" command
+  Future<List<List>> getOscilloscopeValues(Oscilloscope oscilloscope) async {
+    List<List<String>> powerSupplyChannelsRawResponses = [];
+    int i = 0;
+    try {
+      for (OscilloscopeChannel channel in oscilloscope.channels) {
+        for (Command command in channel.commands) {
+          if (command.type == "READ") {
+            sendMessageEOM(command.query, '\n');
+            await completer.future;
+            powerSupplyChannelsRawResponses[i].add(message);
+          }
+        }
+        i++;
+      }
+      return powerSupplyChannelsRawResponses;
     } catch (exception) {
       return List.empty();
     }

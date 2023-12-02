@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
 
-Expanded powerSupplyChannelBuilder(int i) {
+Expanded powerSupplyChannelBuilder(
+    int i, AppViewModel viewModel, int indexStation, int indexDevice) {
   return Expanded(
     child: Stack(
       children: [
@@ -35,13 +37,15 @@ Expanded powerSupplyChannelBuilder(int i) {
               const SizedBox(
                 height: 6,
               ),
-              const Text("12.323 mV",
-                  style: TextStyle(
+              Text(
+                  "${viewModel.stations[indexStation].devices[indexDevice].channels[i - 1].voltageValue} V",
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 15,
                   )),
-              const Text("12.323 mV",
-                  style: TextStyle(
+              Text(
+                  "${viewModel.stations[indexStation].devices[indexDevice].channels[i - 1].currentValue} A",
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 15,
                   )),
@@ -85,13 +89,15 @@ Expanded powerSupplyChannelBuilder(int i) {
                   )
                 ],
               ),
-              const Text("12.323 mV",
-                  style: TextStyle(
+              Text(
+                  "${viewModel.stations[indexStation].devices[indexDevice].channels[i - 1].voltageSourceValue} V",
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 15,
                   )),
-              const Text("12.323 mV",
-                  style: TextStyle(
+              Text(
+                  "${viewModel.stations[indexStation].devices[indexDevice].channels[i - 1].currentSourceValue} V",
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 15,
                   )),

@@ -13,7 +13,7 @@ class Multimeter {
   String serial;
   String status;
   String measuredUnit;
-  double value;
+  String value;
   SocketConnection connection;
 
   String type = "Multimetr";

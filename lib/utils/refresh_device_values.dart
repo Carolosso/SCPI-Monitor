@@ -1,8 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:test/models/device_model/generator/generator_channel.dart';
+import 'package:test/models/device_model/oscilloscope/oscilloscope_channel.dart';
+import 'package:test/models/device_model/power_supply/power_supply_channel.dart';
 
 /// Refreshes devices values
 Future<void> refreshDeviceValues(var device) async {
+  Completer completer = Completer();
+
   switch (device.toString()) {
     case "Multimeter":
       try {
@@ -10,7 +16,7 @@ Future<void> refreshDeviceValues(var device) async {
         List<String> rawValues = await device.connection.getMultimeterValues();
 
         //debugPrint(value.toString());
-        device.value = double.parse(rawValues[0]);
+        device.value = rawValues[0];
         device.measuredUnit = rawValues[1];
       } catch (e) {
         //debugPrint("ERROR: $e");
@@ -25,12 +31,9 @@ Future<void> refreshDeviceValues(var device) async {
         int i = 0;
         for (GeneratorChannel channel in device.channels) {
           channel.function = rawChannelsValues[i].elementAt(0);
-          channel.voltageValue =
-              double.parse(rawChannelsValues[i].elementAt(1));
-          channel.voltageOffset =
-              double.parse(rawChannelsValues[i].elementAt(2));
-          channel.frequencyValue =
-              double.parse(rawChannelsValues[i].elementAt(3));
+          channel.voltageValue = rawChannelsValues[i].elementAt(1);
+          channel.voltageOffset = rawChannelsValues[i].elementAt(2);
+          channel.frequencyValue = rawChannelsValues[i].elementAt(3);
           i++;
         }
       } catch (e) {
@@ -38,25 +41,36 @@ Future<void> refreshDeviceValues(var device) async {
       }
       break;
     case "Oscilloscope":
-      debugPrint("Wysyłanie do Oscyloskopu: ${device.name}");
       try {
-        // double value = await device.connection.getValue();
-        // device.value = value;
-
-        // notifyListeners();
+        debugPrint("Wysyłanie do Oscyloskopu: ${device.name}");
+        List<List<String>> rawChannelsValues =
+            await device.connection.getOscilloscopeValues(device);
+        int i = 0;
+        for (OscilloscopeChannel channel in device.channels) {
+          channel.vpp = rawChannelsValues[i].elementAt(0);
+          channel.vrms = rawChannelsValues[i].elementAt(1);
+          channel.vaverage = rawChannelsValues[i].elementAt(2);
+          channel.frequency = rawChannelsValues[i].elementAt(3);
+          i++;
+        }
       } catch (e) {
         //debugPrint("ERROR: $e");
       }
       break;
     case "Power Supply":
-      debugPrint("Wysyłanie do Zasilacza: ${device.name}");
-
       try {
-        // double value = await device.connection.getValue();
-        //debugPrint(value.toString());
-        //device.value = value;
+        debugPrint("Wysyłanie do Zasilacza: ${device.name}");
+        List<List<String>> rawChannelsValues =
+            await device.connection.getPowerSupplyValues(device);
+        int i = 0;
+        for (PowerSupplyChannel channel in device.channels) {
+          channel.currentSourceValue = rawChannelsValues[i].elementAt(0);
+          channel.voltageSourceValue = rawChannelsValues[i].elementAt(1);
+          channel.voltageValue = rawChannelsValues[i].elementAt(2);
+          channel.currentValue = rawChannelsValues[i].elementAt(3);
 
-        //notifyListeners();
+          i++;
+        }
       } catch (e) {
         //debugPrint("ERROR: $e");
       }

@@ -16,10 +16,10 @@ class Oscilloscope {
 
   String type = "Oscyloskop";
   List<OscilloscopeChannel> channels = [
-    OscilloscopeChannel(1),
-    OscilloscopeChannel(2),
-    OscilloscopeChannel(3),
-    OscilloscopeChannel(4)
+    OscilloscopeChannel(1, "0", "0", "0", "0"),
+    OscilloscopeChannel(2, "0", "0", "0", "0"),
+    OscilloscopeChannel(3, "0", "0", "0", "0"),
+    OscilloscopeChannel(4, "0", "0", "0", "0")
   ];
 
   Oscilloscope(
