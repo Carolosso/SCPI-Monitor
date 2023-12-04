@@ -6,11 +6,15 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:test/models/device_model/device_model.dart';
-import 'package:test/models/device_model/generator/generator_model.dart';
-import 'package:test/models/device_model/multimeter/multimeter_model.dart';
-import 'package:test/models/device_model/oscilloscope/oscilloscope_model.dart';
-import 'package:test/models/device_model/power_supply/power_supply_model.dart';
+import 'package:test/models/command_model.dart';
+import 'package:test/models/device_models/device_model.dart';
+import 'package:test/models/device_models/generator/generator_channel.dart';
+import 'package:test/models/device_models/generator/generator_model.dart';
+import 'package:test/models/device_models/multimeter/multimeter_model.dart';
+import 'package:test/models/device_models/oscilloscope/oscilloscope_channel.dart';
+import 'package:test/models/device_models/oscilloscope/oscilloscope_model.dart';
+import 'package:test/models/device_models/power_supply/power_supply_channel.dart';
+import 'package:test/models/device_models/power_supply/power_supply_model.dart';
 import 'package:test/utils/devices_models.dart';
 import 'package:test/utils/format_unit.dart';
 import 'package:test/utils/increment_ip.dart';
@@ -143,6 +147,7 @@ class AppViewModel extends ChangeNotifier {
       for (var device in station.devices) {
         debugPrint("Próba pobrania informacji urzadzenia ${device.name}");
         await refreshDeviceValues(device);
+
         notifyListeners();
         device.connection.sendMessageEOM("SYSTem:LOCal", '\n');
         debugPrint("Pobrano raz dla ${device.name}");
@@ -404,10 +409,10 @@ class AppViewModel extends ChangeNotifier {
 
     //debugPrint("ADD DEVICE TO STATION PORT: ${newDevice.port}");
     if (comparedBySerialInStations(device) && device.status == "dostępny") {
-      await device.connection.startConnection();
+      // await device.connection.startConnection(); //TODO
       switch (device.type) {
         case "Multimetr":
-          stations[indexStation].devices.add(Multimeter(
+          Multimeter multimeter = Multimeter(
               key: UniqueKey(),
               name: device.name,
               displayON: true,
@@ -419,11 +424,12 @@ class AppViewModel extends ChangeNotifier {
               status: device.status,
               measuredUnit: "-",
               value: "0.0",
-              connection: device.connection));
+              connection: device.connection);
+          stations[indexStation].devices.add(multimeter);
+          await multimeter.connection.startConnection();
           break;
-
         case "Generator":
-          stations[indexStation].devices.add(Generator(
+          Generator generator = Generator(
               key: UniqueKey(),
               name: device.name,
               displayON: true,
@@ -433,10 +439,19 @@ class AppViewModel extends ChangeNotifier {
               model: device.model,
               serial: device.serial,
               status: device.status,
-              connection: device.connection));
+              connection: device.connection);
+          stations[indexStation].devices.add(generator);
+          await generator.connection.startConnection();
+
+          for (GeneratorChannel generatorChannel in generator.channels) {
+            for (Command command in generatorChannel.commands) {
+              debugPrint(command.query);
+            }
+          }
+
           break;
         case "Oscyloskop":
-          stations[indexStation].devices.add(Oscilloscope(
+          Oscilloscope oscilloscope = Oscilloscope(
               key: UniqueKey(),
               name: device.name,
               displayON: true,
@@ -446,10 +461,17 @@ class AppViewModel extends ChangeNotifier {
               model: device.model,
               serial: device.serial,
               status: device.status,
-              connection: device.connection));
+              connection: device.connection);
+          stations[indexStation].devices.add(oscilloscope);
+          await oscilloscope.connection.startConnection();
+          for (OscilloscopeChannel generatorChannel in oscilloscope.channels) {
+            for (Command command in generatorChannel.commands) {
+              debugPrint(command.query);
+            }
+          }
           break;
         case "Zasilacz":
-          stations[indexStation].devices.add(PowerSupply(
+          PowerSupply powerSupply = PowerSupply(
               key: UniqueKey(),
               name: device.name,
               displayON: true,
@@ -459,7 +481,14 @@ class AppViewModel extends ChangeNotifier {
               model: device.model,
               serial: device.serial,
               status: device.status,
-              connection: device.connection));
+              connection: device.connection);
+          stations[indexStation].devices.add(powerSupply);
+          await powerSupply.connection.startConnection();
+          for (PowerSupplyChannel generatorChannel in powerSupply.channels) {
+            for (Command command in generatorChannel.commands) {
+              debugPrint(command.query);
+            }
+          }
           break;
         default:
       }

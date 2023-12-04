@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:test/models/device_model/generator/generator_channel.dart';
+import 'package:test/models/device_models/power_supply/power_supply_channel.dart';
 import 'package:test/utils/socket_connection.dart';
 
-class Generator {
-  String type = "Generator";
+class PowerSupply {
   UniqueKey key;
   bool displayON;
   String name;
@@ -14,12 +13,15 @@ class Generator {
   String serial;
   String status;
   SocketConnection connection;
-  List<GeneratorChannel> channels = [
-    GeneratorChannel(1, "-", "0", "0", "0"),
-    GeneratorChannel(2, "-", "0", "0", "0")
-  ];
 
-  Generator(
+  List<PowerSupplyChannel> channels = [
+    PowerSupplyChannel(1, false, "0", "0", "0", "0"),
+    PowerSupplyChannel(2, false, "0", "0", "0", "0"),
+    PowerSupplyChannel(3, false, "0", "0", "0", "0")
+  ];
+  String type = "Zasilacz";
+
+  PowerSupply(
       {required this.key,
       required this.displayON,
       required this.name,
@@ -30,8 +32,9 @@ class Generator {
       required this.serial,
       required this.status,
       required this.connection});
+
   @override
   String toString() {
-    return "Generator";
+    return "Power Supply";
   }
 }

@@ -12,10 +12,10 @@ class PowerSupplyChannel {
   PowerSupplyChannel(this.number, this.isSet, this.voltageSourceValue,
       this.currentSourceValue, this.voltageValue, this.currentValue) {
     commands = [
-      Command(type: "SET", query: "source:voltage? ,(@$number)"),
-      Command(type: "SET", query: "source:current? ,(@$number)"),
       Command(type: "READ", query: "measure:voltage? ch$number"),
       Command(type: "READ", query: "measure:current? ch$number"),
+      Command(type: "SET", query: "source:voltage? (@$number)"),
+      Command(type: "SET", query: "source:current? (@$number)"),
     ];
   }
 }

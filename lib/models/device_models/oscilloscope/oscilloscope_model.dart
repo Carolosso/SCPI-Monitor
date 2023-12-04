@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:test/models/device_model/multimeter/multimeter_channel.dart';
+import 'package:test/models/device_models/oscilloscope/oscilloscope_channel.dart';
 import 'package:test/utils/socket_connection.dart';
 
-class Multimeter {
+class Oscilloscope {
   UniqueKey key;
   bool displayON;
   String name;
@@ -12,14 +12,17 @@ class Multimeter {
   String model;
   String serial;
   String status;
-  String measuredUnit;
-  String value;
   SocketConnection connection;
 
-  String type = "Multimetr";
-  List<MultimeterChannel> channels = [MultimeterChannel(1)];
+  String type = "Oscyloskop";
+  List<OscilloscopeChannel> channels = [
+    OscilloscopeChannel(1, "0", "0", "0", "0"),
+    OscilloscopeChannel(2, "0", "0", "0", "0"),
+    OscilloscopeChannel(3, "0", "0", "0", "0"),
+    OscilloscopeChannel(4, "0", "0", "0", "0")
+  ];
 
-  Multimeter(
+  Oscilloscope(
       {required this.key,
       required this.displayON,
       required this.name,
@@ -29,12 +32,10 @@ class Multimeter {
       required this.model,
       required this.serial,
       required this.status,
-      required this.measuredUnit,
-      required this.value,
       required this.connection});
 
   @override
   String toString() {
-    return "Multimeter";
+    return "Oscilloscope";
   }
 }

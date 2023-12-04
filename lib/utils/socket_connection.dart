@@ -9,12 +9,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test/models/command_model.dart';
-import 'package:test/models/device_model/generator/generator_channel.dart';
-import 'package:test/models/device_model/generator/generator_model.dart';
-import 'package:test/models/device_model/oscilloscope/oscilloscope_channel.dart';
-import 'package:test/models/device_model/oscilloscope/oscilloscope_model.dart';
-import 'package:test/models/device_model/power_supply/power_supply_channel.dart';
-import 'package:test/models/device_model/power_supply/power_supply_model.dart';
+import 'package:test/models/device_models/generator/generator_channel.dart';
+import 'package:test/models/device_models/generator/generator_model.dart';
+import 'package:test/models/device_models/multimeter/multimeter_channel.dart';
+import 'package:test/models/device_models/multimeter/multimeter_model.dart';
+import 'package:test/models/device_models/oscilloscope/oscilloscope_channel.dart';
+import 'package:test/models/device_models/oscilloscope/oscilloscope_model.dart';
+import 'package:test/models/device_models/power_supply/power_supply_channel.dart';
+import 'package:test/models/device_models/power_supply/power_supply_model.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/utils/navigation_service.dart';
 
@@ -33,32 +35,30 @@ class SocketConnection {
   String message = '';
 
   /// Getting value from received message from device by sending "READ?" command
-  Future<List> getMultimeterValues() async {
+  Future<List> getMultimeterValues(Multimeter multimeter) async {
     // debugPrint("get value():${isConnected()}");
-    List<String> generatorRawResponses = [];
-
+    List<List<String>> multimeterChannelsRawResponses = [[]];
     try {
-      //send READ?
-      sendMessageEOM('READ?', '\n');
-      //wait for messageReceiver()
-      await completer.future;
-      //get and return value
-      generatorRawResponses.add(message);
-      //send FUNCTION?
-      sendMessageEOM('*IDN?', '\n'); //sendMessageEOM('FUNCTION?', '\n'); //TODO
-      //wait for messageReceiver()
-      await completer.future;
-      //get and return value
-      generatorRawResponses.add(message.split(",").first.split("").first);
-      return generatorRawResponses;
+      for (MultimeterChannel channel in multimeter.channels) {
+        for (Command command in channel.commands) {
+          debugPrint(command.query);
+          if (command.type == "READ") {
+            sendMessageEOM(command.query, '\n');
+            await completer.future;
+            multimeterChannelsRawResponses[0].add(message);
+          }
+        }
+      }
+      return multimeterChannelsRawResponses;
     } catch (exception) {
+      debugPrint("$exception");
       return List.empty();
     }
   }
 
   /// Getting value from received message from device by sending "READ?" command
   Future<List<List>> getGeneratorValues(Generator generator) async {
-    List<List<String>> generatorChannelsRawResponses = [];
+    List<List<String>> generatorChannelsRawResponses = [[]];
     int i = 0;
     try {
       for (GeneratorChannel channel in generator.channels) {
@@ -73,13 +73,14 @@ class SocketConnection {
       }
       return generatorChannelsRawResponses;
     } catch (exception) {
+      debugPrint("$exception");
       return List.empty();
     }
   }
 
   /// Getting value from received message from device by sending "READ?" command
   Future<List<List>> getPowerSupplyValues(PowerSupply powerSupply) async {
-    List<List<String>> powerSupplyChannelsRawResponses = [];
+    List<List<String>> powerSupplyChannelsRawResponses = [[]];
     int i = 0;
     try {
       for (PowerSupplyChannel channel in powerSupply.channels) {
@@ -99,13 +100,14 @@ class SocketConnection {
       }
       return powerSupplyChannelsRawResponses;
     } catch (exception) {
+      debugPrint("$exception");
       return List.empty();
     }
   }
 
   /// Getting value from received message from device by sending "READ?" command
   Future<List<List>> getOscilloscopeValues(Oscilloscope oscilloscope) async {
-    List<List<String>> powerSupplyChannelsRawResponses = [];
+    List<List<String>> oscilloscopeChannelsRawResponses = [[]];
     int i = 0;
     try {
       for (OscilloscopeChannel channel in oscilloscope.channels) {
@@ -113,13 +115,14 @@ class SocketConnection {
           if (command.type == "READ") {
             sendMessageEOM(command.query, '\n');
             await completer.future;
-            powerSupplyChannelsRawResponses[i].add(message);
+            oscilloscopeChannelsRawResponses[i].add(message);
           }
         }
         i++;
       }
-      return powerSupplyChannelsRawResponses;
+      return oscilloscopeChannelsRawResponses;
     } catch (exception) {
+      debugPrint("$exception");
       return List.empty();
     }
   }
@@ -142,6 +145,7 @@ class SocketConnection {
         completer = Completer();
       }
     } catch (e) {
+      debugPrint("$e");
       debugPrint(e.toString());
     }
 

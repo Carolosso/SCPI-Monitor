@@ -36,7 +36,7 @@ class StationDeviceItemMultimeter extends StatelessWidget {
                     const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
               Text(
-                '${viewModel.getMultimeterValue(indexStation, indexDevice)}${viewModel.getDeviceMeasuredUnit(indexStation, indexDevice)}',
+                '${viewModel.stations[indexStation].devices[indexDevice].channels[0].value} ${viewModel.stations[indexStation].devices[indexDevice].channels[0].unit}',
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
