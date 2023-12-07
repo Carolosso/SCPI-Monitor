@@ -37,10 +37,18 @@ Expanded oscilloscopeChannelBuilder(
               Container(
                 height: 6,
               ),
-              const Text("Vpp: ",
-                  style: TextStyle(
-                    color: Colors.white,
-                  )),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text("V",
+                      style: TextStyle(
+                        color: Colors.white,
+                      )),
+                  Text("PP: ",
+                      style: TextStyle(color: Colors.white, fontSize: 10)),
+                ],
+              ),
               Text(
                   viewModel.stations[indexStation].devices[indexDevice]
                       .channels[i - 1].vpp,
@@ -49,10 +57,18 @@ Expanded oscilloscopeChannelBuilder(
                     color: Colors.white,
                     //fontSize: double.maxFinite,
                   )),
-              const Text("Vrms: ",
-                  style: TextStyle(
-                    color: Colors.white,
-                  )),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text("V",
+                      style: TextStyle(
+                        color: Colors.white,
+                      )),
+                  Text("RMS: ",
+                      style: TextStyle(color: Colors.white, fontSize: 10)),
+                ],
+              ),
               Text(
                   viewModel.stations[indexStation].devices[indexDevice]
                       .channels[i - 1].vrms,
@@ -61,10 +77,18 @@ Expanded oscilloscopeChannelBuilder(
                     color: Colors.white,
                     //fontSize: double.maxFinite,
                   )),
-              const Text("Vaverage: ",
-                  style: TextStyle(
-                    color: Colors.white,
-                  )),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text("V",
+                      style: TextStyle(
+                        color: Colors.white,
+                      )),
+                  Text("AVG: ",
+                      style: TextStyle(color: Colors.white, fontSize: 10)),
+                ],
+              ),
               Text(
                   viewModel.stations[indexStation].devices[indexDevice]
                       .channels[i - 1].vaverage,

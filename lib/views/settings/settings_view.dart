@@ -17,54 +17,58 @@ class SettingsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<SettingsViewModel>(
         builder: (context, settingsViewModel, child) {
-      return Column(
-        children: [
-          SettingsItemNetwork(
-            title: "Adres sieci lokalnej",
-            icon: Icons.network_wifi,
-            settingsViewModel: settingsViewModel,
-            text: settingsViewModel.ipRange,
-          ),
-          SettingsItemDelay(
-            title: "Opóźnienie wysyłania poleceń",
-            icon: Icons.refresh,
-            settingsViewModel: settingsViewModel,
-            textControllerText: settingsViewModel.timeout.toString(),
-            text: "${settingsViewModel.timeout} ms",
-            dialogOnPressed: settingsViewModel.setNewTimeout,
-            textInputType: TextInputType.number,
-          ),
-          SettingsItemTheme(
-            title: "Motyw aplikacji",
-            icon: Icons.invert_colors,
-            settingsViewModel: settingsViewModel,
-            text: Styles.isDarkTheme ? "Ciemny" : "Jasny",
-          ),
-          SettingsUnitsConverter(
-            title: "Konwertowanie jednostek",
-            icon: Icons.autorenew,
-            settingsViewModel: settingsViewModel,
-            text: settingsViewModel.unitsConversion ? "Włączone" : "Wyłączone",
-          ),
-          SettingsItemLanguage(
-            title: "Język aplikacji",
-            icon: Icons.language,
-            settingsViewModel: settingsViewModel,
-            text: "Polski",
-          ),
-          const SettingsItemAbout(
-            title: "O aplikacji",
-            icon: Icons.info_outline_rounded,
-          ),
-          SettingsTest(
-            title: "Opcje testowe",
-            icon: Icons.warning,
-            settingsViewModel: settingsViewModel,
-            text: settingsViewModel.testOptionsAvailable
-                ? "Włączone"
-                : "Wyłączone",
-          ),
-        ],
+      return SingleChildScrollView(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            SettingsItemNetwork(
+              title: "Adres sieci lokalnej",
+              icon: Icons.network_wifi,
+              settingsViewModel: settingsViewModel,
+              text: settingsViewModel.ipRange,
+            ),
+            SettingsItemDelay(
+              title: "Opóźnienie wysyłania poleceń",
+              icon: Icons.refresh,
+              settingsViewModel: settingsViewModel,
+              textControllerText: settingsViewModel.timeout.toString(),
+              text: "${settingsViewModel.timeout} ms",
+              dialogOnPressed: settingsViewModel.setNewTimeout,
+              textInputType: TextInputType.number,
+            ),
+            SettingsItemTheme(
+              title: "Motyw aplikacji",
+              icon: Icons.invert_colors,
+              settingsViewModel: settingsViewModel,
+              text: Styles.isDarkTheme ? "Ciemny" : "Jasny",
+            ),
+            SettingsUnitsConverter(
+              title: "Konwertowanie jednostek",
+              icon: Icons.autorenew,
+              settingsViewModel: settingsViewModel,
+              text:
+                  settingsViewModel.unitsConversion ? "Włączone" : "Wyłączone",
+            ),
+            SettingsItemLanguage(
+              title: "Język aplikacji",
+              icon: Icons.language,
+              settingsViewModel: settingsViewModel,
+              text: "Polski",
+            ),
+            const SettingsItemAbout(
+              title: "O aplikacji",
+              icon: Icons.info_outline_rounded,
+            ),
+            SettingsTest(
+              title: "Opcje testowe",
+              icon: Icons.warning,
+              settingsViewModel: settingsViewModel,
+              text: settingsViewModel.testOptionsAvailable
+                  ? "Włączone"
+                  : "Wyłączone",
+            ),
+          ],
+        ),
       );
     });
   }

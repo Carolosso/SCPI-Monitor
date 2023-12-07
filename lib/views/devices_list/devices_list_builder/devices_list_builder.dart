@@ -47,7 +47,6 @@ class DevicesListBuilder extends StatelessWidget {
             child: DeviceItem(
                 nameTextController: nameTextController,
                 viewModel: viewModel,
-                ipTextController: ipTextController,
                 indexDevice: indexDevice),
           ),
         );

@@ -11,7 +11,6 @@ class Device {
   String model;
   String serial;
   String status;
-  int channelCount;
   SocketConnection connection;
 
   Device(
@@ -24,6 +23,5 @@ class Device {
       required this.model,
       required this.serial,
       required this.status,
-      required this.channelCount,
       required this.connection});
 }

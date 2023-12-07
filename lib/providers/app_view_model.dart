@@ -18,7 +18,7 @@ import 'package:test/models/device_models/power_supply/power_supply_model.dart';
 import 'package:test/utils/devices_models.dart';
 import 'package:test/utils/format_unit.dart';
 import 'package:test/utils/increment_ip.dart';
-import 'package:test/utils/refresh_device_values.dart';
+import 'package:test/utils/refresh_devices.dart';
 import 'package:test/utils/socket_connection.dart';
 import 'package:test/models/station_model.dart';
 import 'package:test/providers/settings_view_model.dart';
@@ -27,13 +27,14 @@ import 'package:test/utils/validators.dart';
 
 //TODO Unhandled Exception: SocketException: Connection reset by peer (OS Error: Connection reset by peer, errno = 104), address = 10.0.2.2, port = 52046
 //TODO TABLET FRIENDLY UI
+//TODO FORMAT UNITS
 class AppViewModel extends ChangeNotifier {
   AppViewModel() {
     //on provider creation call this
     init();
   }
   List<Device> devices = [
-    Device(
+    /* Device(
         key: UniqueKey(),
         name: "Generator name",
         type: "Generator",
@@ -43,7 +44,6 @@ class AppViewModel extends ChangeNotifier {
         model: "model",
         serial: "serial",
         status: "dostępny",
-        channelCount: 2,
         connection: SocketConnection("128.12.12.2", 525)),
     Device(
         key: UniqueKey(),
@@ -55,7 +55,6 @@ class AppViewModel extends ChangeNotifier {
         model: "model",
         serial: "serial22",
         status: "dostępny",
-        channelCount: 4,
         connection: SocketConnection("128.12.12.22", 525)),
     Device(
         key: UniqueKey(),
@@ -67,8 +66,7 @@ class AppViewModel extends ChangeNotifier {
         model: "model",
         serial: "serial223333",
         status: "dostępny",
-        channelCount: 3,
-        connection: SocketConnection("128.12.12.22", 525))
+        connection: SocketConnection("128.12.12.22", 525)) */
   ];
   List<Station> stations = [
     Station(devices: [], key: UniqueKey(), name: "Stanowisko 1")
@@ -81,7 +79,8 @@ class AppViewModel extends ChangeNotifier {
   bool isStopped = true;
   //
   String textInfo = "";
-
+  String debugRegister = "---";
+  late SocketConnection debugConnection;
   String getTextInfo() => textInfo;
 
   late bool findDevicesInNetworkBreak;
@@ -182,7 +181,6 @@ class AppViewModel extends ChangeNotifier {
     String serial = "Unknown";
     String type = "Unknown";
     Socket socket;
-    int channelCount = 0;
     try {
       if (!isValidHost(ip)) {
         return "Zły format IP!";
@@ -197,15 +195,13 @@ class AppViewModel extends ChangeNotifier {
       socket.listen((List<int> event) async {
         debugPrint(utf8.decode(event));
         List<String> message = utf8.decode(event).split(',');
-        if (message.length > 3) {
+        if (message.length > 2) {
           manufacturer = message.elementAt(0).trim();
           model = message.elementAt(1).trim();
           type = detectDeviceType(model).toString();
-          // debugPrint("$type");
+          debugPrint(type);
           name = "$type $model";
           serial = message.elementAt(2).trim();
-        } else if (message.length == 1) {
-          channelCount = int.parse(message[0]);
         }
         status = "dostępny";
         //we got response so
@@ -213,31 +209,7 @@ class AppViewModel extends ChangeNotifier {
         completer.complete(event);
         completer = Completer();
       });
-      /* // ------------------ TEST -------------------------------
-      SettingsViewModel vm = getSettingsViewModel();
-      if (vm.testOptionsAvailable) {
-        socket.add(
-            utf8.encode('CONF?\n')); //---> "VOLT +1.000000E+01,+3.000000E-05"
-        debugPrint("Zaczynamy timer!");
-        final timeoutTimer = Timer(const Duration(seconds: 3), () {
-          debugPrint("Koniec czasu");
-          textInfo = "Timeout";
-          notifyListeners();
-          completer.complete();
-        });
-        //await for response/completer
-        await completer.future;
-        timeoutTimer.cancel();
-      }
-      completer = Completer();
-      //--------------------- TEST -------------------------------- */
       socket.add(utf8.encode('*IDN?\n'));
-      socket.add(utf8.encode('SYST:COUN?\n')); // channels count
-      socket.add(utf8.encode('SYSTem:LOCal\n')); // channels count
-      //"SYST:COMMunicate:RLSTate REM" Remote and Local do the same thing and are included for compatibility with other products. Both allow front panel control.
-      //"SYSTem:LOCal".
-      //SYSTem:COMMunicate:TCPip:CONTrol? zwraca port urzadzenia
-
       // send *IDN? ----> <Manufacturer>, <Model>, <Serial Number>, <Firmware Level>, <Options>.
       //await for response/completer
       final timeoutTimer = Timer(const Duration(seconds: 3), () {
@@ -249,6 +221,8 @@ class AppViewModel extends ChangeNotifier {
       //await for response/completer
       await completer.future;
       timeoutTimer.cancel(); // .. and close the socket
+      socket.add(utf8.encode('SYSTem:LOCal\n'));
+
       socket.close();
     } catch (ex) {
       return "Nie udalo się nawiązać połączenia z urządzeniem!";
@@ -264,7 +238,6 @@ class AppViewModel extends ChangeNotifier {
         model: model,
         serial: serial,
         status: status,
-        channelCount: channelCount,
         connection: socketConnection);
     debugPrint("CREATE DEVICE PORT: $port");
     // finally add device to main devices list if not already
@@ -290,6 +263,11 @@ class AppViewModel extends ChangeNotifier {
   /// * @indexDevice
   void removeDeviceFromStation(int indexStation, int indexDevice) {
     //debugPrint("REMOVE DEVICE FROM STATION PORT: ${stations[indexStation].devices.elementAt(indexDevice).port}");
+    stations[indexStation]
+        .devices
+        .elementAt(indexDevice)
+        .connection
+        .sendMessageEOM("SYSTem:LOCal", '\n');
     stations[indexStation]
         .devices
         .elementAt(indexDevice)
@@ -389,6 +367,12 @@ class AppViewModel extends ChangeNotifier {
     return true;
   }
 
+  void changeDeviceType(int indexDevice, int value) {
+    List<String> types = ["Multimetr", "Generator", "Zasilacz", "Oscyloskop"];
+    devices[indexDevice].type = types[value];
+    notifyListeners();
+  }
+
   /// Adds device to designated Station, creates new object(device) from this device, checks if is not already in station and if status is ok, if not opens connection and adds device to station
   Future<void> addDeviceToStation(int indexStation, Device device) async {
     // TODO kopiowanie obiektu - ogarnąć to -
@@ -409,7 +393,6 @@ class AppViewModel extends ChangeNotifier {
 
     //debugPrint("ADD DEVICE TO STATION PORT: ${newDevice.port}");
     if (comparedBySerialInStations(device) && device.status == "dostępny") {
-      // await device.connection.startConnection(); //TODO
       switch (device.type) {
         case "Multimetr":
           Multimeter multimeter = Multimeter(
@@ -464,8 +447,9 @@ class AppViewModel extends ChangeNotifier {
               connection: device.connection);
           stations[indexStation].devices.add(oscilloscope);
           await oscilloscope.connection.startConnection();
-          for (OscilloscopeChannel generatorChannel in oscilloscope.channels) {
-            for (Command command in generatorChannel.commands) {
+          for (OscilloscopeChannel oscilloscopeChannel
+              in oscilloscope.channels) {
+            for (Command command in oscilloscopeChannel.commands) {
               debugPrint(command.query);
             }
           }
@@ -484,8 +468,8 @@ class AppViewModel extends ChangeNotifier {
               connection: device.connection);
           stations[indexStation].devices.add(powerSupply);
           await powerSupply.connection.startConnection();
-          for (PowerSupplyChannel generatorChannel in powerSupply.channels) {
-            for (Command command in generatorChannel.commands) {
+          for (PowerSupplyChannel powerSupplyChannel in powerSupply.channels) {
+            for (Command command in powerSupplyChannel.commands) {
               debugPrint(command.query);
             }
           }
@@ -543,10 +527,8 @@ class AppViewModel extends ChangeNotifier {
   /// * @index
   /// * @name
   /// * @ip
-  void setNewParametersToDeviceInList(int index, String name, String ip) {
+  void setNewParametersToDeviceInList(int index, String name) {
     devices[index].name = name;
-    devices[index].ip = ip;
-    devices[index].connection = SocketConnection(ip, 5025);
     notifyListeners();
   }
 
@@ -709,5 +691,35 @@ class AppViewModel extends ChangeNotifier {
 
   void init() async {
     await getNetworkInfo();
+  }
+
+  Future<void> debugConnectPressed(String ip, String port) async {
+    debugConnection = SocketConnection(ip, int.parse(port));
+    await debugConnection.startConnection();
+    if (debugConnection.isConnected()) {
+      debugRegister += "\nNawiązano połączenie! IP: $ip PORT: $port";
+    } else {
+      debugRegister += "\nNie udało się nawiązać połączenia!";
+    }
+    notifyListeners();
+  }
+
+  void debugDisconnectPressed() {
+    debugConnection.disconnect();
+    debugRegister += "\nRozłączono.";
+    notifyListeners();
+  }
+
+  void debugClearPressed() {
+    debugRegister = "---";
+    notifyListeners();
+  }
+
+  Future<void> debugQueryPressed(String query) async {
+    debugRegister += "\nWysłano: ${query.trim()}";
+    notifyListeners();
+    String message = await debugConnection.getDebugMessage(query);
+    debugRegister += "\nOdebrano: ${message.trim()}";
+    notifyListeners();
   }
 }

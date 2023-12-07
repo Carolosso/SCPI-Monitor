@@ -1,11 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:test/models/device_models/generator/generator_channel.dart';
+import 'package:test/models/device_models/multimeter/multimeter_channel.dart';
 import 'package:test/models/device_models/oscilloscope/oscilloscope_channel.dart';
 import 'package:test/models/device_models/power_supply/power_supply_channel.dart';
 
-/// Refreshes devices values
 Future<void> refreshDeviceValues(var device) async {
   switch (device.toString()) {
     case "Multimeter":
@@ -13,8 +11,12 @@ Future<void> refreshDeviceValues(var device) async {
         debugPrint("Wysyłanie do Multimetru: ${device.name}");
         List<List<String>> rawChannelsValues =
             await device.connection.getMultimeterValues(device);
-        device.channels[0].unit = rawChannelsValues[0].elementAt(0).trim();
-        device.channels[0].value = rawChannelsValues[0].elementAt(1).trim();
+        int i = 0;
+        for (MultimeterChannel channel in device.channels) {
+          channel.unit = rawChannelsValues[i].elementAt(0).trim();
+          channel.value = rawChannelsValues[i].elementAt(1).trim();
+          i++;
+        }
       } catch (e) {
         debugPrint("ERROR: $e");
       }
@@ -61,18 +63,19 @@ Future<void> refreshDeviceValues(var device) async {
         int i = 0;
         for (PowerSupplyChannel channel in device.channels) {
           channel.voltageValue = rawChannelsValues[i].elementAt(0).trim();
-          channel.currentValue = rawChannelsValues[i].elementAt(1).trim();
-          if (!device.isSet) {
-            channel.currentSourceValue =
-                rawChannelsValues[i].elementAt(2).trim();
-            channel.voltageSourceValue =
-                rawChannelsValues[i].elementAt(3).trim();
-          }
 
+          //debugPrint(rawChannelsValues[i].elementAt(0).trim());
+          channel.currentValue = rawChannelsValues[i].elementAt(1).trim();
+          //debugPrint(rawChannelsValues[i].elementAt(1).trim());
+          channel.voltageSourceValue = rawChannelsValues[i].elementAt(3).trim();
+          //debugPrint(rawChannelsValues[i].elementAt(3).trim());
+          channel.currentSourceValue = rawChannelsValues[i].elementAt(2).trim();
+          //debugPrint(rawChannelsValues[i].elementAt(2).trim());
+          /*   if (!device.isSet) {} */
           i++;
         }
       } catch (e) {
-        debugPrint("ERROR: $e");
+        debugPrint("ERROR R: $e");
       }
       break;
     default:

@@ -37,7 +37,7 @@ Expanded generatorChannelBuilder(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    "Fun: ",
+                    "Function: ",
                     style: TextStyle(color: Colors.white),
                     textAlign: TextAlign.left,
                   ),
@@ -51,7 +51,8 @@ Expanded generatorChannelBuilder(
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Volt: ", style: TextStyle(color: Colors.white)),
+                  const Text("Voltage: ",
+                      style: TextStyle(color: Colors.white)),
                   Text(
                       "${viewModel.stations[indexStation].devices[indexDevice].channels[i - 1].voltageValue}",
                       style: const TextStyle(color: Colors.white)),
@@ -60,7 +61,7 @@ Expanded generatorChannelBuilder(
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Offs: ", style: TextStyle(color: Colors.white)),
+                  const Text("Offset: ", style: TextStyle(color: Colors.white)),
                   Text(
                       "${viewModel.stations[indexStation].devices[indexDevice].channels[i - 1].voltageOffset}",
                       style: const TextStyle(color: Colors.white)),
@@ -69,7 +70,8 @@ Expanded generatorChannelBuilder(
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Freq: ", style: TextStyle(color: Colors.white)),
+                  const Text("Freqency: ",
+                      style: TextStyle(color: Colors.white)),
                   Text(
                       "${viewModel.stations[indexStation].devices[indexDevice].channels[i - 1].frequencyValue}",
                       style: const TextStyle(color: Colors.white)),

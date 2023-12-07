@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test/views/debug/debug_view.dart';
 import 'package:test/views/devices_list/device_list_view.dart';
 import 'package:test/pages/settings_page.dart';
 //import 'package:test/views/pages/station_detail_page.dart';
@@ -11,6 +12,7 @@ class ScreenIndexProvider extends ChangeNotifier {
     const StationsListView(),
     DevicesListView(),
     const SettingsPage(),
+    DebugView()
   ];
 
   void updateScreenIndex(int newIndex) {

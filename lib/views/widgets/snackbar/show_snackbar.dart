@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test/style/theme.dart';
 
 ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showSnackBar(
     BuildContext context, String text) {
@@ -13,7 +14,7 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showSnackBar(
     ),
     backgroundColor: Colors.black,
     duration: const Duration(milliseconds: 1800),
-    shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(15))),
+    shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(Styles.globalRadius))),
   ));
 }

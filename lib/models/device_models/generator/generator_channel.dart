@@ -13,7 +13,6 @@ class GeneratorChannel {
     commands = [
       Command(type: "READ", query: "source$number:function?"),
       Command(type: "READ", query: "source$number:voltage?"),
-      // Command(type: "READ", query: "source$number:voltage:unit?"),
       Command(type: "READ", query: "source$number:voltage:offset?"),
       Command(type: "READ", query: "source$number:frequency?")
     ];

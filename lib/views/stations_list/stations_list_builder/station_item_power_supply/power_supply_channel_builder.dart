@@ -96,7 +96,7 @@ Expanded powerSupplyChannelBuilder(
                     fontSize: 15,
                   )),
               Text(
-                  "${viewModel.stations[indexStation].devices[indexDevice].channels[i - 1].currentSourceValue} V",
+                  "${viewModel.stations[indexStation].devices[indexDevice].channels[i - 1].currentSourceValue} A",
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 15,

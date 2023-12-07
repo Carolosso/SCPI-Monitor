@@ -41,9 +41,13 @@ List<String> generators = [
   "EDU33212A"
 ];
 // Keysight Technologies InfiniiVision Oscilloscopes with LAN connectivity
-
 List<String> oscilloscopes = [
   "DSOX3012G",
+  "DSOX1204A",
+  "DSOX1204G",
+  "DSOX1202G",
+  "EDUX1052A",
+  "EDUX1052G",
   "DSOX3104G",
   "DSOX3102G",
   "DSOX3054G",

@@ -8,13 +8,11 @@ class DeviceItem extends StatelessWidget {
     super.key,
     required this.nameTextController,
     required this.viewModel,
-    required this.ipTextController,
     required this.indexDevice,
   });
 
   final TextEditingController nameTextController;
   final AppViewModel viewModel;
-  final TextEditingController ipTextController;
   final int indexDevice;
   @override
   Widget build(BuildContext context) {
@@ -26,9 +24,7 @@ class DeviceItem extends StatelessWidget {
           foregroundColor: Colors.white),
       onPressed: () {
         nameTextController.text = viewModel.devices[indexDevice].name;
-        ipTextController.text = viewModel.devices[indexDevice].ip;
-        deviceItemDialog(context, viewModel, indexDevice, nameTextController,
-            ipTextController);
+        deviceItemDialog(context, viewModel, indexDevice, nameTextController);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),

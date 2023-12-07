@@ -13,6 +13,10 @@ Future<void> stationDetailMultimeterDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.all(Radius.circular(Styles.globalRadius)),
+          ),
           title: Text(
               'Edytuj ${viewModel.stations[indexStation].devices[indexDevice].name}'),
           content: SingleChildScrollView(

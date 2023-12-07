@@ -11,6 +11,9 @@ Future<dynamic> settingsItemDialogDelay(
       context: context,
       builder: (context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Styles.globalRadius),
+          ),
           title: const Text("Opóźnienie wysyłania poleceń"),
           content: SingleChildScrollView(
             child: Row(

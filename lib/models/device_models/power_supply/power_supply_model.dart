@@ -15,9 +15,9 @@ class PowerSupply {
   SocketConnection connection;
 
   List<PowerSupplyChannel> channels = [
-    PowerSupplyChannel(1, false, "0", "0", "0", "0"),
-    PowerSupplyChannel(2, false, "0", "0", "0", "0"),
-    PowerSupplyChannel(3, false, "0", "0", "0", "0")
+    PowerSupplyChannel(1, "0", "0", "0", "0"),
+    PowerSupplyChannel(2, "0", "0", "0", "0"),
+    PowerSupplyChannel(3, "0", "0", "0", "0")
   ];
   String type = "Zasilacz";
 
