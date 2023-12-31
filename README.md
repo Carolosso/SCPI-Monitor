@@ -1,7 +1,7 @@
 # SPCI Monitor 
 
 BSC THESIS
-My first time codding mobile app! 
+My first time coding mobile app! 
 ## Getting Started
 
 This project is a starting point for a Flutter application.
