@@ -1,17 +1,11 @@
 # 📱 SCPI MONITOR
 
-<<<<<<< HEAD
 ![Flutter](https://img.shields.io/badge/Flutter-3.0-blue?logo=flutter)
 ![Dart](https://img.shields.io/badge/Dart-2.17-blue?logo=dart)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 
-A Flutter-based mobile application designed with a modular architecture, MVVM pattern, and support for dynamic settings, device management, and custom UI components.
-=======
-BSC THESIS
-My first time coding mobile app! 
 ## Getting Started
->>>>>>> 3ca2fc525c0b4d8f7e98b7c5d0f16568be7ecefe
 
 ---
 
