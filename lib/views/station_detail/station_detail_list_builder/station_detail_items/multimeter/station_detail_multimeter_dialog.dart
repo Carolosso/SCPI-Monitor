@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/style/theme.dart';
 
-Future<void> stationDetailItemDialog(
+Future<void> stationDetailMultimeterDialog(
     BuildContext context,
     int indexDevice,
     AppViewModel viewModel,
@@ -14,6 +13,10 @@ Future<void> stationDetailItemDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.all(Radius.circular(Styles.globalRadius)),
+          ),
           title: Text(
               'Edytuj ${viewModel.stations[indexStation].devices[indexDevice].name}'),
           content: SingleChildScrollView(
@@ -65,7 +68,7 @@ Future<void> stationDetailItemDialog(
                   ),
                 ),
                 const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
-                SizedBox(
+                /* SizedBox(
                     width: double.infinity,
                     child: Consumer<AppViewModel>(
                         builder: (context, viewModel, child) {
@@ -103,7 +106,7 @@ Future<void> stationDetailItemDialog(
                               }),
                         ],
                       );
-                    })),
+                    })), */
               ],
             ),
           ),

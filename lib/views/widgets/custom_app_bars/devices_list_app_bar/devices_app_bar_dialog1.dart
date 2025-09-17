@@ -15,7 +15,7 @@ Future<dynamic> devicesAppBarDialog1(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Styles.primaryColor,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(Styles.globalRadius),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

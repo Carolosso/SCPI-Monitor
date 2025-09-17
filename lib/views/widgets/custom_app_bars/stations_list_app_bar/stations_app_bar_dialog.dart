@@ -11,6 +11,9 @@ Future<dynamic> stationsAppBarDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Styles.globalRadius),
+          ),
           title: const Text('Dodaj stanowisko'),
           content: SingleChildScrollView(
             child: Column(

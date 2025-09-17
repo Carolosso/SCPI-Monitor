@@ -8,6 +8,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:test/models/command_model.dart';
+import 'package:test/models/device_models/generator/generator_channel.dart';
+import 'package:test/models/device_models/generator/generator_model.dart';
+import 'package:test/models/device_models/multimeter/multimeter_channel.dart';
+import 'package:test/models/device_models/multimeter/multimeter_model.dart';
+import 'package:test/models/device_models/oscilloscope/oscilloscope_channel.dart';
+import 'package:test/models/device_models/oscilloscope/oscilloscope_model.dart';
+import 'package:test/models/device_models/power_supply/power_supply_channel.dart';
+import 'package:test/models/device_models/power_supply/power_supply_model.dart';
 import 'package:test/providers/app_view_model.dart';
 import 'package:test/utils/navigation_service.dart';
 
@@ -26,22 +35,155 @@ class SocketConnection {
   String message = '';
 
   /// Getting value from received message from device by sending "READ?" command
-  Future<double> getValue() async {
+  Future<List<List<String>>> getMultimeterValues(Multimeter multimeter) async {
     // debugPrint("get value():${isConnected()}");
-    AppViewModel viewModel = getAppViewModel();
+    List<List<String>> multimeterChannelsRawResponses = [[]];
     try {
-      if (!viewModel.isStopped) {
-        //send READ?
-        sendMessageEOM('READ?', '\n');
-        //wait for messageReceiver()
-        await completer.future;
-        //get and return value
-        double result = double.parse(message);
-        return result;
+      for (MultimeterChannel channel in multimeter.channels) {
+        for (Command command in channel.commands) {
+          debugPrint(command.query);
+          if (command.type == "READ") {
+            sendMessageEOM(command.query, '\n');
+            // await completer.future;
+            final timeoutTimer = Timer(const Duration(seconds: 3), () {
+              debugPrint("Koniec czasu oczekiwania na odpowiedź!");
+              completer.complete();
+              message = "-";
+            });
+            await completer.future;
+            timeoutTimer.cancel(); //
+            completer = Completer();
+
+            ///
+            multimeterChannelsRawResponses[0].add(message);
+          }
+        }
       }
-      return 0;
+      return multimeterChannelsRawResponses;
     } catch (exception) {
-      return 0;
+      debugPrint("$exception");
+      return List.empty();
+    }
+  }
+
+  /// Getting value from received message from device by sending "READ?" command
+  Future<List<List<String>>> getGeneratorValues(Generator generator) async {
+    List<List<String>> generatorChannelsRawResponses = [[], []];
+    int i = 0;
+    try {
+      for (GeneratorChannel channel in generator.channels) {
+        for (Command command in channel.commands) {
+          if (command.type == "READ") {
+            sendMessageEOM(command.query, '\n');
+            //await completer.future;
+            final timeoutTimer = Timer(const Duration(seconds: 3), () {
+              debugPrint("Koniec czasu oczekiwania na odpowiedź!");
+              completer.complete();
+              message = "-";
+            });
+            await completer.future;
+            timeoutTimer.cancel(); //
+            completer = Completer();
+            //
+            generatorChannelsRawResponses[i].add(message);
+          }
+        }
+        i++;
+      }
+      return generatorChannelsRawResponses;
+    } catch (exception) {
+      debugPrint("$exception");
+      return List.empty();
+    }
+  }
+
+  /// Getting value from received message from device by sending "READ?" command
+  Future<List<List<String>>> getPowerSupplyValues(
+      PowerSupply powerSupply) async {
+    List<List<String>> powerSupplyChannelsRawResponses = [[], [], []];
+    int i = 0;
+    try {
+      for (PowerSupplyChannel channel in powerSupply.channels) {
+        for (Command command in channel.commands) {
+          if (command.type == "READ") {
+            sendMessageEOM(command.query, '\n');
+            //await completer.future;
+            //
+            final timeoutTimer = Timer(const Duration(seconds: 3), () {
+              debugPrint("Koniec czasu oczekiwania na odpowiedź!");
+              completer.complete();
+              message = "-";
+            });
+            await completer.future;
+            timeoutTimer.cancel(); //
+            completer = Completer();
+            //
+            powerSupplyChannelsRawResponses[i].add(message);
+          } /* else if (command.type == "SET" && !channel.isSet) {
+            sendMessageEOM(command.query, '\n');
+            await completer.future;
+            powerSupplyChannelsRawResponses[i].add(message);
+          } */
+        }
+        /* channel.isSet = true; */
+        i++;
+      }
+      return powerSupplyChannelsRawResponses;
+    } catch (exception) {
+      debugPrint("$exception");
+      return List.empty();
+    }
+  }
+
+  /// Getting value from received message from device by sending "READ?" command
+  Future<List<List<String>>> getOscilloscopeValues(
+      Oscilloscope oscilloscope) async {
+    List<List<String>> oscilloscopeChannelsRawResponses = [[], [], [], []];
+    int i = 0;
+    try {
+      for (OscilloscopeChannel channel in oscilloscope.channels) {
+        for (Command command in channel.commands) {
+          if (command.type == "READ") {
+            sendMessageEOM(command.query, '\n');
+            //await completer.future;
+            //
+            final timeoutTimer = Timer(const Duration(seconds: 3), () {
+              debugPrint("Koniec czasu oczekiwania na odpowiedź!");
+              completer.complete();
+              message = "-";
+            });
+            await completer.future;
+            timeoutTimer.cancel(); //
+            completer = Completer();
+            //
+            oscilloscopeChannelsRawResponses[i].add(message);
+          }
+        }
+        i++;
+      }
+      return oscilloscopeChannelsRawResponses;
+    } catch (exception) {
+      debugPrint("$exception");
+      return List.empty();
+    }
+  }
+
+  /// Getting value from received message from device by sending "READ?" command
+  Future<String> getDebugMessage(String query) async {
+    try {
+      sendMessageEOM(query, '\n');
+      final timeoutTimer = Timer(const Duration(seconds: 3), () {
+        debugPrint("Koniec czasu oczekiwania na odpowiedź!");
+        completer.complete();
+        message = "-";
+      });
+      await completer.future;
+      timeoutTimer.cancel(); //
+      completer = Completer();
+      return message;
+    } catch (exception) {
+      debugPrint("$exception");
+      return "Błąd $exception";
     }
   }
 
@@ -63,10 +205,8 @@ class SocketConnection {
         completer = Completer();
       }
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint("$e");
     }
-
-    //readValue();
   }
 
   //starting the connection and listening to the socket asynchronously

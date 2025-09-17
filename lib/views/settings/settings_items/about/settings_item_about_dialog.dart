@@ -6,8 +6,10 @@ Future<dynamic> settingsItemDialogAbout(BuildContext context) {
       context: context,
       builder: (context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Styles.globalRadius),
+          ),
           title: const Text("O aplikacji"),
-          //title: const Text('Dodaj urządzenie'),
           content: const SingleChildScrollView(
             child: Column(
               children: [
@@ -18,7 +20,7 @@ Future<dynamic> settingsItemDialogAbout(BuildContext context) {
                 ),
                 Text("Karol Bulanowski"),
                 Text("Jakub Wojturski"),
-                Text("v0.8.4"),
+                Text("v0.8.5"),
               ],
             ),
           ),

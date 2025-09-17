@@ -8,27 +8,23 @@ class DeviceItem extends StatelessWidget {
     super.key,
     required this.nameTextController,
     required this.viewModel,
-    required this.ipTextController,
     required this.indexDevice,
   });
 
   final TextEditingController nameTextController;
   final AppViewModel viewModel;
-  final TextEditingController ipTextController;
   final int indexDevice;
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(Styles.globalRadius)),
           backgroundColor: Styles.primaryColor,
           foregroundColor: Colors.white),
       onPressed: () {
         nameTextController.text = viewModel.devices[indexDevice].name;
-        ipTextController.text = viewModel.devices[indexDevice].ip;
-        deviceItemDialog(context, viewModel, indexDevice, nameTextController,
-            ipTextController);
+        deviceItemDialog(context, viewModel, indexDevice, nameTextController);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -72,6 +68,13 @@ class DeviceItem extends StatelessWidget {
                   ),
                 ),
                 Text(
+                  'Typ: ${viewModel.devices[indexDevice].type}',
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(
+                    fontSize: 15,
+                  ),
+                ),
+                Text(
                   'Serial: ${viewModel.devices[indexDevice].serial}',
                   textAlign: TextAlign.left,
                   style: const TextStyle(
@@ -93,7 +96,7 @@ class DeviceItem extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 15,
                         color:
-                            viewModel.devices[indexDevice].status == 'available'
+                            viewModel.devices[indexDevice].status == 'dostępny'
                                 ? Styles.surfaceColor
                                 : Colors.red,
                       ),

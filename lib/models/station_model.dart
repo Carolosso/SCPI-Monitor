@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:test/models/device_model.dart';
 
 class Station {
   UniqueKey key;
   String name;
-  List<Device> devices = [];
+  List devices = [];
 
-  Station({required this.key, required this.name, required this.devices});
+  Station({
+    required this.devices,
+    required this.key,
+    required this.name,
+  });
 }

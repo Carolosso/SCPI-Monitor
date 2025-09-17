@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:test/models/chart_model.dart';
+import 'package:test/models/device_models/power_supply/power_supply_channel.dart';
 import 'package:test/utils/socket_connection.dart';
 
-class Device {
+class PowerSupply {
   UniqueKey key;
+  bool displayON;
   String name;
   String ip;
   int port;
@@ -11,15 +12,18 @@ class Device {
   String model;
   String serial;
   String status;
-  String measuredUnit;
-  double value;
-  bool stationDetailsChartViewSelected;
-  bool stationsChartViewSelected;
-  Chart chart;
   SocketConnection connection;
 
-  Device(
+  List<PowerSupplyChannel> channels = [
+    PowerSupplyChannel(1, "0", "0", "0", "0"),
+    PowerSupplyChannel(2, "0", "0", "0", "0"),
+    PowerSupplyChannel(3, "0", "0", "0", "0")
+  ];
+  String type = "Zasilacz";
+
+  PowerSupply(
       {required this.key,
+      required this.displayON,
       required this.name,
       required this.ip,
       required this.port,
@@ -27,10 +31,10 @@ class Device {
       required this.model,
       required this.serial,
       required this.status,
-      required this.measuredUnit,
-      required this.value,
-      required this.stationDetailsChartViewSelected,
-      required this.stationsChartViewSelected,
-      required this.chart,
       required this.connection});
+
+  @override
+  String toString() {
+    return "Power Supply";
+  }
 }

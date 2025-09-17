@@ -1,16 +1,25 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:test/models/chart_model.dart';
+import 'package:test/models/command_model.dart';
+import 'package:test/models/device_models/device_model.dart';
+import 'package:test/models/device_models/generator/generator_channel.dart';
+import 'package:test/models/device_models/generator/generator_model.dart';
+import 'package:test/models/device_models/multimeter/multimeter_model.dart';
+import 'package:test/models/device_models/oscilloscope/oscilloscope_channel.dart';
+import 'package:test/models/device_models/oscilloscope/oscilloscope_model.dart';
+import 'package:test/models/device_models/power_supply/power_supply_channel.dart';
+import 'package:test/models/device_models/power_supply/power_supply_model.dart';
+import 'package:test/utils/devices_models.dart';
+import 'package:test/utils/format_unit.dart';
+import 'package:test/utils/increment_ip.dart';
+import 'package:test/utils/refresh_devices.dart';
 import 'package:test/utils/socket_connection.dart';
-import 'package:test/models/device_model.dart';
 import 'package:test/models/station_model.dart';
 import 'package:test/providers/settings_view_model.dart';
 import 'package:test/utils/navigation_service.dart';
@@ -18,41 +27,66 @@ import 'package:test/utils/validators.dart';
 
 //TODO Unhandled Exception: SocketException: Connection reset by peer (OS Error: Connection reset by peer, errno = 104), address = 10.0.2.2, port = 52046
 //TODO TABLET FRIENDLY UI
+//TODO FORMAT UNITS
 class AppViewModel extends ChangeNotifier {
   AppViewModel() {
     //on provider creation call this
     init();
   }
-  List<Device> devices = [];
-  List<Station> stations = [];
+  List<Device> devices = [
+    /* Device(
+        key: UniqueKey(),
+        name: "Generator name",
+        type: "Generator",
+        ip: "127.0.0.2",
+        port: 2313,
+        manufacturer: "manufacturer",
+        model: "model",
+        serial: "serial",
+        status: "dostępny",
+        connection: SocketConnection("128.12.12.2", 525)),
+    Device(
+        key: UniqueKey(),
+        name: "Oscyloskop name2222",
+        type: "Oscyloskop",
+        ip: "127.0.0.222",
+        port: 2313,
+        manufacturer: "manufacturer",
+        model: "model",
+        serial: "serial22",
+        status: "dostępny",
+        connection: SocketConnection("128.12.12.22", 525)),
+    Device(
+        key: UniqueKey(),
+        name: "Zasilacz name2222",
+        type: "Zasilacz",
+        ip: "127.0.0.2223",
+        port: 2313,
+        manufacturer: "manufacturer",
+        model: "model",
+        serial: "serial223333",
+        status: "dostępny",
+        connection: SocketConnection("128.12.12.22", 525)) */
+  ];
+  List<Station> stations = [
+    Station(devices: [], key: UniqueKey(), name: "Stanowisko 1")
+  ];
   int get stationsCount => stations.length;
   int get devicesCount => devices.length;
-  //CHART
-  int limitCount = 50;
-  double xValue = 0;
-  double step = 0.1;
-  //
-  //
+
   bool connectedToWIFI = false;
 
   bool isStopped = true;
   //
   String textInfo = "";
-
+  String debugRegister = "---";
+  late SocketConnection debugConnection;
   String getTextInfo() => textInfo;
 
   late bool findDevicesInNetworkBreak;
 
   void switchFindDevicesInNetworkBreak() {
     findDevicesInNetworkBreak = !findDevicesInNetworkBreak;
-    //notifyListeners();
-  }
-
-  bool chartInStation(int indexStation) {
-    for (Device device in stations.elementAt(indexStation).devices) {
-      if (device.stationsChartViewSelected) return true;
-    }
-    return false;
   }
 
   void switchStartStop() {
@@ -74,26 +108,48 @@ class AppViewModel extends ChangeNotifier {
   /// Starting measurements for every Device in every Station with time delay while not stopped.
   void play() async {
     SettingsViewModel settingsViewModel = getSettingsViewModel();
+    /*    if (isStopped) {
+      for (Station station in stations) {
+        for (var device in station.devices) {
+          debugPrint("Zaczynanie pomiarow dla ${device.name}");
+          device.connection.sendMessageEOM("SYSTem:REMote", '\n');
+        }
+      }
+    } */
     while (!isStopped) {
       for (Station station in stations) {
-        for (Device device in station.devices) {
+        for (var device in station.devices) {
           if (isStopped) break;
+          // device.connection.sendMessageEOM("SYSTem:LOCK:REQuest?", '\n');
           debugPrint("Próba pobrania informacji urzadzenia ${device.name}");
-          await refreshDeviceValue(device);
+          await refreshDeviceValues(device);
+          debugPrint("Pobrano dla ${device.name}");
+          notifyListeners();
         }
       }
       //delay
       await Future.delayed(Duration(milliseconds: settingsViewModel.timeout));
     }
+    if (isStopped) {
+      for (Station station in stations) {
+        for (var device in station.devices) {
+          debugPrint("Konczenie pomiarow dla ${device.name}");
+          device.connection.sendMessageEOM("SYSTem:LOCal", '\n');
+        }
+      }
+    }
   }
 
-  /// Starting measurements for every Device in every Station once.
+  /// Measurement for every Device in every Station once.
   void playOnce() async {
     for (Station station in stations) {
-      for (Device device in station.devices) {
+      for (var device in station.devices) {
         debugPrint("Próba pobrania informacji urzadzenia ${device.name}");
-        await refreshDeviceValue(device);
-        debugPrint("Pobrano");
+        await refreshDeviceValues(device);
+
+        notifyListeners();
+        device.connection.sendMessageEOM("SYSTem:LOCal", '\n');
+        debugPrint("Pobrano raz dla ${device.name}");
       }
     }
   }
@@ -123,16 +179,15 @@ class AppViewModel extends ChangeNotifier {
     String model = "Unknown";
     String status = "Offline";
     String serial = "Unknown";
-    String measuredUnit = "-";
+    String type = "Unknown";
     Socket socket;
-
     try {
       if (!isValidHost(ip)) {
         return "Zły format IP!";
       } else if (!comparedByIP(ip)) {
         return "Urządzenie znajduje się już na liście.";
       }
-      // debugPrint("CREATE DEVICE CONNECT PORT:$port");
+      //debugPrint("CREATE DEVICE CONNECT PORT:$port");
       //initialize socket
       socket =
           await Socket.connect(ip, port, timeout: const Duration(seconds: 3));
@@ -140,89 +195,56 @@ class AppViewModel extends ChangeNotifier {
       socket.listen((List<int> event) async {
         debugPrint(utf8.decode(event));
         List<String> message = utf8.decode(event).split(',');
-        if (message.length > 3) {
+        if (message.length > 2) {
           manufacturer = message.elementAt(0).trim();
           model = message.elementAt(1).trim();
-          name = "$manufacturer $model";
+          type = detectDeviceType(model).toString();
+          debugPrint(type);
+          name = "$type $model";
           serial = message.elementAt(2).trim();
-        } else if (message.length == 2) {
-          List<String> temp = message.toString().split(' ');
-          measuredUnit = temp.first;
         }
-        status = "available";
+        status = "dostępny";
         //we got response so
         //complete completer
         completer.complete(event);
         completer = Completer();
       });
-      // ------------------ TEST -------------------------------
-      SettingsViewModel vm = getSettingsViewModel();
-      if (vm.testOptionsAvailable) {
-        socket.add(
-            utf8.encode('CONF?\n')); //---> "VOLT +1.000000E+01,+3.000000E-05"
-        debugPrint("Zaczynamy timer!");
-        final timeoutTimer = Timer(const Duration(seconds: 3), () {
-          debugPrint("Koniec czasu");
-          textInfo = "Timeout";
-          notifyListeners();
-          completer.complete();
-        });
-        //await for response/completer
-        await completer.future;
-        timeoutTimer.cancel();
-      }
-      completer = Completer();
-      //--------------------- TEST --------------------------------
       socket.add(utf8.encode('*IDN?\n'));
       // send *IDN? ----> <Manufacturer>, <Model>, <Serial Number>, <Firmware Level>, <Options>.
       //await for response/completer
+      final timeoutTimer = Timer(const Duration(seconds: 3), () {
+        debugPrint("Koniec czasu");
+        textInfo = "Timeout";
+        notifyListeners();
+        completer.complete();
+      });
+      //await for response/completer
       await completer.future;
-      // .. and close the socket
+      timeoutTimer.cancel(); // .. and close the socket
+      socket.add(utf8.encode('SYSTem:LOCal\n'));
+
       socket.close();
-      Device device = Device(
-          key: UniqueKey(),
-          name: name,
-          ip: ip,
-          port: port,
-          manufacturer: manufacturer,
-          model: model,
-          serial: serial,
-          status: status,
-          measuredUnit: measuredUnit,
-          value: 0.0,
-          stationDetailsChartViewSelected: false,
-          stationsChartViewSelected: false,
-          chart: Chart(points: [], xValue: xValue),
-          connection: socketConnection);
-      debugPrint("CREATE DEVICE PORT: $port");
-      // finally add device to main devices list if not already
-      if (comparedBySerial(device)) {
-        devices.add(device);
-      }
-      notifyListeners();
     } catch (ex) {
-      // if can't connect then add it too
-      Device device = Device(
-          key: UniqueKey(),
-          name: name,
-          ip: ip,
-          port: port,
-          manufacturer: manufacturer,
-          model: model,
-          serial: serial,
-          status: status,
-          measuredUnit: measuredUnit,
-          value: 0.0,
-          stationDetailsChartViewSelected: false,
-          stationsChartViewSelected: false,
-          chart: Chart(points: [], xValue: xValue),
-          connection: socketConnection);
-      if (comparedBySerial(device)) {
-        devices.add(device);
-      }
-      notifyListeners();
       return "Nie udalo się nawiązać połączenia z urządzeniem!";
     }
+
+    Device device = Device(
+        key: UniqueKey(),
+        name: name,
+        type: type,
+        ip: ip,
+        port: port,
+        manufacturer: manufacturer,
+        model: model,
+        serial: serial,
+        status: status,
+        connection: socketConnection);
+    debugPrint("CREATE DEVICE PORT: $port");
+    // finally add device to main devices list if not already
+    if (comparedBySerial(device)) {
+      devices.add(device);
+    }
+    notifyListeners();
     return "Nawiązano połączenie z urządzeniem!";
   }
 
@@ -245,11 +267,13 @@ class AppViewModel extends ChangeNotifier {
         .devices
         .elementAt(indexDevice)
         .connection
+        .sendMessageEOM("SYSTem:LOCal", '\n');
+    stations[indexStation]
+        .devices
+        .elementAt(indexDevice)
+        .connection
         .disconnect();
-    // have to clear this points cuz its stays in memory??? despite removing object from list
-    //stations[indexStation].devices.elementAt(indexDevice).points.clear();
     stations[indexStation].devices.removeAt(indexDevice);
-    xValue = 0; //resetting X
     notifyListeners();
   }
 
@@ -299,7 +323,7 @@ class AppViewModel extends ChangeNotifier {
       //debugPrint("REFRESH FNC PORT: $port");
       if (device.status == "Offline" &&
           await device.connection.canConnect(5000)) {
-        device.status = "available";
+        device.status = "dostępny";
         devices.remove(device);
         createDevice(ip, port);
       }
@@ -310,10 +334,10 @@ class AppViewModel extends ChangeNotifier {
   /// Checks if device with its serial is already added in any station
   /// * @indexStation - Index of station we are on
   /// * @device - Device that we want to check
-  bool comparedBySerialInStations(Device device) {
+  bool comparedBySerialInStations(var device) {
     for (Station station in stations) {
-      for (Device sdevice in station.devices) {
-        if (device.serial == sdevice.serial) {
+      for (var device2 in station.devices) {
+        if (device2.serial == device.serial) {
           return false;
         }
       }
@@ -343,63 +367,128 @@ class AppViewModel extends ChangeNotifier {
     return true;
   }
 
+  void changeDeviceType(int indexDevice, int value) {
+    List<String> types = ["Multimetr", "Generator", "Zasilacz", "Oscyloskop"];
+    devices[indexDevice].type = types[value];
+    notifyListeners();
+  }
+
   /// Adds device to designated Station, creates new object(device) from this device, checks if is not already in station and if status is ok, if not opens connection and adds device to station
   Future<void> addDeviceToStation(int indexStation, Device device) async {
     // TODO kopiowanie obiektu - ogarnąć to -
-    SocketConnection newSocketConnection =
+    /* SocketConnection newSocketConnection =
         SocketConnection(device.ip, device.port);
-    Chart newChart = Chart(points: [const FlSpot(0, 0)], xValue: 0);
+
     Device newDevice = Device(
         key: device.key,
         name: device.name,
+        type: device.type,
         ip: device.ip,
         port: device.port,
         manufacturer: device.manufacturer,
         model: device.model,
         serial: device.serial,
         status: device.status,
-        measuredUnit: device.measuredUnit,
-        value: device.value,
-        stationDetailsChartViewSelected: device.stationDetailsChartViewSelected,
-        stationsChartViewSelected: device.stationsChartViewSelected,
-        chart:
-            newChart, //clearing points and adding one to prevent from crashing
-        connection: newSocketConnection);
+        connection: newSocketConnection); */
+
     //debugPrint("ADD DEVICE TO STATION PORT: ${newDevice.port}");
-    if (comparedBySerialInStations(newDevice) &&
-        newDevice.status == "available") {
-      await newDevice.connection.startConnection();
-      stations[indexStation].devices.add(newDevice);
-      notifyListeners();
-    }
-  }
+    if (comparedBySerialInStations(device) && device.status == "dostępny") {
+      switch (device.type) {
+        case "Multimetr":
+          Multimeter multimeter = Multimeter(
+              key: UniqueKey(),
+              name: device.name,
+              displayON: true,
+              ip: device.ip,
+              port: device.port,
+              manufacturer: device.manufacturer,
+              model: device.model,
+              serial: device.serial,
+              status: device.status,
+              measuredUnit: "-",
+              value: "0.0",
+              connection: device.connection);
+          stations[indexStation].devices.add(multimeter);
+          await multimeter.connection.startConnection();
+          break;
+        case "Generator":
+          Generator generator = Generator(
+              key: UniqueKey(),
+              name: device.name,
+              displayON: true,
+              ip: device.ip,
+              port: device.port,
+              manufacturer: device.manufacturer,
+              model: device.model,
+              serial: device.serial,
+              status: device.status,
+              connection: device.connection);
+          stations[indexStation].devices.add(generator);
+          await generator.connection.startConnection();
 
-  /// Refreshes devices value
-  Future<void> refreshDeviceValue(Device device) async {
-    //debugPrint("PUNKTY PO RESECIE ${device.points.toString()}");
-    //debugPrint("Wysyłanie wiadomosci do ${device.name}");
-    try {
-      double value = await device.connection.getValue();
-      //debugPrint(value.toString());
-      device.value = value;
-      //move chart
-      if (device.chart.points.length > limitCount) {
-        device.chart.points.removeAt(0);
-        notifyListeners();
+          for (GeneratorChannel generatorChannel in generator.channels) {
+            for (Command command in generatorChannel.commands) {
+              debugPrint(command.query);
+            }
+          }
+
+          break;
+        case "Oscyloskop":
+          Oscilloscope oscilloscope = Oscilloscope(
+              key: UniqueKey(),
+              name: device.name,
+              displayON: true,
+              ip: device.ip,
+              port: device.port,
+              manufacturer: device.manufacturer,
+              model: device.model,
+              serial: device.serial,
+              status: device.status,
+              connection: device.connection);
+          stations[indexStation].devices.add(oscilloscope);
+          await oscilloscope.connection.startConnection();
+          for (OscilloscopeChannel oscilloscopeChannel
+              in oscilloscope.channels) {
+            for (Command command in oscilloscopeChannel.commands) {
+              debugPrint(command.query);
+            }
+          }
+          break;
+        case "Zasilacz":
+          PowerSupply powerSupply = PowerSupply(
+              key: UniqueKey(),
+              name: device.name,
+              displayON: true,
+              ip: device.ip,
+              port: device.port,
+              manufacturer: device.manufacturer,
+              model: device.model,
+              serial: device.serial,
+              status: device.status,
+              connection: device.connection);
+          stations[indexStation].devices.add(powerSupply);
+          await powerSupply.connection.startConnection();
+          for (PowerSupplyChannel powerSupplyChannel in powerSupply.channels) {
+            for (Command command in powerSupplyChannel.commands) {
+              debugPrint(command.query);
+            }
+          }
+          break;
+        default:
       }
-      //add point to chart
-      device.chart.points.add(FlSpot(device.chart.xValue, value));
-      // debugPrint(device.points.toString());
-      device.chart.xValue += step;
       notifyListeners();
-    } catch (e) {
-      //debugPrint("ERROR: $e");
     }
   }
 
-  /// Returning devices count in specified Station.
-  int getStationsDevicesCount(int index) {
-    return stations[index].devices.length;
+  /// Returning devices count of specified type in specified Station.
+  int getStationsDevicesCount(int indexStation, String type) {
+    debugPrint(
+        "$type: ${stations[indexStation].devices.where((device) => device.type == type).length}");
+
+    return stations[indexStation]
+        .devices
+        .where((device) => device.type == type)
+        .length;
   }
 
   /// Returing specified device's name in specified Station.
@@ -434,92 +523,21 @@ class AppViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// CheckBox1 controller
-  /// * indexDevice
-  /// * indexStation
-  /// * chartSelected
-  void setCheckBox1ParameterToDeviceInStation(
-      int indexDevice, int indexStation, bool chartSelected) {
-    stations[indexStation]
-        .devices[indexDevice]
-        .stationDetailsChartViewSelected = chartSelected;
-    notifyListeners();
-  }
-
-  /// CheckBox2 controller
-  /// * indexDevice
-  /// * indexStation
-  /// * chartSelected
-  void setCheckBox2ParameterToDeviceInStation(
-      int indexDevice, int indexStation, bool chartSelected) {
-    stations[indexStation].devices[indexDevice].stationsChartViewSelected =
-        chartSelected;
-    notifyListeners();
-  }
-
   /// Setting new parameters to specified Device in main devices list.
   /// * @index
   /// * @name
   /// * @ip
-  void setNewParametersToDeviceInList(int index, String name, String ip) {
+  void setNewParametersToDeviceInList(int index, String name) {
     devices[index].name = name;
-    devices[index].ip = ip;
-    devices[index].connection = SocketConnection(ip, 5025);
     notifyListeners();
-  }
-
-  /// Formatting value to SI base units. Returing formatted value.
-  /// * @rawValue
-  String formatUnit(String rawValue) {
-    String newValue = "";
-    //debugPrint(rawValue);
-    if (rawValue.contains('e') || rawValue.contains('E')) {
-      int lastDigit = int.parse(rawValue.substring(rawValue.length - 1));
-      double value = double.parse(rawValue.substring(0, rawValue.length - 3));
-      if (rawValue.contains('+')) {
-        if (lastDigit > 3 && lastDigit <= 6) {
-          value = value / pow(10, 6 - lastDigit);
-          newValue = "${value.toStringAsFixed(3)} M";
-        } else if (lastDigit == 3) {
-          value = value / pow(10, 3 - lastDigit);
-          newValue = "${value.toStringAsFixed(3)} k";
-        } else if (lastDigit > 6 && lastDigit <= 9) {
-          value = value / pow(10, 9 - lastDigit);
-          newValue = "${value.toStringAsFixed(3)} G";
-        } else {
-          value = value * pow(10, lastDigit);
-          newValue = "${value.toStringAsFixed(3)} ";
-//          newValue = rawValue.substring(0, rawValue.length - 3);
-        }
-      } else if (rawValue.contains('-')) {
-        if (lastDigit > 3 && lastDigit <= 6) {
-          value = value * pow(10, 6 - lastDigit);
-          newValue = "${value.toStringAsFixed(3)} u";
-        } else if (lastDigit > 0 && lastDigit <= 3) {
-          value = value * pow(10, 3 - lastDigit);
-          newValue = "${value.toStringAsFixed(3)} m";
-        } else if (lastDigit > 6 && lastDigit <= 9) {
-          value = value * pow(10, 9 - lastDigit);
-          newValue = "${value.toStringAsFixed(3)} n";
-        } else if (lastDigit > 9 && lastDigit <= 12) {
-          value = value * pow(10, 12 - lastDigit);
-          newValue = "${value.toStringAsFixed(3)} p";
-        }
-      }
-    } else {
-      newValue = rawValue;
-    }
-    return newValue;
   }
 
   /// Returing specified Device's value in specified Station as formatted String.
   /// * @indexStation
   /// * @indexDevice
-  String getDeviceValue(int indexStation, int indexDevice) {
-    String value = stations[indexStation]
-        .devices
-        .elementAt(indexDevice)
-        .value
+  String getMultimeterValue(int indexStation, int indexDevice) {
+    String value = double.parse(
+            stations[indexStation].devices.elementAt(indexDevice).value.trim())
         .toStringAsExponential(3);
     SettingsViewModel settingsViewModel = getSettingsViewModel();
 
@@ -549,25 +567,12 @@ class AppViewModel extends ChangeNotifier {
   /// Remove specified Station; disconnecting and removing every Device in Station.
   /// * @indexStation
   void removeStation(int indexStation) {
-    for (Device device in stations[indexStation].devices) {
+    for (var device in stations[indexStation].devices) {
       device.connection.disconnect();
     }
     stations[indexStation].devices.clear();
     stations.removeAt(indexStation);
     notifyListeners();
-  }
-
-  /// Increments IP and returs incremented.
-  /// * @input
-  String incrementIP(String input) {
-    List<String> inputIPString = input.split(".");
-    List<int> inputIP = inputIPString.map((e) => int.parse(e)).toList();
-    var ip = (inputIP[0] << 24) |
-        (inputIP[1] << 16) |
-        (inputIP[2] << 8) |
-        (inputIP[3] << 0);
-    ip++;
-    return "${ip >> 24 & 0xff}.${ip >> 16 & 0xff}.${ip >> 8 & 0xff}.${ip >> 0 & 0xff}"; //0xff = 255
   }
 
   /// Looking for devices in local network by trying to connect to them. Starting from network IP address, incrementing and checking till reaching broadcast IP address of this network. If can connect to device at specified port then adding this device to main devices list.
@@ -644,7 +649,7 @@ class AppViewModel extends ChangeNotifier {
     if (oldIndex < newIndex) {
       newIndex--;
     }
-    Device device = stations[indexStation].devices.removeAt(oldIndex);
+    var device = stations[indexStation].devices.removeAt(oldIndex);
     stations[indexStation].devices.insert(newIndex, device);
     notifyListeners();
   }
@@ -660,7 +665,61 @@ class AppViewModel extends ChangeNotifier {
     */
   }
 
+  void changeDisplayOnOff(int indexStation, int indexDevice) {
+    stations[indexStation].devices[indexDevice].displayON =
+        !stations[indexStation].devices[indexDevice].displayON;
+    if (stations[indexStation].devices[indexDevice].displayON) {
+      stations[indexStation]
+          .devices[indexDevice]
+          .connection
+          .sendMessageEOM("DISPlay OFF", "\n");
+    } else if (!stations[indexStation].devices[indexDevice].displayON) {
+      stations[indexStation]
+          .devices[indexDevice]
+          .connection
+          .sendMessageEOM("DISPlay ON", "\n");
+    }
+    notifyListeners();
+  }
+
+  bool checkIfStationContainsDeviceType(int indexStation, String type) {
+    for (var device in stations[indexStation].devices) {
+      if (device.type == type) return true;
+    }
+    return false;
+  }
+
   void init() async {
     await getNetworkInfo();
+  }
+
+  Future<void> debugConnectPressed(String ip, String port) async {
+    debugConnection = SocketConnection(ip, int.parse(port));
+    await debugConnection.startConnection();
+    if (debugConnection.isConnected()) {
+      debugRegister += "\nNawiązano połączenie! IP: $ip PORT: $port";
+    } else {
+      debugRegister += "\nNie udało się nawiązać połączenia!";
+    }
+    notifyListeners();
+  }
+
+  void debugDisconnectPressed() {
+    debugConnection.disconnect();
+    debugRegister += "\nRozłączono.";
+    notifyListeners();
+  }
+
+  void debugClearPressed() {
+    debugRegister = "---";
+    notifyListeners();
+  }
+
+  Future<void> debugQueryPressed(String query) async {
+    debugRegister += "\nWysłano: ${query.trim()}";
+    notifyListeners();
+    String message = await debugConnection.getDebugMessage(query);
+    debugRegister += "\nOdebrano: ${message.trim()}";
+    notifyListeners();
   }
 }
